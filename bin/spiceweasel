@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+ 
+#TODO this should take arg
+yml = YAML.load_file '../infrastructure.yml'
+
+knife = ""
+
+#cookbooks 
+cookbooks = yml['cookbooks'] || []
+cookbooks.each do |cookbook|
+  knife += "knife cookbook upload #{cookbook}\n"
+end
+
+#roles 
+roles = yml['roles'] || []
+roles.each do |role|
+  knife += "knife role from file #{role}.rb\n"
+end
+
+#data bags
+bags = yml['data bags'] || []
+bags.keys.each do |bag|
+  knife += "knife data bag create #{bag}\n"
+  items = bags[bag] || []
+  items.each do |item|
+    knife += "knife data bag from file #{bag} data_bags/#{item}.json\n"
+  end
+end
+
+nodes = yml['nodes'] || []
+nodes.keys.each do |node|
+  run_list = nodes[node][0].split()
+  #TODO verify the run_list against the nodes and recipes
+  if node.start_with?("bluebox","ec2","rackspace","slicehost","terremark")
+    provider = node.split()
+    count = 1
+    if (provider.length == 2)
+      count = provider[1] 
+    end
+    count.to_i.times do
+      knife += "knife #{provider[0]} server create "
+      run_list.each do |x|
+        knife += "\'#{x}\' "
+      end
+      knife +="#{nodes[node][1]}\n"
+    end
+  else
+    knife += "knife bootstrap #{node} "
+    run_list.each do |x|
+      knife += "\'#{x}\' "
+    end
+    knife +="#{nodes[node][1]}\n"
+  end
+end
+
+puts knife
+#--clientsync
+#--delete
+#--dryrun 
+#--rebuild
+#remember to -y

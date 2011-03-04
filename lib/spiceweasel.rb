@@ -1,0 +1,3 @@
+module Spiceweasel
+  # Your code goes here...
+end
