@@ -1,10 +1,31 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
 require 'yaml'
  
-#TODO this should take arg
-yml = YAML.load_file '../infrastructure.yml'
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: spiceweasel [options] file"
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+  opts.on('-v', '--version', 'Version') do 
+    puts "spiceweasel 0.1"
+    exit
+  end
+end
 
+begin
+  ARGV << "-h" if ARGV.empty? 
+  optparse.parse!(ARGV)
+rescue OptionParser::ParseError => e 
+  STDERR.puts e.message, "\n", optparse
+  exit(-1)
+end
+
+
+yml = YAML.load_file ARGV[0]
 knife = ""
 
 #cookbooks 

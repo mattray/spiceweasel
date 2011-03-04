@@ -2,7 +2,7 @@ Description
 ===========
 Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax for describing and deploying infrastructure with the Chef command-line tool `knife`.
 
-HISTORY.txt covers development milestones and future goals..
+HISTORY.md covers current, previous and future development milestones and contains the features backlog.
 
 Requirements
 ============
@@ -126,7 +126,7 @@ Usage
 =====
 To run a spiceweasel file, run the following from you Chef repository directory:
 
-    spiceweasel -f path/to/infrastructure.yml
+    spiceweasel path/to/infrastructure.yml
 
 This will generate the knife commands to build the described infrastructure. 
 
