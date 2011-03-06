@@ -17,6 +17,8 @@ This is the current, previous and future development milestones and contains the
 
 0.3
 ===
+* renamed MILESTONES.md to CHANGELOG.md
+* fixed version number
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
 * validate that the recipes and roles listed in the nodes are loaded
 
