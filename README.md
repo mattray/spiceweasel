@@ -130,6 +130,23 @@ To run a spiceweasel file, run the following from you Chef repository directory:
 
 This will generate the knife commands to build the described infrastructure. 
 
+--dryrun
+--------
+This is the default action, printing the knife commands to be run without executing them.
+
+-d/--delete
+-----------
+The delete command will generate the knife commands to delete the infrastructure described in the YAML file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+
+-h/--help
+---------
+Print the currently-supported usage options for spiceweasel.
+
+-v/--version
+------------
+Print the version of spiceweasel currently installed.
+
+
 License and Author
 ==================
 Author: Matt Ray <matt@opscode.com>

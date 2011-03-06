@@ -57,15 +57,16 @@ rescue Exception
   exit(-1)
 end
 
-knife = ""
+create = String.new()
+delete = String.new()
 
 #cookbooks 
 cookbooks = yml['cookbooks'] || []
 cookbooks.each do |cookbook|
   if cli.config[:delete]
-    knife += "knife cookbook delete #{cookbook}\n"
+    delete += "knife cookbook delete #{cookbook}\n"
   else
-    knife += "knife cookbook upload #{cookbook}\n"
+    create += "knife cookbook upload #{cookbook}\n"
   end
 end
 
@@ -73,30 +74,30 @@ end
 roles = yml['roles'] || []
 roles.each do |role|
   if cli.config[:delete]
-    knife += "knife role delete #{role}\n"
+    delete += "knife role delete #{role}\n"
   else
-    knife += "knife role from file #{role}.rb\n"
+    create += "knife role from file #{role}.rb\n"
   end
 end
 
 #data bags
-bags = yml['data bags'] || []
+bags = yml['data bags'] || {}
 bags.keys.each do |bag|
   if cli.config[:delete]
-    knife += "knife data bag delete #{bag}\n"
+    delete += "knife data bag delete #{bag}\n"
   else
-    knife += "knife data bag create #{bag}\n"
+    create += "knife data bag create #{bag}\n"
     items = bags[bag] || []
     items.each do |item|
-      knife += "knife data bag from file #{bag} data_bags/#{item}.json\n"
+      create += "knife data bag from file #{bag} data_bags/#{item}.json\n"
     end
   end
 end
 
-nodes = yml['nodes'] || []
+nodes = yml['nodes'] || {}
 nodes.keys.each do |node|
   if cli.config[:delete]
-    knife += "knife node delete #{node}\n"
+    delete += "knife node delete #{node}\n"
   else
     run_list = nodes[node][0].split()
     #TODO verify the run_list against the nodes and recipes
@@ -107,18 +108,18 @@ nodes.keys.each do |node|
         count = provider[1] 
       end
       count.to_i.times do
-        knife += "knife #{provider[0]} server create "
+        create += "knife #{provider[0]} server create "
         run_list.each do |x|
-          knife += "\'#{x}\' "
+          create += "\'#{x}\' "
         end
-        knife +="#{nodes[node][1]}\n"
+        create +="#{nodes[node][1]}\n"
       end
     else
-      knife += "knife bootstrap #{node} "
+      create += "knife bootstrap #{node} "
       run_list.each do |x|
-        knife += "\'#{x}\' "
+        create += "\'#{x}\' "
       end
-      knife +="#{nodes[node][1]}\n"
+      create +="#{nodes[node][1]}\n"
     end
   end
 end
@@ -127,10 +128,12 @@ end
 #--dryrun 
 #just print the knife commands, do not execute
 if cli.config[:dryrun]
-  puts knife
+  puts delete unless delete.empty?
+  puts create unless create.empty?
 else
   #eventually we will execute instead of printing knife commands
-  puts knife
+  puts delete unless delete.empty?
+  puts create unless create.empty?
   #puts "BAM!"
 end
 
