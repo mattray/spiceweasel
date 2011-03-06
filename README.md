@@ -142,10 +142,13 @@ The delete command will generate the knife commands to delete the infrastructure
 ---------
 Print the currently-supported usage options for spiceweasel.
 
+-r/--rebuild
+---------
+The rebuild command will generate the knife commands to delete and recreate the infrastructure described in the YAML file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+
 -v/--version
 ------------
 Print the version of spiceweasel currently installed.
-
 
 License and Author
 ==================
