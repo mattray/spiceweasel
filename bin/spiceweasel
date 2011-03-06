@@ -2,9 +2,22 @@
 
 require 'mixlib/cli'
 require 'yaml'
- 
+
 class SpiceweaselCLI
   include Mixlib::CLI
+
+  banner("Usage: spiceweasel [option] file")
+
+  option :delete,
+  :short => "-d",
+  :long => "--delete",
+  :description => "Print the knife commands to be delete the infrastructure",
+  :boolean => true
+
+  option :dryrun,
+  :long => "--dryrun",
+  :description => "Print the knife commands to be executed to STDOUT",
+  :boolean => true
 
   option :help,
   :short => "-h",
@@ -20,80 +33,104 @@ class SpiceweaselCLI
   :long => "--version",
   :description => "Version",
   :boolean => true,
-  :proc => lambda {|v| 
-    puts "Spiceweasel: 0.2"
-    exit 0
-  },
-  :show_options => true
-
-  banner("Usage: spiceweasel [option] file")
+  :proc => lambda {|v| puts "Spiceweasel: 0.2" },
+  :exit => 0
 
 end
 
+#process command line options
 begin
   ARGV << "-h" if ARGV.empty? 
   cli = SpiceweaselCLI.new
   cli.parse_options
 rescue OptionParser::InvalidOption => e 
   STDERR.puts e.message
-  cli.parse_options(["-h"])
+  #puts???
   exit(-1)
 end
 
-yml = YAML.load_file ARGV[0]
+begin
+  yml = YAML.load_file ARGV.last
+rescue Exception
+  STDERR.puts "No infrastructure YAML file provided."
+  #puts???
+  exit(-1)
+end
+
 knife = ""
 
 #cookbooks 
 cookbooks = yml['cookbooks'] || []
 cookbooks.each do |cookbook|
-  knife += "knife cookbook upload #{cookbook}\n"
+  if cli.config[:delete]
+    knife += "knife cookbook delete #{cookbook}\n"
+  else
+    knife += "knife cookbook upload #{cookbook}\n"
+  end
 end
 
 #roles 
 roles = yml['roles'] || []
 roles.each do |role|
-  knife += "knife role from file #{role}.rb\n"
+  if cli.config[:delete]
+    knife += "knife role delete #{role}\n"
+  else
+    knife += "knife role from file #{role}.rb\n"
+  end
 end
 
 #data bags
 bags = yml['data bags'] || []
 bags.keys.each do |bag|
-  knife += "knife data bag create #{bag}\n"
-  items = bags[bag] || []
-  items.each do |item|
-    knife += "knife data bag from file #{bag} data_bags/#{item}.json\n"
+  if cli.config[:delete]
+    knife += "knife data bag delete #{bag}\n"
+  else
+    knife += "knife data bag create #{bag}\n"
+    items = bags[bag] || []
+    items.each do |item|
+      knife += "knife data bag from file #{bag} data_bags/#{item}.json\n"
+    end
   end
 end
 
 nodes = yml['nodes'] || []
 nodes.keys.each do |node|
-  run_list = nodes[node][0].split()
-  #TODO verify the run_list against the nodes and recipes
-  if node.start_with?("bluebox","ec2","rackspace","slicehost","terremark")
-    provider = node.split()
-    count = 1
-    if (provider.length == 2)
-      count = provider[1] 
-    end
-    count.to_i.times do
-      knife += "knife #{provider[0]} server create "
+  if cli.config[:delete]
+    knife += "knife node delete #{node}\n"
+  else
+    run_list = nodes[node][0].split()
+    #TODO verify the run_list against the nodes and recipes
+    if node.start_with?("bluebox","ec2","rackspace","slicehost","terremark")
+      provider = node.split()
+      count = 1
+      if (provider.length == 2)
+        count = provider[1] 
+      end
+      count.to_i.times do
+        knife += "knife #{provider[0]} server create "
+        run_list.each do |x|
+          knife += "\'#{x}\' "
+        end
+        knife +="#{nodes[node][1]}\n"
+      end
+    else
+      knife += "knife bootstrap #{node} "
       run_list.each do |x|
         knife += "\'#{x}\' "
       end
       knife +="#{nodes[node][1]}\n"
     end
-  else
-    knife += "knife bootstrap #{node} "
-    run_list.each do |x|
-      knife += "\'#{x}\' "
-    end
-    knife +="#{nodes[node][1]}\n"
   end
 end
 
-puts knife
-#--clientsync
-#--delete
+
 #--dryrun 
-#--rebuild
-#remember to -y
+#just print the knife commands, do not execute
+if cli.config[:dryrun]
+  puts knife
+else
+  #eventually we will execute instead of printing knife commands
+  puts knife
+  #puts "BAM!"
+end
+

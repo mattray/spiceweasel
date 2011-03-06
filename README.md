@@ -8,11 +8,11 @@ Requirements
 ============
 Spiceweasel currently depends on `knife` to run commands for it.
 
-Written with Chef 0.9.12 and supports cookbooks, recipes, roles, data bags and nodes. Support for environments will be added with the Chef 0.10 release.
+Written with Chef 0.9.12 and 0.9.14 and supports cookbooks, recipes, roles, data bags and nodes. Support for environments will be added with the Chef 0.10 release.
 
 Testing
 -------
-Tested with Ubuntu 10.04 and 10.10 and Chef 0.9.12.
+Tested with Ubuntu 10.04 and 10.10 and Chef 0.9.12 and 0.9.14.
 
 File Syntax
 ===========
