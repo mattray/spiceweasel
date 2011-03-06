@@ -37,3 +37,12 @@ echo "------------>Return code:$?"
 echo "------------>spiceweasel --delete example.yml"
 spiceweasel --delete example.yml
 echo "------------>Return code:$?"
+echo "------------>spiceweasel -r"
+spiceweasel -r
+echo "------------>Return code:$?"
+echo "------------>spiceweasel -r example.yml"
+spiceweasel -r example.yml
+echo "------------>Return code:$?"
+echo "------------>spiceweasel --rebuild example.yml"
+spiceweasel --rebuild example.yml
+echo "------------>Return code:$?"

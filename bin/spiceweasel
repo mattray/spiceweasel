@@ -28,6 +28,12 @@ class SpiceweaselCLI
   :show_options => true,
   :exit => 0
 
+  option :rebuild,
+  :short => "-r",
+  :long => "--rebuild",
+  :description => "Print the knife commands to be delete and recreate the infrastructure",
+  :boolean => true
+
   option :version,
   :short => "-v",
   :long => "--version",
@@ -63,77 +69,69 @@ delete = String.new()
 #cookbooks 
 cookbooks = yml['cookbooks'] || []
 cookbooks.each do |cookbook|
-  if cli.config[:delete]
-    delete += "knife cookbook delete #{cookbook}\n"
-  else
-    create += "knife cookbook upload #{cookbook}\n"
-  end
+  delete += "knife cookbook delete #{cookbook} -y\n"
+  create += "knife cookbook upload #{cookbook}\n"
 end
 
 #roles 
 roles = yml['roles'] || []
 roles.each do |role|
-  if cli.config[:delete]
-    delete += "knife role delete #{role}\n"
-  else
-    create += "knife role from file #{role}.rb\n"
-  end
+  delete += "knife role delete #{role} -y\n"
+  create += "knife role from file #{role}.rb\n"
 end
 
 #data bags
 bags = yml['data bags'] || {}
 bags.keys.each do |bag|
-  if cli.config[:delete]
-    delete += "knife data bag delete #{bag}\n"
-  else
-    create += "knife data bag create #{bag}\n"
-    items = bags[bag] || []
-    items.each do |item|
-      create += "knife data bag from file #{bag} data_bags/#{item}.json\n"
-    end
+  delete += "knife data bag delete #{bag} -y\n"
+  create += "knife data bag create #{bag}\n"
+  items = bags[bag] || []
+  items.each do |item|
+    create += "knife data bag from file #{bag} data_bags/#{item}.json\n"
   end
 end
 
 nodes = yml['nodes'] || {}
+#currently use bulk_delete for deleting, add provider support real soon
+delete += "knife node bulk_delete .* -y\n"
 nodes.keys.each do |node|
-  if cli.config[:delete]
-    delete += "knife node delete #{node}\n"
-  else
-    run_list = nodes[node][0].split()
-    #TODO verify the run_list against the nodes and recipes
-    if node.start_with?("bluebox","ec2","rackspace","slicehost","terremark")
-      provider = node.split()
-      count = 1
-      if (provider.length == 2)
-        count = provider[1] 
-      end
-      count.to_i.times do
-        create += "knife #{provider[0]} server create "
-        run_list.each do |x|
-          create += "\'#{x}\' "
-        end
-        create +="#{nodes[node][1]}\n"
-      end
-    else
-      create += "knife bootstrap #{node} "
+  # delete += "knife node delete #{node}\n"
+  run_list = nodes[node][0].split()
+  #TODO verify the run_list against the nodes and recipes
+  if node.start_with?("bluebox","ec2","rackspace","slicehost","terremark")
+    provider = node.split()
+    count = 1
+    if (provider.length == 2)
+      count = provider[1] 
+    end
+    count.to_i.times do
+      create += "knife #{provider[0]} server create "
       run_list.each do |x|
         create += "\'#{x}\' "
       end
       create +="#{nodes[node][1]}\n"
     end
+  else
+    create += "knife bootstrap #{node} "
+    run_list.each do |x|
+      create += "\'#{x}\' "
+    end
+    create +="#{nodes[node][1]}\n"
   end
 end
 
-
-#--dryrun 
 #just print the knife commands, do not execute
-if cli.config[:dryrun]
+#if cli.config[:dryrun]
+if cli.config[:delete] 
+  puts delete unless delete.empty?
+elsif cli.config[:rebuild]
   puts delete unless delete.empty?
   puts create unless create.empty?
 else
-  #eventually we will execute instead of printing knife commands
-  puts delete unless delete.empty?
   puts create unless create.empty?
+end       
+#else
+  #eventually we will execute instead of printing knife commands
   #puts "BAM!"
-end
+#end
 

@@ -17,7 +17,7 @@ This is the current, previous and future development milestones and contains the
 
 0.3
 ===
-* on delete... what to do with provider provided nodes (take count of vendor-specific, delete if match)
+* on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
 * validate that the recipes and roles listed in the nodes are loaded
 
 0.4
