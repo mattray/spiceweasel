@@ -22,16 +22,19 @@ This is the current, previous and future development milestones and contains the
 * updated YAML schema and examples because Ruby 1.8 does not order hashes.
 * validate that the recipes and roles listed in the nodes are loaded
 
+0.4
+===
+* --chef-client The option `--chef-client` will make a `knife ssh` call to each box and run `chef-client` on each.
+* --chef-client validation that nodes are added
+
 BACKLOG
 =======
 * support site vendor for cookbooks
 * support versions for cookbooks
+* add support for environments
 * make the JSON calls directly with Spice (https://github.com/danryan/spice) 
 * -e/--execute execute the commands
 * catching return codes and retrying (with retry count?)
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
-* --chef-client The option `--chef-client` will make a `knife ssh` call to each box and run `chef-client` on each.
-* --chef-client validation that nodes are added
-* add support for environments
 * knife windows bootstrap FQDN [RUN LIST...] (options)
 * use GNU parallel with knife?
