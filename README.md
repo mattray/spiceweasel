@@ -19,41 +19,41 @@ File Syntax
 The syntax for the spiceweasel file is a simple YAML format of Chef primitives describing what is to be instantiated. 
 
     cookbooks:
-      - apache2
-      - apt
-      - mysql
+    - apache2:
+    - apt:
+    - mysql:
 
     roles:
-      - base
-      - monitoring
-      - webserver
+    - base:
+    - monitoring:
+    - webserver:
 
     data bags:
-      users:
-        - alice
-        - bob
-        - chuck
-      data:
+    - users:
+      - alice
+      - bob
+      - chuck
+    - data:
 
     nodes:
-      serverA:
-        - role[loadbalancer]
-        - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-      ec2 5:
-        - role[webserver]
-        - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-      rackspace 3:
-        - recipe[mysql] role[clustered_mysql]
-        - --image 49 --flavor 2
+    - serverA:
+      - role[loadbalancer]
+      - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+    - ec2 5:
+      - role[webserver]
+      - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+    - rackspace 3:
+      - recipe[mysql] role[clustered_mysql]
+      - --image 49 --flavor 2
 
 Cookbooks
 ---------
 The `cookbooks` section of the YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The YAML snippet
 
     cookbooks:
-      - apache2
-      - apt
-      - mysql
+    - apache2:
+    - apt:
+    - mysql:
 
 produces the knife commands
 
@@ -66,9 +66,9 @@ Roles
 The `roles` section of the YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The YAML snippet 
 
     roles:
-      - base
-      - monitoring
-      - webserver
+    - base:
+    - monitoring:
+    - webserver:
 
 produces the knife commands 
 
@@ -81,11 +81,11 @@ Data Bags
 The `data bags` section of the YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a YAML sequence, the assumption is made that they `.json` files and in the `data_bags` directory. The YAML snippet 
 
     data bags:
-      users:
-        - alice
-        - bob
-        - chuck
-      data:
+    - users:
+      - alice
+      - bob
+      - chuck
+    - data:
 
 produces the knife commands 
 
@@ -100,15 +100,15 @@ Nodes
 The `nodes` section of the YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a YAML sequence. The first item is the run_list and the second the CLI options used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
 
     nodes:
-      serverA:
-        - role[loadbalancer]
-        - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-      ec2 5:
-        - role[webserver]
-        - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-      rackspace 3:
-        - recipe[mysql] role[clustered_mysql]
-        - --image 49 --flavor 2
+    - serverA:
+      - role[loadbalancer]
+      - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+    - ec2 5:
+      - role[webserver]
+      - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+    - rackspace 3:
+      - recipe[mysql] role[clustered_mysql]
+      - --image 49 --flavor 2
 
 produces the knife commands 
 

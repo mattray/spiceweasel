@@ -19,6 +19,7 @@ This is the current, previous and future development milestones and contains the
 ===
 * renamed MILESTONES.md to CHANGELOG.md
 * fixed version number
+* updated YAML schema and examples because Ruby 1.8 does not order hashes.
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
 * validate that the recipes and roles listed in the nodes are loaded
 

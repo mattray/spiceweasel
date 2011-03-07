@@ -1,27 +1,27 @@
 cookbooks:
-  - apache2
-  - apt
-  - mysql
+- apache2:
+- apt:
+- mysql:
 
 roles:
-  - base
-  - monitoring
-  - webserver
+- base:
+- monitoring:
+- webserver:
 
 data bags:
-  users:
-    - alice
-    - bob
-    - chuck
-  data:
+- users:
+  - alice
+  - bob
+  - chuck
+- data:
 
 nodes:
-  serverA:
-    - role[loadbalancer]
-    - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-  ec2 5:
-    - role[webserver]
-    - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-  rackspace 3:
-    - recipe[mysql] role[clustered_mysql]
-    - --image 49 --flavor 2
+- serverA:
+  - role[loadbalancer]
+  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+- ec2 5:
+  - role[webserver]
+  - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+- rackspace 3:
+  - recipe[mysql] role[clustered_mysql]
+  - --image 49 --flavor 2

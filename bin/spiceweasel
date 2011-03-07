@@ -70,37 +70,37 @@ delete = String.new()
 #cookbooks 
 cookbooks = yml['cookbooks'] || []
 cookbooks.each do |cookbook|
-  delete += "knife cookbook delete #{cookbook} -y\n"
-  create += "knife cookbook upload #{cookbook}\n"
+  delete += "knife cookbook delete #{cookbook.keys[0]} -y\n"
+  create += "knife cookbook upload #{cookbook.keys[0]}\n"
 end
 
 #roles 
 roles = yml['roles'] || []
 roles.each do |role|
-  delete += "knife role delete #{role} -y\n"
-  create += "knife role from file #{role}.rb\n"
+  delete += "knife role delete #{role.keys[0]} -y\n"
+  create += "knife role from file #{role.keys[0]}.rb\n"
 end
 
 #data bags
-bags = yml['data bags'] || {}
-bags.keys.each do |bag|
-  delete += "knife data bag delete #{bag} -y\n"
-  create += "knife data bag create #{bag}\n"
-  items = bags[bag] || []
+bags = yml['data bags'] || []
+bags.each do |bag|
+  delete += "knife data bag delete #{bag.keys[0]} -y\n"
+  create += "knife data bag create #{bag.keys[0]}\n"
+  items = bag[bag.keys[0]] || []
   items.each do |item|
-    create += "knife data bag from file #{bag} data_bags/#{item}.json\n"
+    create += "knife data bag from file #{bag.keys[0]} data_bags/#{item}.json\n"
   end
 end
 
-nodes = yml['nodes'] || {}
+nodes = yml['nodes'] || []
 #currently use bulk_delete for deleting, add provider support real soon
 delete += "knife node bulk_delete .* -y\n"
-nodes.keys.each do |node|
-  # delete += "knife node delete #{node}\n"
-  run_list = nodes[node][0].split()
+nodes.each do |node|
+  # delete += "knife node delete #{node[node.keys[0]}\n"
+  run_list = node[node.keys[0]][0].split()
   #TODO verify the run_list against the nodes and recipes
-  if node.start_with?("bluebox","ec2","rackspace","slicehost","terremark")
-    provider = node.split()
+  if node.keys[0].start_with?("bluebox","ec2","rackspace","slicehost","terremark")
+    provider = node.keys[0].split()
     count = 1
     if (provider.length == 2)
       count = provider[1] 
@@ -110,14 +110,14 @@ nodes.keys.each do |node|
       run_list.each do |x|
         create += "\'#{x}\' "
       end
-      create +="#{nodes[node][1]}\n"
+      create +="#{node[node.keys[0]][1]}\n"
     end
   else
-    create += "knife bootstrap #{node} "
+    create += "knife bootstrap #{node.keys[0]} "
     run_list.each do |x|
       create += "\'#{x}\' "
     end
-    create +="#{nodes[node][1]}\n"
+    create +="#{node[node.keys[0]][1]}\n"
   end
 end
 
