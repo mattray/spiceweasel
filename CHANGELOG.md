@@ -29,10 +29,12 @@ This is the current, previous and future development milestones and contains the
 
 BACKLOG
 =======
+* support JSON and YAML
+* convert to a knife plugin (knife batchload from file infrastructure.yml)
 * support site vendor for cookbooks
 * support versions for cookbooks
 * add support for environments
-* make the JSON calls directly with Spice (https://github.com/danryan/spice) 
+* make the JSON calls directly with Chef APIs 
 * -e/--execute execute the commands
 * catching return codes and retrying (with retry count?)
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
