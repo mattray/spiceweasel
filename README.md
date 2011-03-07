@@ -1,6 +1,6 @@
 Description
 ===========
-Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax for describing and deploying infrastructure with the Chef command-line tool `knife`.
+Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax for describing and deploying infrastructure in order with the Chef command-line tool `knife`.
 
 CHANGELOG.md covers current, previous and future development milestones and contains the features backlog.
 
@@ -37,13 +37,13 @@ The syntax for the spiceweasel file is a simple YAML format of Chef primitives d
 
     nodes:
     - serverA:
-      - role[loadbalancer]
+      - role[base]
       - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
     - ec2 5:
-      - role[webserver]
+      - role[webserver] recipe[mysql::client]
       - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
     - rackspace 3:
-      - recipe[mysql] role[clustered_mysql]
+      - recipe[mysql] role[monitoring]
       - --image 49 --flavor 2
 
 Cookbooks
@@ -89,38 +89,38 @@ The `data bags` section of the YAML file currently creates the data bags listed 
 
 produces the knife commands 
 
-    knife data bag create data
     knife data bag create users
     knife data bag from file users data_bags/alice.json
     knife data bag from file users data_bags/bob.json
     knife data bag from file users data_bags/chuck.json
+    knife data bag create data
 
 Nodes
 -----
-The `nodes` section of the YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a YAML sequence. The first item is the run_list and the second the CLI options used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
+The `nodes` section of the YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a YAML sequence. The first item is the run_list and the second the CLI options used. Validation is performed on the run_list components to ensure that only recipes and roles listed in the YAML file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
 
     nodes:
     - serverA:
-      - role[loadbalancer]
+      - role[base]
       - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
     - ec2 5:
-      - role[webserver]
+      - role[webserver] recipe[mysql::client]
       - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
     - rackspace 3:
-      - recipe[mysql] role[clustered_mysql]
+      - recipe[mysql] role[monitoring]
       - --image 49 --flavor 2
 
 produces the knife commands 
 
-    knife bootstrap serverA 'role[loadbalancer]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-    knife ec2 server create 'role[webserver]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife rackspace server create 'recipe[mysql]' 'role[clustered_mysql]' --image 49 --flavor 2
-    knife rackspace server create 'recipe[mysql]' 'role[clustered_mysql]' --image 49 --flavor 2
-    knife rackspace server create 'recipe[mysql]' 'role[clustered_mysql]' --image 49 --flavor 2
+    knife bootstrap serverA 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+    knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
+    knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
+    knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
 
 Usage
 =====

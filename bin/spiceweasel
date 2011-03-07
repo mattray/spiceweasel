@@ -2,7 +2,31 @@
 
 require 'mixlib/cli'
 require 'yaml'
-require "spiceweasel/version"
+require 'spiceweasel/version'
+
+#ensure that the run_list contents are present in either the cookbooks or roles
+def validate_run_list(run_list, cookbooks, roles)
+  run_list.each do |item|
+    if item.start_with?("recipe")
+      #recipe[foo] or recipe[foo::bar]
+      recipe = item.slice(7..-2).split("::")[0]
+      unless cookbooks.member?(recipe)
+        raise "'#{item}' is an invalid run_list recipe not managed by spiceweasel"
+        exit(-1)
+      end
+    elsif item.start_with?("role")
+      #role[blah]
+      role = item.slice(5..-2)
+      unless roles.member?(role)
+        raise "'#{item}' is an invalid run_list role not managed by spiceweasel"
+        exit(-1)
+      end
+    else 
+      raise "'#{item}' is an invalid run_list component"
+      exit(-1)
+    end
+  end
+end
 
 class SpiceweaselCLI
   include Mixlib::CLI
@@ -69,16 +93,22 @@ delete = String.new()
 
 #cookbooks 
 cookbooks = yml['cookbooks'] || []
+cookbook_list = []
 cookbooks.each do |cookbook|
   delete += "knife cookbook delete #{cookbook.keys[0]} -y\n"
   create += "knife cookbook upload #{cookbook.keys[0]}\n"
+  #flatten list of cookbooks for validation later
+  cookbook_list.push(cookbook.keys[0])
 end
 
 #roles 
 roles = yml['roles'] || []
+role_list = []
 roles.each do |role|
   delete += "knife role delete #{role.keys[0]} -y\n"
   create += "knife role from file #{role.keys[0]}.rb\n"
+  #flatten list of roles for validation later
+  role_list.push(role.keys[0])
 end
 
 #data bags
@@ -98,7 +128,7 @@ delete += "knife node bulk_delete .* -y\n"
 nodes.each do |node|
   # delete += "knife node delete #{node[node.keys[0]}\n"
   run_list = node[node.keys[0]][0].split()
-  #TODO verify the run_list against the nodes and recipes
+  validate_run_list(run_list, cookbook_list, role_list)
   if node.keys[0].start_with?("bluebox","ec2","rackspace","slicehost","terremark")
     provider = node.keys[0].split()
     count = 1
@@ -132,7 +162,8 @@ else
   puts create unless create.empty?
 end       
 #else
-  #eventually we will execute instead of printing knife commands
-  #puts "BAM!"
+#eventually we will execute instead of printing knife commands
+#puts "BAM!"
 #end
+
 
