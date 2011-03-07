@@ -76,7 +76,7 @@ begin
   cli.parse_options
 rescue OptionParser::InvalidOption => e 
   STDERR.puts e.message
-  #puts???
+  puts cli.opt_parser.to_s
   exit(-1)
 end
 
@@ -84,7 +84,7 @@ begin
   yml = YAML.load_file ARGV.last
 rescue Exception
   STDERR.puts "No infrastructure YAML file provided."
-  #puts???
+  puts cli.opt_parser.to_s
   exit(-1)
 end
 
@@ -165,5 +165,3 @@ end
 #eventually we will execute instead of printing knife commands
 #puts "BAM!"
 #end
-
-
