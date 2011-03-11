@@ -21,6 +21,7 @@ The syntax for the spiceweasel file is a simple YAML format of Chef primitives d
     cookbooks:
     - apache2:
     - apt:
+      - 1.1.0
     - mysql:
 
     roles:
