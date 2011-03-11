@@ -95,10 +95,27 @@ delete = String.new()
 cookbooks = yml['cookbooks'] || []
 cookbook_list = []
 cookbooks.each do |cookbook|
-  delete += "knife cookbook delete #{cookbook.keys[0]} -y\n"
-  create += "knife cookbook upload #{cookbook.keys[0]}\n"
+  cb = cookbook.keys.first
+  delete += "knife cookbook delete #{cb} #{version} -y\n"
+  #get the version if available
+  version = cookbook[cb]
+  if File.directory?("cookbooks")
+    if version and File.directory?("cookbooks/#{cb}")
+      #check metadata.rb for requested version
+      metadata = File.open("cookbooks/#{cb}/metadata.rb").grep(/^version/)[0].split()[1].gsub(/"/,'')
+      if (metadata != version[0])
+        raise "Invalid version '#{version[0]}' of '#{cb}' requested, '#{metadata}' is already in the cookbooks directory."
+        exit(-1)
+      end
+    elsif !File.directory?("cookbooks/#{cb}")
+      create += "knife cookbook site vendor #{cb} #{version}\n"
+    end
+  else
+    STDERR.puts "cookbooks directory not found, validation and downloading skipped"
+  end
+  create += "knife cookbook upload #{cb}\n"
   #flatten list of cookbooks for validation later
-  cookbook_list.push(cookbook.keys[0])
+  cookbook_list.push(cb)
 end
 
 #roles 

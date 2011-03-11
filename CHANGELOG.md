@@ -24,15 +24,18 @@ This is the current, previous and future development milestones and contains the
 
 0.4
 ===
-* --chef-client The option `--chef-client` will make a `knife ssh` call to each box and run `chef-client` on each.
-* --chef-client validation that nodes are added
+* support versions for cookbooks
+* support site vendor for cookbooks
+
+0.5
+===
+* support JSON and YAML
 
 BACKLOG
 =======
-* support JSON and YAML
 * convert to a knife plugin (knife batchload from file infrastructure.yml)
-* support site vendor for cookbooks
-* support versions for cookbooks
+* --chef-client The option `--chef-client` will make a `knife ssh` call to each box and run `chef-client` on each.
+* --chef-client validation that nodes are added
 * add support for environments
 * make the JSON calls directly with Chef APIs 
 * -e/--execute execute the commands

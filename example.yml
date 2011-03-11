@@ -1,6 +1,7 @@
 cookbooks:
 - apache2:
 - apt:
+    - 1.1.0
 - mysql:
 
 roles:

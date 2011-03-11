@@ -48,16 +48,18 @@ The syntax for the spiceweasel file is a simple YAML format of Chef primitives d
 
 Cookbooks
 ---------
-The `cookbooks` section of the YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The YAML snippet
+The `cookbooks` section of the YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded. The YAML snippet
 
     cookbooks:
     - apache2:
     - apt:
+      - 1.1.0
     - mysql:
 
 produces the knife commands
 
     knife cookbook upload apache2
+    knife cookbook site vendor apt 1.1.0
     knife cookbook upload apt
     knife cookbook upload mysql
 
