@@ -96,9 +96,9 @@ cookbooks = yml['cookbooks'] || []
 cookbook_list = []
 cookbooks.each do |cookbook|
   cb = cookbook.keys.first
-  delete += "knife cookbook delete #{cb} #{version} -y\n"
   #get the version if available
   version = cookbook[cb]
+  delete += "knife cookbook delete #{cb} #{version} -y\n"
   if File.directory?("cookbooks")
     if version and File.directory?("cookbooks/#{cb}")
       #check metadata.rb for requested version
