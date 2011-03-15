@@ -1,12 +1,12 @@
 Description
 ===========
-Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax for describing and deploying infrastructure in order with the Chef command-line tool `knife`.
+Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax in either JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`.
 
 CHANGELOG.md covers current, previous and future development milestones and contains the features backlog.
 
 Requirements
 ============
-Spiceweasel currently depends on `knife` to run commands for it.
+Spiceweasel currently depends on `knife` to run commands for it. Infrastructure files must either end in .json or .yml to be processed.
 
 Written with Chef 0.9.12 and 0.9.14 and supports cookbooks, recipes, roles, data bags and nodes. Support for environments will be added with the Chef 0.10 release.
 
@@ -16,7 +16,66 @@ Tested with Ubuntu 10.04 and 10.10 and Chef 0.9.12 and 0.9.14.
 
 File Syntax
 ===========
-The syntax for the spiceweasel file is a simple YAML format of Chef primitives describing what is to be instantiated. 
+The syntax for the spiceweasel file may be either JSON or YAML format of Chef primitives describing what is to be instantiated. Below or 2 examples describing the same infrastructure.
+
+JSON
+----
+From the `example.json`:
+
+    {
+        "cookbooks":
+        [
+            {"apache2":[]},
+            {"apt":
+             [
+                 "1.1.0"
+             ]
+            },
+            {"mysql":[]}
+        ],
+        "roles":
+        [
+            {"base":[]},
+            {"monitoring":[]},
+            {"webserver":[]}
+        ],
+        "data bags":
+        [
+            {"users":
+             [
+                 "alice",
+                 "bob",
+                 "chuck"
+             ]
+            },
+            {"data":[]}
+        ],
+        "nodes":
+        [
+            {"serverA":
+             [
+                 "role[base]",
+                 "-i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems"
+             ]
+            },
+            {"ec2 5":
+             [
+                 "role[webserver] recipe[mysql::client]",
+                 "-S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small"
+             ]
+            },
+            {"rackspace 3":
+             [
+                 "recipe[mysql] role[monitoring]",
+                 "--image 49 --flavor 2"
+             ]
+            }
+        ]
+    }
+
+YAML
+----
+From the `example.yml`:
 
     cookbooks:
     - apache2:
@@ -49,7 +108,7 @@ The syntax for the spiceweasel file is a simple YAML format of Chef primitives d
 
 Cookbooks
 ---------
-The `cookbooks` section of the YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded. The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded.  The YAML snippet
 
     cookbooks:
     - apache2:
@@ -66,7 +125,7 @@ produces the knife commands
 
 Roles
 -----
-The `roles` section of the YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The YAML snippet 
+The `roles` section of the JSON or YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The YAML snippet 
 
     roles:
     - base:
@@ -81,7 +140,7 @@ produces the knife commands
 
 Data Bags
 ---------
-The `data bags` section of the YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a YAML sequence, the assumption is made that they `.json` files and in the `data_bags` directory. The YAML snippet 
+The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags` directory. The YAML snippet 
 
     data bags:
     - users:
@@ -100,7 +159,7 @@ produces the knife commands
 
 Nodes
 -----
-The `nodes` section of the YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a YAML sequence. The first item is the run_list and the second the CLI options used. Validation is performed on the run_list components to ensure that only recipes and roles listed in the YAML file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
+The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
 
     nodes:
     - serverA:
@@ -129,9 +188,13 @@ Usage
 =====
 To run a spiceweasel file, run the following from you Chef repository directory:
 
+    spiceweasel path/to/infrastructure.json
+
+or
+
     spiceweasel path/to/infrastructure.yml
 
-This will generate the knife commands to build the described infrastructure. 
+This will generate the knife commands to build the described infrastructure. Infrastructure files must end in either `.json` or `.yml`.
 
 --dryrun
 --------
@@ -139,7 +202,7 @@ This is the default action, printing the knife commands to be run without execut
 
 -d/--delete
 -----------
-The delete command will generate the knife commands to delete the infrastructure described in the YAML file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+The delete command will generate the knife commands to delete the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
 
 -h/--help
 ---------
@@ -147,7 +210,7 @@ Print the currently-supported usage options for spiceweasel.
 
 -r/--rebuild
 ---------
-The rebuild command will generate the knife commands to delete and recreate the infrastructure described in the YAML file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+The rebuild command will generate the knife commands to delete and recreate the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
 
 -v/--version
 ------------

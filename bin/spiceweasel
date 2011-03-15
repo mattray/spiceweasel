@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 
+require 'json'
 require 'mixlib/cli'
-require 'yaml'
 require 'spiceweasel/version'
+require 'yaml'
 
 #ensure that the run_list contents are present in either the cookbooks or roles
 def validate_run_list(run_list, cookbooks, roles)
@@ -81,9 +82,17 @@ rescue OptionParser::InvalidOption => e
 end
 
 begin
-  yml = YAML.load_file ARGV.last
+  file = ARGV.last
+  if (file.end_with?(".yml"))
+    input = YAML.load_file ARGV.last
+  elsif (file.end_with?(".json"))
+    input = JSON.parse(File.read(ARGV.last))
+  else
+    raise "Unknown file type, please use a file ending with either '.json' or '.yml'."
+    exit(-1)
+  end
 rescue Exception
-  STDERR.puts "No infrastructure YAML file provided."
+  STDERR.puts "No infrastructure .json or .yml file provided."
   puts cli.opt_parser.to_s
   exit(-1)
 end
@@ -92,7 +101,7 @@ create = String.new()
 delete = String.new()
 
 #cookbooks 
-cookbooks = yml['cookbooks'] || []
+cookbooks = input['cookbooks'] || []
 cookbook_list = []
 cookbooks.each do |cookbook|
   cb = cookbook.keys.first
@@ -119,7 +128,7 @@ cookbooks.each do |cookbook|
 end
 
 #roles 
-roles = yml['roles'] || []
+roles = input['roles'] || []
 role_list = []
 roles.each do |role|
   delete += "knife role delete #{role.keys[0]} -y\n"
@@ -129,7 +138,7 @@ roles.each do |role|
 end
 
 #data bags
-bags = yml['data bags'] || []
+bags = input['data bags'] || []
 bags.each do |bag|
   delete += "knife data bag delete #{bag.keys[0]} -y\n"
   create += "knife data bag create #{bag.keys[0]}\n"
@@ -139,7 +148,7 @@ bags.each do |bag|
   end
 end
 
-nodes = yml['nodes'] || []
+nodes = input['nodes'] || []
 #currently use bulk_delete for deleting, add provider support real soon
 delete += "knife node bulk_delete .* -y\n"
 nodes.each do |node|
