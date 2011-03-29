@@ -105,8 +105,10 @@ cookbooks = input['cookbooks'] || []
 cookbook_list = []
 cookbooks.each do |cookbook|
   cb = cookbook.keys.first
-  #get the version if available
-  version = cookbook[cb]
+  if cookbook[cb] and cookbook[cb].length > 0
+    version = cookbook[cb][0] || ""
+    args = cookbook[cb][1] || ""
+  end
   delete += "knife cookbook delete #{cb} #{version} -y\n"
   if File.directory?("cookbooks")
     if version and File.directory?("cookbooks/#{cb}")
@@ -117,7 +119,7 @@ cookbooks.each do |cookbook|
         exit(-1)
       end
     elsif !File.directory?("cookbooks/#{cb}")
-      create += "knife cookbook site vendor #{cb} #{version}\n"
+      create += "knife cookbook site vendor #{cb} #{version} #{args}\n"
     end
   else
     STDERR.puts "cookbooks directory not found, validation and downloading skipped"

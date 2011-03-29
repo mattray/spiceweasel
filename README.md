@@ -28,7 +28,8 @@ From the `example.json`:
             {"apache2":[]},
             {"apt":
              [
-                 "1.1.0"
+                 "1.1.0",
+                 "-B testing"
              ]
             },
             {"mysql":[]}
@@ -81,6 +82,7 @@ From the `example.yml`:
     - apache2:
     - apt:
       - 1.1.0
+      - -B testing
     - mysql:
 
     roles:
@@ -108,18 +110,19 @@ From the `example.yml`:
 
 Cookbooks
 ---------
-The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded.  The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded. You may pass any additional arguments (ie. a Git branch) if necessary. The YAML snippet
 
     cookbooks:
     - apache2:
     - apt:
       - 1.1.0
+      - -B testing
     - mysql:
 
 produces the knife commands
 
     knife cookbook upload apache2
-    knife cookbook site vendor apt 1.1.0
+    knife cookbook site vendor apt 1.1.0 -B testing
     knife cookbook upload apt
     knife cookbook upload mysql
 

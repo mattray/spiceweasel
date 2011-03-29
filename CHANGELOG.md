@@ -31,6 +31,10 @@ This is the current, previous and future development milestones and contains the
 ===
 * support JSON and YAML
 
+0.6
+===
+* add support for cookbook options
+
 BACKLOG
 =======
 * convert to a knife plugin (knife batchload from file infrastructure.yml)
