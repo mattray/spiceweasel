@@ -1,6 +1,10 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
+require "json"
+require "mixlib/cli"
 require "spiceweasel/version"
+require "yaml"
+
 
 Gem::Specification.new do |s|
   s.name        = "spiceweasel"
