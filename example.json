@@ -16,6 +16,12 @@
         {"monitoring":[]},
         {"webserver":[]}
     ],
+    "environments":
+    [
+        {"development":[]},
+        {"qa":[]},
+        {"production":[]}
+    ],
     "data bags":
     [
         {"users":
