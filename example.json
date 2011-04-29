@@ -10,17 +10,17 @@
         },
         {"mysql":[]}
     ],
-    "roles":
-    [
-        {"base":[]},
-        {"monitoring":[]},
-        {"webserver":[]}
-    ],
     "environments":
     [
         {"development":[]},
         {"qa":[]},
         {"production":[]}
+    ],
+    "roles":
+    [
+        {"base":[]},
+        {"monitoring":[},
+        {"webserver":[]}
     ],
     "data bags":
     [
