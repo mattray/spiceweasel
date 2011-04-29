@@ -6,13 +6,24 @@ require 'spiceweasel/version'
 require 'yaml'
 
 #ensure that the run_list contents are present in either the cookbooks or roles
-def validate_run_list(run_list, cookbooks, roles)
+def validate_run_list(run_list, cookbooks, environments, roles)
   run_list.each do |item|
     if item.start_with?("recipe")
       #recipe[foo] or recipe[foo::bar]
       recipe = item.slice(7..-2).split("::")[0]
       unless cookbooks.member?(recipe)
         raise "'#{item}' is an invalid run_list recipe not managed by spiceweasel"
+        exit(-1)
+      end
+    elsif item.start_with?("environment")
+      # if cli.config[:chefversion] == '0.9'
+      #   raise "Environments are not supported in Chef 0.9.x"
+      #   exit(-1)
+      # end
+      #environment[blah]
+      environment = item.slice(12..-2)
+      unless environments.member?(environment)
+        raise "'#{item}' is an invalid run_list environment not managed by spiceweasel"
         exit(-1)
       end
     elsif item.start_with?("role")
@@ -33,6 +44,12 @@ class SpiceweaselCLI
   include Mixlib::CLI
 
   banner("Usage: spiceweasel [option] file")
+
+  # option :chefversion,
+  # :short => "-c",
+  # :long => "--chefversion",
+  # :description => "Select which version of Chef is being used ('0.9' or '0.10'). Default is '0.10'",
+  # :boolean => false
 
   option :delete,
   :short => "-d",
@@ -67,7 +84,6 @@ class SpiceweaselCLI
   :boolean => true,
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0
-
 end
 
 #process command line options
@@ -91,6 +107,10 @@ begin
     raise "Unknown file type, please use a file ending with either '.json' or '.yml'."
     exit(-1)
   end
+rescue JSON::ParserError => e
+  STDERR.puts e.message
+  STDERR.puts "Parsing error in the infrastructure file provided."
+  exit(-1)
 rescue Exception
   STDERR.puts "No infrastructure .json or .yml file provided."
   puts cli.opt_parser.to_s
@@ -119,7 +139,7 @@ cookbooks.each do |cookbook|
         exit(-1)
       end
     elsif !File.directory?("cookbooks/#{cb}")
-      create += "knife cookbook site vendor #{cb} #{version} #{args}\n"
+      create += "knife cookbook site download #{cb} #{version} #{args}\n"
     end
   else
     STDERR.puts "cookbooks directory not found, validation and downloading skipped"
@@ -127,6 +147,16 @@ cookbooks.each do |cookbook|
   create += "knife cookbook upload #{cb}\n"
   #flatten list of cookbooks for validation later
   cookbook_list.push(cb)
+end
+
+#environments 
+environments = input['environments'] || []
+environment_list = []
+environments.each do |environment|
+  delete += "knife environment delete #{environment.keys[0]} -y\n"
+  create += "knife environment from file #{environment.keys[0]}.rb\n"
+  #flatten list of environments for validation later
+  environment_list.push(environment.keys[0])
 end
 
 #roles 
@@ -156,8 +186,8 @@ delete += "knife node bulk_delete .* -y\n"
 nodes.each do |node|
   # delete += "knife node delete #{node[node.keys[0]}\n"
   run_list = node[node.keys[0]][0].split()
-  validate_run_list(run_list, cookbook_list, role_list)
-  if node.keys[0].start_with?("bluebox","ec2","rackspace","slicehost","terremark")
+  validate_run_list(run_list, cookbook_list, environment_list, role_list)
+  if node.keys[0].start_with?("bluebox","ec2","openstack","rackspace","slicehost","terremark")
     provider = node.keys[0].split()
     count = 1
     if (provider.length == 2)
