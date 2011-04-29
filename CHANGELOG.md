@@ -35,15 +35,33 @@ This is the current, previous and future development milestones and contains the
 ===
 * add support for cookbook options
 
+0.7
+===
+* add support for environments
+* add flag for 0.9
+* update cookbook download syntax
+* multiple nodes with same runlists syntax
+* regex support for data bag items
+* rescue from parser errors
+* add support for encrypted data bags
+
+
 BACKLOG
 =======
 * convert to a knife plugin (knife batchload from file infrastructure.yml)
 * --chef-client The option `--chef-client` will make a `knife ssh` call to each box and run `chef-client` on each.
 * --chef-client validation that nodes are added
-* add support for environments
-* make the JSON calls directly with Chef APIs 
 * -e/--execute execute the commands
-* catching return codes and retrying (with retry count?)
+ * catching return codes and retrying (with retry count?)
+* make spiceweasel a library rather than an executable
+ * make the JSON calls directly with Chef APIs 
+* execution-phase validation
+ * check metadata.rb of cookbooks for their dependencies
+ * validate within role files rather than the names of files (assumption that they are the same)
+ * validate cookbooks referenced in roles
+ * validate within environment files rather than the names of files (assumption that they are the same)
+ * validate cookbooks referenced in environments
+ * validate recipes from cookbooks in run_lists
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
-* knife windows bootstrap FQDN [RUN LIST...] (options)
+* knife winrm bootstrap FQDN [RUN LIST...] (options)
 * use GNU parallel with knife?
