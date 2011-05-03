@@ -40,6 +40,7 @@ This is the current, previous and future development milestones and contains the
 * add support for environments
 * rescue from parser errors
 * update cookbook download syntax
+
 * multiple nodes with same runlists syntax
 * regex support for data bag items
 * add support for encrypted data bags

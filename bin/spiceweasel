@@ -192,11 +192,14 @@ nodes.each do |node|
       create +="#{node[node.keys[0]][1]}\n"
     end
   else
-    create += "knife bootstrap #{node.keys[0]} "
-    run_list.each do |x|
-      create += "\'#{x}\' "
+    #multinode support
+    node.keys[0].split.each do |server|
+      create += "knife bootstrap #{server} "
+      run_list.each do |x|
+        create += "\'#{x}\' "
+      end
+      create +="#{node[node.keys[0]][1]}\n"
     end
-    create +="#{node[node.keys[0]][1]}\n"
   end
 end
 
