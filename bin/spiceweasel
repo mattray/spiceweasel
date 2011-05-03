@@ -139,7 +139,8 @@ cookbooks.each do |cookbook|
         exit(-1)
       end
     elsif !File.directory?("cookbooks/#{cb}")
-      create += "knife cookbook site download #{cb} #{version} #{args}\n"
+      create += "knife cookbook site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{args}\n"
+      create += "tar -C cookbooks/ -xf cookbooks/#{cb}.tgz\n"
     end
   else
     STDERR.puts "cookbooks directory not found, validation and downloading skipped"

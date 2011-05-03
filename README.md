@@ -29,8 +29,7 @@ From the `example.json`:
         {"apache2":[]},
         {"apt":
          [
-             "1.1.0",
-             "-B testing"
+             "1.1.0"
          ]
         },
         {"mysql":[]}
@@ -91,7 +90,6 @@ cookbooks:
 - apache2:
 - apt:
     - 1.1.0
-    - -B testing
 - mysql:
 
 environments:
@@ -125,14 +123,13 @@ nodes:
 
 Cookbooks
 ---------
-The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded. You may pass any additional arguments (ie. a Git branch) if necessary. The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded (and the command to untar it is provided). You may pass any additional arguments if necessary. The YAML snippet
 
 ``` yaml
 cookbooks:
 - apache2:
 - apt:
   - 1.1.0
-  - -B testing
 - mysql:
 ```
 
@@ -140,7 +137,8 @@ produces the knife commands
 
 ```
 knife cookbook upload apache2
-knife cookbook site download apt 1.1.0 -B testing
+knife cookbook site download apt 1.1.0 --file cookbooks/apt.tgz 
+tar -C cookbooks/ -xf cookbooks/apt.tgz
 knife cookbook upload apt
 knife cookbook upload mysql
 ```

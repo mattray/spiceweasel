@@ -19,7 +19,7 @@
     "roles":
     [
         {"base":[]},
-        {"monitoring":[},
+        {"monitoring":[]},
         {"webserver":[]}
     ],
     "data bags":
