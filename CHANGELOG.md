@@ -38,11 +38,10 @@ This is the current, previous and future development milestones and contains the
 0.7 *CURRENT*
 =============
 * add support for environments
-* add flag for 0.9
+* rescue from parser errors
 * update cookbook download syntax
 * multiple nodes with same runlists syntax
 * regex support for data bag items
-* rescue from parser errors
 * add support for encrypted data bags
 
 BACKLOG
@@ -66,6 +65,7 @@ Future
  * check metadata.rb of cookbooks for their dependencies
  * validate within role files rather than the names of files (assumption that they are the same)
  * validate cookbooks referenced in roles
+ * validate not trying to use environments with 0.9.x
  * validate within environment files rather than the names of files (assumption that they are the same)
  * validate cookbooks referenced in environments
  * validate recipes from cookbooks in run_lists

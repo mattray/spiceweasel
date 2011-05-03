@@ -16,10 +16,6 @@ def validate_run_list(run_list, cookbooks, environments, roles)
         exit(-1)
       end
     elsif item.start_with?("environment")
-      # if cli.config[:chefversion] == '0.9'
-      #   raise "Environments are not supported in Chef 0.9.x"
-      #   exit(-1)
-      # end
       #environment[blah]
       environment = item.slice(12..-2)
       unless environments.member?(environment)
@@ -44,12 +40,6 @@ class SpiceweaselCLI
   include Mixlib::CLI
 
   banner("Usage: spiceweasel [option] file")
-
-  # option :chefversion,
-  # :short => "-c",
-  # :long => "--chefversion",
-  # :description => "Select which version of Chef is being used ('0.9' or '0.10'). Default is '0.10'",
-  # :boolean => false
 
   option :delete,
   :short => "-d",
