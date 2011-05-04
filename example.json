@@ -30,7 +30,14 @@
              "chuck"
          ]
         },
-        {"data":[]}
+        {"data":[]},
+        {"passwords":
+         [
+             "secret secret_key",
+             "mysql",
+             "rabbitmq"
+         ]
+        }
     ],
     "nodes":
     [

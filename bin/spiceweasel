@@ -166,8 +166,17 @@ bags.each do |bag|
   delete += "knife data bag delete #{bag.keys[0]} -y\n"
   create += "knife data bag create #{bag.keys[0]}\n"
   items = bag[bag.keys[0]] || []
+  secret = nil
   items.each do |item|
-    create += "knife data bag from file #{bag.keys[0]} data_bags/#{item}.json\n"
+    if item.start_with?("secret")
+      secret = item.split()[1]
+      next
+    end
+    if secret
+      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json --secret-file #{secret}\n"
+    else
+      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json\n"
+    end
   end
 end
 

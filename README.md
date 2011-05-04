@@ -123,7 +123,7 @@ nodes:
 
 Cookbooks
 ---------
-The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded (and the command to untar it is provided). You may pass any additional arguments if necessary. The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded (without touching version control) and the command to untar it is provided. You may pass any additional arguments if necessary. The YAML snippet
 
 ``` yaml
 cookbooks:
@@ -183,7 +183,7 @@ knife role from file webserver.rb
 
 Data Bags
 ---------
-The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags` directory. The YAML snippet 
+The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags/FOO` directory. Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). The YAML snippet 
 
 ``` yaml
 data bags:
@@ -192,16 +192,23 @@ data bags:
   - bob
   - chuck
 - data:
+- passwords:
+  - secret secret_key
+  - mysql
+  - rabbitmq
 ```
 
 produces the knife commands 
 
 ```
 knife data bag create users
-knife data bag from file users data_bags/alice.json
-knife data bag from file users data_bags/bob.json
-knife data bag from file users data_bags/chuck.json
+knife data bag from file users data_bags/users/alice.json
+knife data bag from file users data_bags/users/bob.json
+knife data bag from file users data_bags/users/chuck.json
 knife data bag create data
+knife data bag create passwords
+knife data bag from file passwords data_bags/passwords/mysql.json --secret-file secret_key
+knife data bag from file passwords data_bags/passwords/rabbitmq.json --secret-file secret_key
 ```
 
 Nodes
