@@ -55,7 +55,11 @@ From the `example.json`:
              "chuck"
          ]
         },
-        {"data":[]}
+        {"data":
+         [
+             "*"
+         ]
+        },
     ],
     "nodes":
     [
