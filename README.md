@@ -183,7 +183,7 @@ knife role from file webserver.rb
 
 Data Bags
 ---------
-The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags/FOO` directory. Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). The YAML snippet 
+The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `*`). Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet 
 
 ``` yaml
 data bags:
@@ -192,6 +192,7 @@ data bags:
   - bob
   - chuck
 - data:
+  - *
 - passwords:
   - secret secret_key
   - mysql
@@ -206,6 +207,8 @@ knife data bag from file users data_bags/users/alice.json
 knife data bag from file users data_bags/users/bob.json
 knife data bag from file users data_bags/users/chuck.json
 knife data bag create data
+knife data bag from file users data_bags/data/dataA.json
+knife data bag from file users data_bags/data/dataB.json
 knife data bag create passwords
 knife data bag from file passwords data_bags/passwords/mysql.json --secret-file secret_key
 knife data bag from file passwords data_bags/passwords/rabbitmq.json --secret-file secret_key

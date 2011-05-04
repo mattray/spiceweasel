@@ -20,6 +20,7 @@ data bags:
   - bob
   - chuck
 - data:
+  - *
 - passwords:
   - secret secret_key
   - mysql

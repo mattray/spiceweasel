@@ -167,9 +167,15 @@ bags.each do |bag|
   create += "knife data bag create #{bag.keys[0]}\n"
   items = bag[bag.keys[0]] || []
   secret = nil
-  items.each do |item|
+  while item = items.shift
     if item.start_with?("secret")
       secret = item.split()[1]
+      next
+    end
+    if item =~ /\*/ #wildcard support
+      files = Dir.glob("data_bags/#{bag.keys[0]}/#{item}.json")
+      items += files.collect {|x| x[x.rindex('/')+1..-6]}
+      puts items
       next
     end
     if secret

@@ -40,10 +40,9 @@ This is the current, previous and future development milestones and contains the
 * add support for environments
 * rescue from parser errors
 * update cookbook download syntax
-
 * multiple nodes with same runlists syntax
-* regex support for data bag items
 * add support for encrypted data bags
+* wildcard support for data bag items
 
 BACKLOG
 =======
@@ -70,6 +69,7 @@ Future
  * validate within environment files rather than the names of files (assumption that they are the same)
  * validate cookbooks referenced in environments
  * validate recipes from cookbooks in run_lists
+* wildcards for environments and roles
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
 * knife winrm bootstrap FQDN [RUN LIST...] (options)
 * use GNU parallel with knife?

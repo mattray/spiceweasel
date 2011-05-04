@@ -30,7 +30,11 @@
              "chuck"
          ]
         },
-        {"data":[]},
+        {"data":
+         [
+             "*"
+         ]
+        },
         {"passwords":
          [
              "secret secret_key",
