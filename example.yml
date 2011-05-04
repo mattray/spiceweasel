@@ -1,9 +1,13 @@
 cookbooks:
 - apache2:
 - apt:
-    - 1.1.0
-    - -B testing
+    - 1.1.1
 - mysql:
+
+environments:
+- development:
+- qa:
+- production:
 
 roles:
 - base:
@@ -16,12 +20,20 @@ data bags:
   - bob
   - chuck
 - data:
+  - *
+- passwords:
+  - secret secret_key
+  - mysql
+  - rabbitmq
 
 nodes:
 - serverA:
   - role[base]
   - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-- ec2 5:
+- serverB serverC:
+  - role[base]
+  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+- ec2 3:
   - role[webserver] recipe[mysql::client]
   - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
 - rackspace 3:

@@ -35,15 +35,43 @@ This is the current, previous and future development milestones and contains the
 ===
 * add support for cookbook options
 
+0.7 *CURRENT*
+=============
+* add support for environments
+* rescue from parser errors
+* update cookbook download syntax
+* multiple nodes with same runlists syntax
+* add support for encrypted data bags
+* wildcard support for data bag items
+
 BACKLOG
 =======
-* convert to a knife plugin (knife batchload from file infrastructure.yml)
+Next
+----
+* make spiceweasel a library rather than an executable
+* switch to using lib/ directory
+* convert to a knife plugin
+ * knife batch create from file infrastructure.yml
+ * knife batch delete from file infrastructure.json
+ * knife batch rebuild from file infrastructure.yml
+Future
+------
 * --chef-client The option `--chef-client` will make a `knife ssh` call to each box and run `chef-client` on each.
 * --chef-client validation that nodes are added
-* add support for environments
-* make the JSON calls directly with Chef APIs 
 * -e/--execute execute the commands
-* catching return codes and retrying (with retry count?)
+ * catching return codes and retrying (with retry count?)
+* make the JSON calls directly with Chef APIs 
+* execution-phase validation
+ * check metadata.rb of cookbooks for their dependencies
+ * validate within role files rather than the names of files (assumption that they are the same)
+ * validate cookbooks referenced in roles
+ * validate not trying to use environments with 0.9.x
+ * validate within environment files rather than the names of files (assumption that they are the same)
+ * validate cookbooks referenced in environments
+ * validate recipes from cookbooks in run_lists
+* wildcards for environments and roles
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
-* knife windows bootstrap FQDN [RUN LIST...] (options)
+* knife winrm bootstrap FQDN [RUN LIST...] (options)
 * use GNU parallel with knife?
+* extract existing infrastructure
+ * knife batch extract

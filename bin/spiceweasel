@@ -6,13 +6,20 @@ require 'spiceweasel/version'
 require 'yaml'
 
 #ensure that the run_list contents are present in either the cookbooks or roles
-def validate_run_list(run_list, cookbooks, roles)
+def validate_run_list(run_list, cookbooks, environments, roles)
   run_list.each do |item|
     if item.start_with?("recipe")
       #recipe[foo] or recipe[foo::bar]
       recipe = item.slice(7..-2).split("::")[0]
       unless cookbooks.member?(recipe)
         raise "'#{item}' is an invalid run_list recipe not managed by spiceweasel"
+        exit(-1)
+      end
+    elsif item.start_with?("environment")
+      #environment[blah]
+      environment = item.slice(12..-2)
+      unless environments.member?(environment)
+        raise "'#{item}' is an invalid run_list environment not managed by spiceweasel"
         exit(-1)
       end
     elsif item.start_with?("role")
@@ -67,7 +74,6 @@ class SpiceweaselCLI
   :boolean => true,
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0
-
 end
 
 #process command line options
@@ -91,6 +97,10 @@ begin
     raise "Unknown file type, please use a file ending with either '.json' or '.yml'."
     exit(-1)
   end
+rescue JSON::ParserError => e
+  STDERR.puts e.message
+  STDERR.puts "Parsing error in the infrastructure file provided."
+  exit(-1)
 rescue Exception
   STDERR.puts "No infrastructure .json or .yml file provided."
   puts cli.opt_parser.to_s
@@ -119,7 +129,8 @@ cookbooks.each do |cookbook|
         exit(-1)
       end
     elsif !File.directory?("cookbooks/#{cb}")
-      create += "knife cookbook site vendor #{cb} #{version} #{args}\n"
+      create += "knife cookbook site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{args}\n"
+      create += "tar -C cookbooks/ -xf cookbooks/#{cb}.tgz\n"
     end
   else
     STDERR.puts "cookbooks directory not found, validation and downloading skipped"
@@ -127,6 +138,16 @@ cookbooks.each do |cookbook|
   create += "knife cookbook upload #{cb}\n"
   #flatten list of cookbooks for validation later
   cookbook_list.push(cb)
+end
+
+#environments 
+environments = input['environments'] || []
+environment_list = []
+environments.each do |environment|
+  delete += "knife environment delete #{environment.keys[0]} -y\n"
+  create += "knife environment from file #{environment.keys[0]}.rb\n"
+  #flatten list of environments for validation later
+  environment_list.push(environment.keys[0])
 end
 
 #roles 
@@ -145,8 +166,23 @@ bags.each do |bag|
   delete += "knife data bag delete #{bag.keys[0]} -y\n"
   create += "knife data bag create #{bag.keys[0]}\n"
   items = bag[bag.keys[0]] || []
-  items.each do |item|
-    create += "knife data bag from file #{bag.keys[0]} data_bags/#{item}.json\n"
+  secret = nil
+  while item = items.shift
+    if item.start_with?("secret")
+      secret = item.split()[1]
+      next
+    end
+    if item =~ /\*/ #wildcard support
+      files = Dir.glob("data_bags/#{bag.keys[0]}/#{item}.json")
+      items += files.collect {|x| x[x.rindex('/')+1..-6]}
+      puts items
+      next
+    end
+    if secret
+      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json --secret-file #{secret}\n"
+    else
+      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json\n"
+    end
   end
 end
 
@@ -156,8 +192,8 @@ delete += "knife node bulk_delete .* -y\n"
 nodes.each do |node|
   # delete += "knife node delete #{node[node.keys[0]}\n"
   run_list = node[node.keys[0]][0].split()
-  validate_run_list(run_list, cookbook_list, role_list)
-  if node.keys[0].start_with?("bluebox","ec2","rackspace","slicehost","terremark")
+  validate_run_list(run_list, cookbook_list, environment_list, role_list)
+  if node.keys[0].start_with?("bluebox","ec2","openstack","rackspace","slicehost","terremark")
     provider = node.keys[0].split()
     count = 1
     if (provider.length == 2)
@@ -171,11 +207,14 @@ nodes.each do |node|
       create +="#{node[node.keys[0]][1]}\n"
     end
   else
-    create += "knife bootstrap #{node.keys[0]} "
-    run_list.each do |x|
-      create += "\'#{x}\' "
+    #multinode support
+    node.keys[0].split.each do |server|
+      create += "knife bootstrap #{server} "
+      run_list.each do |x|
+        create += "\'#{x}\' "
+      end
+      create +="#{node[node.keys[0]][1]}\n"
     end
-    create +="#{node[node.keys[0]][1]}\n"
   end
 end
 

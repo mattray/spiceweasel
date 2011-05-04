@@ -8,11 +8,11 @@ Requirements
 ============
 Spiceweasel currently depends on `knife` to run commands for it. Infrastructure files must either end in .json or .yml to be processed.
 
-Written with Chef 0.9.12 and 0.9.14 and supports cookbooks, recipes, roles, data bags and nodes. Support for environments will be added with the Chef 0.10 release.
+Written with Chef 0.9.12 and 0.10.0 and supports cookbooks, environments, roles, data bags and nodes.
 
 Testing
 -------
-Tested with Ubuntu 10.04 and 10.10 and Chef 0.9.12 and 0.9.14.
+Tested with Ubuntu 10.04 and 10.10 and Chef 0.9.16 and 0.10.0.rc.1.
 
 File Syntax
 ===========
@@ -22,180 +22,246 @@ JSON
 ----
 From the `example.json`:
 
-    {
-        "cookbooks":
-        [
-            {"apache2":[]},
-            {"apt":
-             [
-                 "1.1.0",
-                 "-B testing"
-             ]
-            },
-            {"mysql":[]}
-        ],
-        "roles":
-        [
-            {"base":[]},
-            {"monitoring":[]},
-            {"webserver":[]}
-        ],
-        "data bags":
-        [
-            {"users":
-             [
-                 "alice",
-                 "bob",
-                 "chuck"
-             ]
-            },
-            {"data":[]}
-        ],
-        "nodes":
-        [
-            {"serverA":
-             [
-                 "role[base]",
-                 "-i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems"
-             ]
-            },
-            {"ec2 5":
-             [
-                 "role[webserver] recipe[mysql::client]",
-                 "-S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small"
-             ]
-            },
-            {"rackspace 3":
-             [
-                 "recipe[mysql] role[monitoring]",
-                 "--image 49 --flavor 2"
-             ]
-            }
-        ]
-    }
+``` json
+{
+    "cookbooks":
+    [
+        {"apache2":[]},
+        {"apt":
+         [
+             "1.1.0"
+         ]
+        },
+        {"mysql":[]}
+    ],
+    "environments":
+    [
+        {"development":[]},
+        {"qa":[]},
+        {"production":[]}
+    ],
+    "roles":
+    [
+        {"base":[]},
+        {"monitoring":[]},
+        {"webserver":[]}
+    ],
+    "data bags":
+    [
+        {"users":
+         [
+             "alice",
+             "bob",
+             "chuck"
+         ]
+        },
+        {"data":
+         [
+             "*"
+         ]
+        },
+    ],
+    "nodes":
+    [
+        {"serverA":
+         [
+             "role[base]",
+             "-i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems"
+         ]
+        },
+        {"ec2 5":
+         [
+             "role[webserver] recipe[mysql::client]",
+             "-S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small"
+         ]
+        },
+        {"rackspace 3":
+         [
+             "recipe[mysql] role[monitoring]",
+             "--image 49 --flavor 2"
+         ]
+        }
+    ]
+}
+```
 
 YAML
 ----
 From the `example.yml`:
 
-    cookbooks:
-    - apache2:
-    - apt:
-      - 1.1.0
-      - -B testing
-    - mysql:
+``` yaml
+cookbooks:
+- apache2:
+- apt:
+    - 1.1.0
+- mysql:
 
-    roles:
-    - base:
-    - monitoring:
-    - webserver:
+environments:
+- development:
+- qa:
+- production:
 
-    data bags:
-    - users:
-      - alice
-      - bob
-      - chuck
-    - data:
+roles:
+- base:
+- monitoring:
+- webserver:
 
-    nodes:
-    - serverA:
-      - role[base]
-      - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-    - ec2 5:
-      - role[webserver] recipe[mysql::client]
-      - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    - rackspace 3:
-      - recipe[mysql] role[monitoring]
-      - --image 49 --flavor 2
+data bags:
+- users:
+  - alice
+  - bob
+  - chuck
+- data:
+
+nodes:
+- serverA:
+  - role[base]
+  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+- ec2 5:
+  - role[webserver] recipe[mysql::client]
+  - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+- rackspace 3:
+  - recipe[mysql] role[monitoring]
+  - --image 49 --flavor 2
+```
 
 Cookbooks
 ---------
-The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded. You may pass any additional arguments (ie. a Git branch) if necessary. The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded (without touching version control) and the command to untar it is provided. You may pass any additional arguments if necessary. The YAML snippet
 
-    cookbooks:
-    - apache2:
-    - apt:
-      - 1.1.0
-      - -B testing
-    - mysql:
+``` yaml
+cookbooks:
+- apache2:
+- apt:
+  - 1.1.0
+- mysql:
+```
 
 produces the knife commands
 
-    knife cookbook upload apache2
-    knife cookbook site vendor apt 1.1.0 -B testing
-    knife cookbook upload apt
-    knife cookbook upload mysql
+```
+knife cookbook upload apache2
+knife cookbook site download apt 1.1.0 --file cookbooks/apt.tgz 
+tar -C cookbooks/ -xf cookbooks/apt.tgz
+knife cookbook upload apt
+knife cookbook upload mysql
+```
+
+Environments
+------------
+The `environments` section of the JSON or YAML file currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` in the `environments` directory. The YAML snippet 
+
+``` yaml
+environments:
+- development:
+- qa:
+- production:
+```
+
+produces the knife commands 
+
+```
+knife environment from file development.rb
+knife environment from file qa.rb
+knife environment from file production.rb
+```
 
 Roles
 -----
 The `roles` section of the JSON or YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The YAML snippet 
 
-    roles:
-    - base:
-    - monitoring:
-    - webserver:
+``` yaml
+roles:
+- base:
+- monitoring:
+- webserver:
+```
 
 produces the knife commands 
 
-    knife role from file base.rb
-    knife role from file monitoring.rb
-    knife role from file webserver.rb
+```
+knife role from file base.rb
+knife role from file monitoring.rb
+knife role from file webserver.rb
+```
 
 Data Bags
 ---------
-The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags` directory. The YAML snippet 
+The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `*`). Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet 
 
-    data bags:
-    - users:
-      - alice
-      - bob
-      - chuck
-    - data:
+``` yaml
+data bags:
+- users:
+  - alice
+  - bob
+  - chuck
+- data:
+  - *
+- passwords:
+  - secret secret_key
+  - mysql
+  - rabbitmq
+```
 
 produces the knife commands 
 
-    knife data bag create users
-    knife data bag from file users data_bags/alice.json
-    knife data bag from file users data_bags/bob.json
-    knife data bag from file users data_bags/chuck.json
-    knife data bag create data
+```
+knife data bag create users
+knife data bag from file users data_bags/users/alice.json
+knife data bag from file users data_bags/users/bob.json
+knife data bag from file users data_bags/users/chuck.json
+knife data bag create data
+knife data bag from file users data_bags/data/dataA.json
+knife data bag from file users data_bags/data/dataB.json
+knife data bag create passwords
+knife data bag from file passwords data_bags/passwords/mysql.json --secret-file secret_key
+knife data bag from file passwords data_bags/passwords/rabbitmq.json --secret-file secret_key
+```
 
 Nodes
 -----
 The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
 
-    nodes:
-    - serverA:
-      - role[base]
-      - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-    - ec2 5:
-      - role[webserver] recipe[mysql::client]
-      - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    - rackspace 3:
-      - recipe[mysql] role[monitoring]
-      - --image 49 --flavor 2
+``` yaml
+nodes:
+- serverA:
+  - role[base]
+  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+- ec2 5:
+  - role[webserver] recipe[mysql::client]
+  - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+- rackspace 3:
+  - recipe[mysql] role[monitoring]
+  - --image 49 --flavor 2
+```
 
 produces the knife commands 
 
-    knife bootstrap serverA 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-    knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
-    knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
-    knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
+```
+knife bootstrap serverA 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
+knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
+knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
+```
 
 Usage
 =====
 To run a spiceweasel file, run the following from you Chef repository directory:
 
-    spiceweasel path/to/infrastructure.json
+```
+spiceweasel path/to/infrastructure.json
+```
 
 or
 
-    spiceweasel path/to/infrastructure.yml
+```
+spiceweasel path/to/infrastructure.yml
+```
 
 This will generate the knife commands to build the described infrastructure. Infrastructure files must end in either `.json` or `.yml`.
 
