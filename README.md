@@ -18,6 +18,54 @@ File Syntax
 ===========
 The syntax for the spiceweasel file may be either JSON or YAML format of Chef primitives describing what is to be instantiated. Below or 2 examples describing the same infrastructure.
 
+YAML
+----
+From the `example.yml`:
+
+``` yaml
+cookbooks:
+- apache2:
+- apt:
+    - 1.1.1
+- mysql:
+
+environments:
+- development:
+- qa:
+- production:
+
+roles:
+- base:
+- monitoring:
+- webserver:
+
+data bags:
+- users:
+  - alice
+  - bob
+  - chuck
+- data:
+  - *
+- passwords:
+  - secret secret_key
+  - mysql
+  - rabbitmq
+
+nodes:
+- serverA:
+  - role[base]
+  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+- serverB serverC:
+  - role[base]
+  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+- ec2 3:
+  - role[webserver] recipe[mysql::client]
+  - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+- rackspace 3:
+  - recipe[mysql] role[monitoring]
+  - --image 49 --flavor 2
+```
+
 JSON
 ----
 From the `example.json`:
@@ -29,7 +77,7 @@ From the `example.json`:
         {"apache2":[]},
         {"apt":
          [
-             "1.1.0"
+             "1.1.1"
          ]
         },
         {"mysql":[]}
@@ -60,6 +108,13 @@ From the `example.json`:
              "*"
          ]
         },
+        {"passwords":
+         [
+             "secret secret_key",
+             "mysql",
+             "rabbitmq"
+         ]
+        }
     ],
     "nodes":
     [
@@ -69,7 +124,13 @@ From the `example.json`:
              "-i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems"
          ]
         },
-        {"ec2 5":
+        {"serverB serverC":
+         [
+             "role[base]",
+             "-i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems"
+         ]
+        },
+        {"ec2 3":
          [
              "role[webserver] recipe[mysql::client]",
              "-S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small"
@@ -83,46 +144,6 @@ From the `example.json`:
         }
     ]
 }
-```
-
-YAML
-----
-From the `example.yml`:
-
-``` yaml
-cookbooks:
-- apache2:
-- apt:
-    - 1.1.0
-- mysql:
-
-environments:
-- development:
-- qa:
-- production:
-
-roles:
-- base:
-- monitoring:
-- webserver:
-
-data bags:
-- users:
-  - alice
-  - bob
-  - chuck
-- data:
-
-nodes:
-- serverA:
-  - role[base]
-  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-- ec2 5:
-  - role[webserver] recipe[mysql::client]
-  - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-- rackspace 3:
-  - recipe[mysql] role[monitoring]
-  - --image 49 --flavor 2
 ```
 
 Cookbooks
@@ -227,7 +248,10 @@ nodes:
 - serverA:
   - role[base]
   - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-- ec2 5:
+- serverB serverC:
+  - role[base]
+  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+- ec2 3:
   - role[webserver] recipe[mysql::client]
   - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
 - rackspace 3:
@@ -239,8 +263,8 @@ produces the knife commands
 
 ```
 knife bootstrap serverA 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+knife bootstrap serverB 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
+knife bootstrap serverC 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
 knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
 knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
 knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
