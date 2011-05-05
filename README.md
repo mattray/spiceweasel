@@ -2,6 +2,8 @@ Description
 ===========
 Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax in either JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`.
 
+The `examples` directory provides examples based on the Quick Starts provided at [http://help.opscode.com/kb/otherhelp](http://help.opscode.com/kb/otherhelp).
+
 CHANGELOG.md covers current, previous and future development milestones and contains the features backlog.
 
 Requirements
@@ -12,7 +14,7 @@ Written with Chef 0.9.12 and 0.10.0 and supports cookbooks, environments, roles,
 
 Testing
 -------
-Tested with Ubuntu 10.04 and 10.10 and Chef 0.9.16 and 0.10.0.rc.1.
+Tested with Ubuntu 10.04 and Chef 0.9.16 and 0.10.0.
 
 File Syntax
 ===========
@@ -60,9 +62,9 @@ nodes:
   - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
 - ec2 3:
   - role[webserver] recipe[mysql::client]
-  - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:
-  - recipe[mysql] role[monitoring]
+  - recipe[mysql],role[monitoring]
   - --image 49 --flavor 2
 ```
 
@@ -133,12 +135,12 @@ From the `example.json`:
         {"ec2 3":
          [
              "role[webserver] recipe[mysql::client]",
-             "-S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small"
+             "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small"
          ]
         },
         {"rackspace 3":
          [
-             "recipe[mysql] role[monitoring]",
+             "recipe[mysql],role[monitoring]",
              "--image 49 --flavor 2"
          ]
         }
@@ -148,7 +150,7 @@ From the `example.json`:
 
 Cookbooks
 ---------
-The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` and if none is found, the missing cookbook is downloaded (without touching version control) and the command to untar it is provided. You may pass any additional arguments if necessary. The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` (it must match the `metadata.rb` string exactly) and if none is found, the missing cookbook is downloaded (without touching version control) and the command to untar it is provided. You may pass any additional arguments if necessary. The YAML snippet
 
 ``` yaml
 cookbooks:
@@ -241,7 +243,7 @@ knife data bag from file passwords data_bags/passwords/rabbitmq.json --secret-fi
 
 Nodes
 -----
-The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
+The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
 
 ``` yaml
 nodes:
@@ -253,9 +255,9 @@ nodes:
   - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
 - ec2 3:
   - role[webserver] recipe[mysql::client]
-  - -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
+  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:
-  - recipe[mysql] role[monitoring]
+  - recipe[mysql],role[monitoring]
   - --image 49 --flavor 2
 ```
 
@@ -265,12 +267,12 @@ produces the knife commands
 knife bootstrap serverA 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
 knife bootstrap serverB 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
 knife bootstrap serverC 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-knife ec2 server create 'role[webserver]' 'recipe[mysql::client]' -S mray -I ~/.ssh/mray.pem -x ubuntu -G default -i ami-a403f7cd -f m1.small
-knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
-knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
-knife rackspace server create 'recipe[mysql]' 'role[monitoring]' --image 49 --flavor 2
+knife ec2 server create 'role[webserver],recipe[mysql::client]' -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
+knife ec2 server create 'role[webserver],recipe[mysql::client]' -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
+knife ec2 server create 'role[webserver],recipe[mysql::client]' -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
+knife rackspace server create 'recipe[mysql],role[monitoring]' --image 49 --flavor 2
+knife rackspace server create 'recipe[mysql],role[monitoring]' --image 49 --flavor 2
+knife rackspace server create 'recipe[mysql],role[monitoring]' --image 49 --flavor 2
 ```
 
 Usage

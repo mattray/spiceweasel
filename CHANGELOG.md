@@ -35,7 +35,7 @@ This is the current, previous and future development milestones and contains the
 ===
 * add support for cookbook options
 
-0.7 *CURRENT*
+0.7
 =============
 * add support for environments
 * rescue from parser errors
@@ -43,6 +43,13 @@ This is the current, previous and future development milestones and contains the
 * multiple nodes with same runlists syntax
 * add support for encrypted data bags
 * wildcard support for data bag items
+
+0.7.1 *CURRENT*
+===============
+* fixed run list parsing
+* updated examples for Chef 0.10
+* fixed validation on existing cookbooks
+* added examples directory
 
 BACKLOG
 =======
