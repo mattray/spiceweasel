@@ -28,7 +28,7 @@ def validate_run_list(run_list, cookbooks, environments, roles)
         raise "'#{item}' is an invalid run_list role not managed by spiceweasel"
         exit(-1)
       end
-    else 
+    else
       raise "'#{item}' is an invalid run_list component"
       exit(-1)
     end
@@ -82,10 +82,10 @@ end
 
 #process command line options
 begin
-  ARGV << "-h" if ARGV.empty? 
+  ARGV << "-h" if ARGV.empty?
   cli = SpiceweaselCLI.new
   cli.parse_options
-rescue OptionParser::InvalidOption => e 
+rescue OptionParser::InvalidOption => e
   STDERR.puts e.message
   puts cli.opt_parser.to_s
   exit(-1)
@@ -93,7 +93,7 @@ end
 
 begin
   file = ARGV.last
-  STDOUT.puts "DEBUG: file: #{file}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: file: #{file}" if cli.config[:debug]
   if (file.end_with?(".yml"))
     input = YAML.load_file ARGV.last
   elsif (file.end_with?(".json"))
@@ -115,7 +115,7 @@ end
 create = String.new()
 delete = String.new()
 
-#cookbooks 
+#cookbooks
 cookbooks = input['cookbooks'] || []
 cookbook_list = []
 cookbooks.each do |cookbook|
@@ -124,7 +124,7 @@ cookbooks.each do |cookbook|
     version = cookbook[cb][0].to_s || ""
     args = cookbook[cb][1] || ""
   end
-  STDOUT.puts "DEBUG: cookbook: #{cb} #{version}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: cookbook: #{cb} #{version}" if cli.config[:debug]
   delete += "knife cookbook delete #{cb} #{version} -y\n"
   if File.directory?("cookbooks")
     if version and File.directory?("cookbooks/#{cb}")
@@ -146,22 +146,22 @@ cookbooks.each do |cookbook|
   cookbook_list.push(cb)
 end
 
-#environments 
+#environments
 environments = input['environments'] || []
 environment_list = []
 environments.each do |environment|
-  STDOUT.puts "DEBUG: environment: #{environment.keys[0]}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: environment: #{environment.keys[0]}" if cli.config[:debug]
   delete += "knife environment delete #{environment.keys[0]} -y\n"
   create += "knife environment from file #{environment.keys[0]}.rb\n"
   #flatten list of environments for validation later
   environment_list.push(environment.keys[0])
 end
 
-#roles 
+#roles
 roles = input['roles'] || []
 role_list = []
 roles.each do |role|
-  STDOUT.puts "DEBUG: role: #{role.keys[0]}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: role: #{role.keys[0]}" if cli.config[:debug]
   delete += "knife role delete #{role.keys[0]} -y\n"
   create += "knife role from file #{role.keys[0]}.rb\n"
   #flatten list of roles for validation later
@@ -171,13 +171,13 @@ end
 #data bags
 bags = input['data bags'] || []
 bags.each do |bag|
-  STDOUT.puts "DEBUG: data bag: #{bag.keys[0]}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: data bag: #{bag.keys[0]}" if cli.config[:debug]
   delete += "knife data bag delete #{bag.keys[0]} -y\n"
   create += "knife data bag create #{bag.keys[0]}\n"
   items = bag[bag.keys[0]] || []
   secret = nil
   while item = items.shift
-    STDOUT.puts "DEBUG: data bag #{bag.keys[0]} item: #{item}" if cli.config[:debug] 
+    STDOUT.puts "DEBUG: data bag #{bag.keys[0]} item: #{item}" if cli.config[:debug]
     if item.start_with?("secret")
       secret = item.split()[1]
       next
@@ -200,17 +200,17 @@ nodes = input['nodes'] || []
 #currently use bulk_delete for deleting, add provider support real soon
 delete += "knife node bulk_delete .* -y\n"
 nodes.each do |node|
-  STDOUT.puts "DEBUG: node: #{node.keys[0]}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: node: #{node.keys[0]}" if cli.config[:debug]
   # delete += "knife node delete #{node[node.keys[0]}\n"
   run_list = node[node.keys[0]][0].gsub(/ /,',').split(',')
-  STDOUT.puts "DEBUG: node run_list: #{run_list}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: node run_list: #{run_list}" if cli.config[:debug]
   validate_run_list(run_list, cookbook_list, environment_list, role_list)
   #provider support
   if node.keys[0].start_with?("bluebox","ec2","openstack","rackspace","slicehost","terremark")
     provider = node.keys[0].split()
     count = 1
     if (provider.length == 2)
-      count = provider[1] 
+      count = provider[1]
     end
     #create the instances
     count.to_i.times do
@@ -231,14 +231,14 @@ end
 
 #just print the knife commands, do not execute
 #if cli.config[:dryrun]
-if cli.config[:delete] 
+if cli.config[:delete]
   puts delete unless delete.empty?
 elsif cli.config[:rebuild]
   puts delete unless delete.empty?
   puts create unless create.empty?
 else
   puts create unless create.empty?
-end       
+end
 #else
 #eventually we will execute instead of printing knife commands
 #puts "BAM!"
