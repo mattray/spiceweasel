@@ -44,42 +44,17 @@ delete = String.new()
 cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'])
 environment_list = Spiceweasel::EnvironmentList.new(input['environments'])
 role_list = Spiceweasel::RoleList.new(input['roles'])
+data_bag_list = Spiceweasel::DataBagList.new(input['data bags'])
 
 create += cookbook_list.create
 create += environment_list.create
 create += role_list.create
+create += data_bag_list.create
 
 delete += cookbook_list.delete
 delete += environment_list.delete
-
-#data bags
-bags = input['data bags'] || []
-bags.each do |bag|
-  STDOUT.puts "DEBUG: data bag: #{bag.keys[0]}" if cli.config[:debug]
-  delete += "knife data bag delete #{bag.keys[0]} -y\n"
-  create += "knife data bag create #{bag.keys[0]}\n"
-  items = bag[bag.keys[0]] || []
-  secret = nil
-  while item = items.shift
-    STDOUT.puts "DEBUG: data bag #{bag.keys[0]} item: #{item}" if cli.config[:debug]
-    if item.start_with?("secret")
-      secret = item.split()[1]
-      next
-    end
-    if item =~ /\*/ #wildcard support
-      files = Dir.glob("data_bags/#{bag.keys[0]}/#{item}.json")
-      items += files.collect {|x| x[x.rindex('/')+1..-6]}
-      puts items
-      next
-    end
-    if secret
-      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json --secret-file #{secret}\n"
-    else
-      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json\n"
-    end
-  end
-end
 delete += role_list.delete
+delete += data_bag_list.delete
 
 nodes = input['nodes'] || []
 #currently use bulk_delete for deleting, add provider support real soon
