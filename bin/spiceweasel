@@ -42,19 +42,13 @@ create = String.new()
 delete = String.new()
 
 cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'])
-create += cookbook_list.create
-delete += cookbook_list.delete
+environment_list = Spiceweasel::EnvironmentList.new(input['environments'])
 
-#environments
-environments = input['environments'] || []
-environment_list = []
-environments.each do |environment|
-  STDOUT.puts "DEBUG: environment: #{environment.keys[0]}" if cli.config[:debug]
-  delete += "knife environment delete #{environment.keys[0]} -y\n"
-  create += "knife environment from file #{environment.keys[0]}.rb\n"
-  #flatten list of environments for validation later
-  environment_list.push(environment.keys[0])
-end
+create += cookbook_list.create
+create += environment_list.create
+
+delete += cookbook_list.delete
+delete += environment_list.delete
 
 #roles
 roles = input['roles'] || []
