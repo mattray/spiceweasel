@@ -1,3 +1,3 @@
 module Spiceweasel
-  # Your code goes here...
+  autoload :CLI, 'spiceweasel/cli'
 end

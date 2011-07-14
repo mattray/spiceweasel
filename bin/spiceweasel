@@ -2,7 +2,8 @@
 
 require 'json'
 require 'yaml'
-require 'mixlib/cli'
+
+require 'spiceweasel'
 
 #ensure that the run_list contents are present in either the cookbooks or roles
 def validate_run_list(run_list, cookbooks, environments, roles)
@@ -35,55 +36,10 @@ def validate_run_list(run_list, cookbooks, environments, roles)
   end
 end
 
-class SpiceweaselCLI
-  include Mixlib::CLI
-
-  banner("Usage: spiceweasel [option] file")
-
-  option :debug,
-  :long => "--debug",
-  :description => "Verbose debugging messages.",
-  :boolean => true
-
-  option :delete,
-  :short => "-d",
-  :long => "--delete",
-  :description => "Print the knife commands to be delete the infrastructure",
-  :boolean => true
-
-  option :dryrun,
-  :long => "--dryrun",
-  :description => "Print the knife commands to be executed to STDOUT",
-  :boolean => true
-
-  option :help,
-  :short => "-h",
-  :long => "--help",
-  :description => "Show this message",
-  :on => :tail,
-  :boolean => true,
-  :show_options => true,
-  :exit => 0
-
-  option :rebuild,
-  :short => "-r",
-  :long => "--rebuild",
-  :description => "Print the knife commands to be delete and recreate the infrastructure",
-  :boolean => true
-
-  option :version,
-  :short => "-v",
-  :long => "--version",
-  :description => "Version",
-  :boolean => true,
-  :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
-  :exit => 0
-end
-
 #process command line options
 begin
   ARGV << "-h" if ARGV.empty?
-  cli = SpiceweaselCLI.new
+  cli = Spiceweasel::CLI.new
   cli.parse_options
 rescue OptionParser::InvalidOption => e
   STDERR.puts e.message
