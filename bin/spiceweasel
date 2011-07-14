@@ -43,23 +43,14 @@ delete = String.new()
 
 cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'])
 environment_list = Spiceweasel::EnvironmentList.new(input['environments'])
+role_list = Spiceweasel::RoleList.new(input['roles'])
 
 create += cookbook_list.create
 create += environment_list.create
+create += role_list.create
 
 delete += cookbook_list.delete
 delete += environment_list.delete
-
-#roles
-roles = input['roles'] || []
-role_list = []
-roles.each do |role|
-  STDOUT.puts "DEBUG: role: #{role.keys[0]}" if cli.config[:debug]
-  delete += "knife role delete #{role.keys[0]} -y\n"
-  create += "knife role from file #{role.keys[0]}.rb\n"
-  #flatten list of roles for validation later
-  role_list.push(role.keys[0])
-end
 
 #data bags
 bags = input['data bags'] || []
@@ -88,6 +79,7 @@ bags.each do |bag|
     end
   end
 end
+delete += role_list.delete
 
 nodes = input['nodes'] || []
 #currently use bulk_delete for deleting, add provider support real soon

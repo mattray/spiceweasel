@@ -3,4 +3,5 @@ module Spiceweasel
   autoload :RunList, 'spiceweasel/run_list'
   autoload :CookbookList, 'spiceweasel/cookbook_list'
   autoload :EnvironmentList, 'spiceweasel/environment_list'
+  autoload :RoleList, 'spiceweasel/role_list'
 end
