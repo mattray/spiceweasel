@@ -5,37 +5,6 @@ require 'yaml'
 
 require 'spiceweasel'
 
-#ensure that the run_list contents are present in either the cookbooks or roles
-def validate_run_list(run_list, cookbooks, environments, roles)
-  run_list.each do |item|
-    if item.start_with?("recipe")
-      #recipe[foo] or recipe[foo::bar]
-      recipe = item.slice(7..-2).split("::")[0]
-      unless cookbooks.member?(recipe)
-        raise "'#{item}' is an invalid run_list recipe not managed by spiceweasel"
-        exit(-1)
-      end
-    elsif item.start_with?("environment")
-      #environment[blah]
-      environment = item.slice(12..-2)
-      unless environments.member?(environment)
-        raise "'#{item}' is an invalid run_list environment not managed by spiceweasel"
-        exit(-1)
-      end
-    elsif item.start_with?("role")
-      #role[blah]
-      role = item.slice(5..-2)
-      unless roles.member?(role)
-        raise "'#{item}' is an invalid run_list role not managed by spiceweasel"
-        exit(-1)
-      end
-    else
-      raise "'#{item}' is an invalid run_list component"
-      exit(-1)
-    end
-  end
-end
-
 #process command line options
 begin
   ARGV << "-h" if ARGV.empty?
@@ -160,7 +129,7 @@ nodes.each do |node|
   # delete += "knife node delete #{node[node.keys[0]}\n"
   run_list = node[node.keys[0]][0].gsub(/ /,',').split(',')
   STDOUT.puts "DEBUG: node run_list: #{run_list}" if cli.config[:debug]
-  validate_run_list(run_list, cookbook_list, environment_list, role_list)
+  Spiceweasel::RunList.new(run_list).validate(cookbook_list, environment_list, role_list)
   #provider support
   if node.keys[0].start_with?("bluebox","ec2","openstack","rackspace","slicehost","terremark")
     provider = node.keys[0].split()
