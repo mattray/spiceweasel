@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'json'
-require 'mixlib/cli'
-require 'spiceweasel/version'
 require 'yaml'
+require 'mixlib/cli'
 
 #ensure that the run_list contents are present in either the cookbooks or roles
 def validate_run_list(run_list, cookbooks, environments, roles)
