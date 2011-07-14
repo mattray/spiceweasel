@@ -5,4 +5,5 @@ module Spiceweasel
   autoload :EnvironmentList, 'spiceweasel/environment_list'
   autoload :RoleList, 'spiceweasel/role_list'
   autoload :DataBagList, 'spiceweasel/data_bag_list'
+  autoload :NodeList, 'spiceweasel/node_list'
 end
