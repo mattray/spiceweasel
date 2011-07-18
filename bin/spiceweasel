@@ -1,92 +1,17 @@
 #!/usr/bin/env ruby
 
 require 'json'
-require 'mixlib/cli'
-require 'spiceweasel/version'
 require 'yaml'
 
-#ensure that the run_list contents are present in either the cookbooks or roles
-def validate_run_list(run_list, cookbooks, environments, roles)
-  run_list.each do |item|
-    if item.start_with?("recipe")
-      #recipe[foo] or recipe[foo::bar]
-      recipe = item.slice(7..-2).split("::")[0]
-      unless cookbooks.member?(recipe)
-        raise "'#{item}' is an invalid run_list recipe not managed by spiceweasel"
-        exit(-1)
-      end
-    elsif item.start_with?("environment")
-      #environment[blah]
-      environment = item.slice(12..-2)
-      unless environments.member?(environment)
-        raise "'#{item}' is an invalid run_list environment not managed by spiceweasel"
-        exit(-1)
-      end
-    elsif item.start_with?("role")
-      #role[blah]
-      role = item.slice(5..-2)
-      unless roles.member?(role)
-        raise "'#{item}' is an invalid run_list role not managed by spiceweasel"
-        exit(-1)
-      end
-    else 
-      raise "'#{item}' is an invalid run_list component"
-      exit(-1)
-    end
-  end
-end
-
-class SpiceweaselCLI
-  include Mixlib::CLI
-
-  banner("Usage: spiceweasel [option] file")
-
-  option :debug,
-  :long => "--debug",
-  :description => "Verbose debugging messages.",
-  :boolean => true
-
-  option :delete,
-  :short => "-d",
-  :long => "--delete",
-  :description => "Print the knife commands to be delete the infrastructure",
-  :boolean => true
-
-  option :dryrun,
-  :long => "--dryrun",
-  :description => "Print the knife commands to be executed to STDOUT",
-  :boolean => true
-
-  option :help,
-  :short => "-h",
-  :long => "--help",
-  :description => "Show this message",
-  :on => :tail,
-  :boolean => true,
-  :show_options => true,
-  :exit => 0
-
-  option :rebuild,
-  :short => "-r",
-  :long => "--rebuild",
-  :description => "Print the knife commands to be delete and recreate the infrastructure",
-  :boolean => true
-
-  option :version,
-  :short => "-v",
-  :long => "--version",
-  :description => "Version",
-  :boolean => true,
-  :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
-  :exit => 0
-end
+require 'spiceweasel'
 
 #process command line options
 begin
-  ARGV << "-h" if ARGV.empty? 
-  cli = SpiceweaselCLI.new
+  ARGV << "-h" if ARGV.empty?
+  cli = Spiceweasel::CLI.new
   cli.parse_options
-rescue OptionParser::InvalidOption => e 
+  DEBUG = cli.config[:debug]
+rescue OptionParser::InvalidOption => e
   STDERR.puts e.message
   puts cli.opt_parser.to_s
   exit(-1)
@@ -94,7 +19,7 @@ end
 
 begin
   file = ARGV.last
-  STDOUT.puts "DEBUG: file: #{file}" if cli.config[:debug] 
+  STDOUT.puts "DEBUG: file: #{file}" if cli.config[:debug]
   if (file.end_with?(".yml"))
     input = YAML.load_file ARGV.last
   elsif (file.end_with?(".json"))
@@ -116,130 +41,35 @@ end
 create = String.new()
 delete = String.new()
 
-#cookbooks 
-cookbooks = input['cookbooks'] || []
-cookbook_list = []
-cookbooks.each do |cookbook|
-  cb = cookbook.keys.first
-  if cookbook[cb] and cookbook[cb].length > 0
-    version = cookbook[cb][0].to_s || ""
-    args = cookbook[cb][1] || ""
-  end
-  STDOUT.puts "DEBUG: cookbook: #{cb} #{version}" if cli.config[:debug] 
-  delete += "knife cookbook delete #{cb} #{version} -y\n"
-  if File.directory?("cookbooks")
-    if version and File.directory?("cookbooks/#{cb}")
-      #check metadata.rb for requested version
-      metadata = File.open("cookbooks/#{cb}/metadata.rb").grep(/^version/)[0].split()[1].gsub(/"/,'').to_s
-      if (metadata != version)
-        raise "Invalid version #{version} of '#{cb}' requested, #{metadata} is already in the cookbooks directory."
-        exit(-1)
-      end
-    elsif !File.directory?("cookbooks/#{cb}")
-      create += "knife cookbook site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{args}\n"
-      create += "tar -C cookbooks/ -xf cookbooks/#{cb}.tgz\n"
-    end
-  else
-    STDERR.puts "cookbooks directory not found, validation and downloading skipped"
-  end
-  create += "knife cookbook upload #{cb}\n"
-  #flatten list of cookbooks for validation later
-  cookbook_list.push(cb)
-end
+cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'])
+environment_list = Spiceweasel::EnvironmentList.new(input['environments'])
+role_list = Spiceweasel::RoleList.new(input['roles'])
+data_bag_list = Spiceweasel::DataBagList.new(input['data bags'])
 
-#environments 
-environments = input['environments'] || []
-environment_list = []
-environments.each do |environment|
-  STDOUT.puts "DEBUG: environment: #{environment.keys[0]}" if cli.config[:debug] 
-  delete += "knife environment delete #{environment.keys[0]} -y\n"
-  create += "knife environment from file #{environment.keys[0]}.rb\n"
-  #flatten list of environments for validation later
-  environment_list.push(environment.keys[0])
-end
+node_list = Spiceweasel::NodeList.new(input['nodes'], cookbook_list, environment_list, role_list)
 
-#roles 
-roles = input['roles'] || []
-role_list = []
-roles.each do |role|
-  STDOUT.puts "DEBUG: role: #{role.keys[0]}" if cli.config[:debug] 
-  delete += "knife role delete #{role.keys[0]} -y\n"
-  create += "knife role from file #{role.keys[0]}.rb\n"
-  #flatten list of roles for validation later
-  role_list.push(role.keys[0])
-end
+create += cookbook_list.create
+create += environment_list.create
+create += role_list.create
+create += data_bag_list.create
+create += node_list.create
 
-#data bags
-bags = input['data bags'] || []
-bags.each do |bag|
-  STDOUT.puts "DEBUG: data bag: #{bag.keys[0]}" if cli.config[:debug] 
-  delete += "knife data bag delete #{bag.keys[0]} -y\n"
-  create += "knife data bag create #{bag.keys[0]}\n"
-  items = bag[bag.keys[0]] || []
-  secret = nil
-  while item = items.shift
-    STDOUT.puts "DEBUG: data bag #{bag.keys[0]} item: #{item}" if cli.config[:debug] 
-    if item.start_with?("secret")
-      secret = item.split()[1]
-      next
-    end
-    if item =~ /\*/ #wildcard support
-      files = Dir.glob("data_bags/#{bag.keys[0]}/#{item}.json")
-      items += files.collect {|x| x[x.rindex('/')+1..-6]}
-      puts items
-      next
-    end
-    if secret
-      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json --secret-file #{secret}\n"
-    else
-      create += "knife data bag from file #{bag.keys[0]} data_bags/#{bag.keys[0]}/#{item}.json\n"
-    end
-  end
-end
-
-nodes = input['nodes'] || []
-#currently use bulk_delete for deleting, add provider support real soon
-delete += "knife node bulk_delete .* -y\n"
-nodes.each do |node|
-  STDOUT.puts "DEBUG: node: #{node.keys[0]}" if cli.config[:debug] 
-  # delete += "knife node delete #{node[node.keys[0]}\n"
-  run_list = node[node.keys[0]][0].gsub(/ /,',').split(',')
-  STDOUT.puts "DEBUG: node run_list: #{run_list}" if cli.config[:debug] 
-  validate_run_list(run_list, cookbook_list, environment_list, role_list)
-  #provider support
-  if node.keys[0].start_with?("bluebox","ec2","openstack","rackspace","slicehost","terremark")
-    provider = node.keys[0].split()
-    count = 1
-    if (provider.length == 2)
-      count = provider[1] 
-    end
-    #create the instances
-    count.to_i.times do
-      create += "knife #{provider[0]} server create #{node[node.keys[0]][1]}"
-      if run_list.length > 0
-        create += " -r '#{node[node.keys[0]][0].gsub(/ /,',')}'\n"
-      end
-    end
-  else #multinode support
-    node.keys[0].split.each do |server|
-      create += "knife bootstrap #{server} #{node[node.keys[0]][1]}"
-      if run_list.length > 0
-        create += " -r '#{node[node.keys[0]][0].gsub(/ /,',')}'\n"
-      end
-    end
-  end
-end
+delete += cookbook_list.delete
+delete += environment_list.delete
+delete += role_list.delete
+delete += data_bag_list.delete
+delete += node_list.delete
 
 #just print the knife commands, do not execute
 #if cli.config[:dryrun]
-if cli.config[:delete] 
+if cli.config[:delete]
   puts delete unless delete.empty?
 elsif cli.config[:rebuild]
   puts delete unless delete.empty?
   puts create unless create.empty?
 else
   puts create unless create.empty?
-end       
+end
 #else
 #eventually we will execute instead of printing knife commands
 #puts "BAM!"
