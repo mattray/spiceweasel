@@ -55,8 +55,12 @@ BACKLOG
 =======
 Next
 ----
+* make .yml files for each quickstart
 * make spiceweasel a library rather than an executable
 * switch to using lib/ directory
+* flags for cookbooks are for uploads since we're using site download now
+* move environments before cookbooks
+* validation for environments
 * convert to a knife plugin
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json
@@ -81,4 +85,8 @@ Future
 * knife winrm bootstrap FQDN [RUN LIST...] (options)
 * use GNU parallel with knife?
 * extract existing infrastructure
- * knife batch extract
+ * knife batch extract to a tarball named for the organization
+ * option to include credentials and knife.rb
+ * translate json back to rb?
+* option to run commands after node creation with "knife ssh"
+ * intended for kicking off chef-client 
