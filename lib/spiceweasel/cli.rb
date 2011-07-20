@@ -1,4 +1,5 @@
 require 'mixlib/cli'
+require 'spiceweasel/version'
 
 class Spiceweasel::CLI
   include Mixlib::CLI
