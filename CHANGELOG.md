@@ -44,12 +44,16 @@ This is the current, previous and future development milestones and contains the
 * add support for encrypted data bags
 * wildcard support for data bag items
 
-0.7.1 *CURRENT*
-===============
+0.7.1
+=====
 * fixed run list parsing
 * updated examples for Chef 0.10
 * fixed validation on existing cookbooks
 * added examples directory
+
+0.8
+===
+* refactor by Elliot Crosby-McCullough into libraries and adding testing.
 
 BACKLOG
 =======
@@ -57,9 +61,7 @@ Next
 ----
 * make .yml files for each quickstart
 * make spiceweasel a library rather than an executable
-* switch to using lib/ directory
 * flags for cookbooks are for uploads since we're using site download now
-* move environments before cookbooks
 * validation for environments
 * convert to a knife plugin
  * knife batch create from file infrastructure.yml

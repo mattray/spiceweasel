@@ -14,7 +14,7 @@ Written with Chef 0.9.12 and 0.10.0 and supports cookbooks, environments, roles,
 
 Testing
 -------
-Tested with Ubuntu 10.04 and Chef 0.9.16 and 0.10.0.
+Tested with Ubuntu 10.04 and Chef 0.9.16 and 0.10.2.
 
 File Syntax
 ===========
