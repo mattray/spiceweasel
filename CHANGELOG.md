@@ -55,6 +55,10 @@ This is the current, previous and future development milestones and contains the
 ===
 * refactor by Elliot Crosby-McCullough into libraries and adding testing.
 
+0.8.1
+=====
+* typo fix by Rick Martinez (digx)
+
 BACKLOG
 =======
 Next
