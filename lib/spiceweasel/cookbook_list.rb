@@ -9,7 +9,7 @@ class Spiceweasel::CookbookList
         args = cookbook[cb][1] || ""
       end
       STDOUT.puts "DEBUG: cookbook: #{cb} #{version}" if DEBUG
-      @delete += "knife cookbook @delete #{cb} #{version} -y\n"
+      @delete += "knife cookbook delete #{cb} #{version} -y\n"
       if File.directory?("cookbooks")
         if version and File.directory?("cookbooks/#{cb}")
           #check metadata.rb for requested version
