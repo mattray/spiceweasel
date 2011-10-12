@@ -1,10 +1,10 @@
 class Spiceweasel::DataBagList
-  def initialize(data_bags = [])
+  def initialize(data_bags = [], options = {})
     @create = @delete = ''
     data_bags.each do |data_bag|
       STDOUT.puts "DEBUG: data bag: #{data_bag.keys[0]}" if DEBUG
-      @delete += "knife data bag delete #{data_bag.keys[0]} -y\n"
-      @create += "knife data bag create #{data_bag.keys[0]}\n"
+      @delete += "knife data bag#{options['knife_options']} delete #{data_bag.keys[0]} -y\n"
+      @create += "knife data bag#{options['knife_options']} create #{data_bag.keys[0]}\n"
       items = data_bag[data_bag.keys[0]] || []
       secret = nil
       while item = items.shift
@@ -20,9 +20,9 @@ class Spiceweasel::DataBagList
           next
         end
         if secret
-          @create += "knife data bag from file #{data_bag.keys[0]} data_bags/#{data_bag.keys[0]}/#{item}.json --secret-file #{secret}\n"
+          @create += "knife data bag#{options['knife_options']} from file #{data_bag.keys[0]} data_bags/#{data_bag.keys[0]}/#{item}.json --secret-file #{secret}\n"
         else
-          @create += "knife data bag from file #{data_bag.keys[0]} data_bags/#{data_bag.keys[0]}/#{item}.json\n"
+          @create += "knife data bag#{options['knife_options']} from file #{data_bag.keys[0]} data_bags/#{data_bag.keys[0]}/#{item}.json\n"
         end
       end
     end

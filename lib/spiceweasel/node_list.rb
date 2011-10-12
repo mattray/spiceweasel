@@ -1,9 +1,9 @@
 class Spiceweasel::NodeList
-  def initialize(nodes, cookbook_list, environment_list, role_list)
+  def initialize(nodes, cookbook_list, environment_list, role_list, options = {})
     nodes ||= []
     @create = @delete = ''
 
-    @delete += "knife node bulk_delete .* -y\n"
+    @delete += "knife node#{options['knife_options']} bulk_delete .* -y\n"
     nodes.each do |node|
       STDOUT.puts "DEBUG: node: #{node.keys[0]}" if DEBUG
       run_list = node[node.keys[0]][0].gsub(/ /,',').split(',')
@@ -18,14 +18,14 @@ class Spiceweasel::NodeList
         end
         #create the instances
         count.to_i.times do
-          @create += "knife #{provider[0]} server create #{node[node.keys[0]][1]}"
+          @create += "knife #{provider[0]}#{options['knife_options']} server create #{node[node.keys[0]][1]}"
           if run_list.length > 0
             @create += " -r '#{node[node.keys[0]][0].gsub(/ /,',')}'\n"
           end
         end
       else #multinode support
         node.keys[0].split.each do |server|
-          @create += "knife bootstrap #{server} #{node[node.keys[0]][1]}"
+          @create += "knife bootstrap#{options['knife_options']} #{server} #{node[node.keys[0]][1]}"
           if run_list.length > 0
             @create += " -r '#{node[node.keys[0]][0].gsub(/ /,',')}'\n"
           end
