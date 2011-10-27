@@ -48,6 +48,6 @@ class Spiceweasel::CLI
   option :knifeconfig,
   :short => "-c CONFIG",
   :long => "--knifeconfig CONFIG",
-  :description => "The config file against which knife commands will be generated"
+  :description => "The knife.rb configuration file to use."
 
 end

@@ -4,17 +4,20 @@ Spiceweasel is a command-line tool for batch loading Chef infrastructure. It pro
 
 The `examples` directory provides examples based on the Quick Starts provided at [http://help.opscode.com/kb/otherhelp](http://help.opscode.com/kb/otherhelp).
 
-CHANGELOG.md covers current, previous and future development milestones and contains the features backlog.
+The [https://github.com/mattray/ravel-repo](https://github.com/mattray/ravel-repo) provides a working example for bootstrapping a Chef repository with Spiceweasel.
+
+The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.md) covers current, previous and future development milestones and contains the features backlog.
+
 
 Requirements
 ============
 Spiceweasel currently depends on `knife` to run commands for it. Infrastructure files must either end in .json or .yml to be processed.
 
-Written with Chef 0.9.12 and 0.10.0 and supports cookbooks, environments, roles, data bags and nodes.
+Written initially with Chef 0.9.12 (should still work) and continuing to develop with support for 0.10.
 
 Testing
 -------
-Tested with Ubuntu 10.04 and Chef 0.9.16 and 0.10.2.
+Tested with Ubuntu 10.04 and Chef 0.9.16 and 0.10.4.
 
 File Syntax
 ===========
@@ -164,7 +167,7 @@ produces the knife commands
 
 ```
 knife cookbook upload apache2
-knife cookbook site download apt 1.1.0 --file cookbooks/apt.tgz 
+knife cookbook site download apt 1.1.0 --file cookbooks/apt.tgz
 tar -C cookbooks/ -xf cookbooks/apt.tgz
 knife cookbook upload apt
 knife cookbook upload mysql
@@ -172,7 +175,7 @@ knife cookbook upload mysql
 
 Environments
 ------------
-The `environments` section of the JSON or YAML file currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` in the `environments` directory. The YAML snippet 
+The `environments` section of the JSON or YAML file currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` in the `environments` directory. The YAML snippet
 
 ``` yaml
 environments:
@@ -181,7 +184,7 @@ environments:
 - production:
 ```
 
-produces the knife commands 
+produces the knife commands
 
 ```
 knife environment from file development.rb
@@ -191,7 +194,7 @@ knife environment from file production.rb
 
 Roles
 -----
-The `roles` section of the JSON or YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The YAML snippet 
+The `roles` section of the JSON or YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The YAML snippet
 
 ``` yaml
 roles:
@@ -200,7 +203,7 @@ roles:
 - webserver:
 ```
 
-produces the knife commands 
+produces the knife commands
 
 ```
 knife role from file base.rb
@@ -210,7 +213,7 @@ knife role from file webserver.rb
 
 Data Bags
 ---------
-The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `*`). Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet 
+The `data bags` section of the JSON or YAML file currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `*`). Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet
 
 ``` yaml
 data bags:
@@ -226,7 +229,7 @@ data bags:
   - rabbitmq
 ```
 
-produces the knife commands 
+produces the knife commands
 
 ```
 knife data bag create users
@@ -243,7 +246,7 @@ knife data bag from file passwords data_bags/passwords/rabbitmq.json --secret-fi
 
 Nodes
 -----
-The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet 
+The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet
 
 ``` yaml
 nodes:
@@ -261,7 +264,7 @@ nodes:
   - --image 49 --flavor 2
 ```
 
-produces the knife commands 
+produces the knife commands
 
 ```
 knife bootstrap serverA 'role[base]' -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
