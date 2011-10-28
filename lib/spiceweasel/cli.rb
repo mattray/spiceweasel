@@ -44,4 +44,10 @@ class Spiceweasel::CLI
   :boolean => true,
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0
+
+  option :knifeconfig,
+  :short => "-c CONFIG",
+  :long => "--knifeconfig CONFIG",
+  :description => "The knife.rb configuration file to use."
+
 end

@@ -59,12 +59,19 @@ This is the current, previous and future development milestones and contains the
 =====
 * typo fix by Rick Martinez (digx)
 
+0.8.2
+=====
+* fixed Issue #6, catch empty cookbooks, environments, roles, data bags and nodes.
+* fixed Issue #7, permissions in spiceweasel gem folder
+* fixed Issue #8, allow passthrough of knife options (in particular -c KNIFECONFIGFILES) through to the outputted knife commands. Patch by gmacid
+* linked ravel-repo and php quickstart examples
+
 BACKLOG
 =======
 Next
 ----
-* make .yml files for each quickstart
-* make spiceweasel a library rather than an executable
+* --no-validation to skip validation
+* make .yml files for every quickstart
 * flags for cookbooks are for uploads since we're using site download now
 * validation for environments
 * convert to a knife plugin
@@ -77,12 +84,11 @@ Future
 * --chef-client validation that nodes are added
 * -e/--execute execute the commands
  * catching return codes and retrying (with retry count?)
-* make the JSON calls directly with Chef APIs 
+* make the JSON calls directly with Chef APIs
 * execution-phase validation
  * check metadata.rb of cookbooks for their dependencies
  * validate within role files rather than the names of files (assumption that they are the same)
  * validate cookbooks referenced in roles
- * validate not trying to use environments with 0.9.x
  * validate within environment files rather than the names of files (assumption that they are the same)
  * validate cookbooks referenced in environments
  * validate recipes from cookbooks in run_lists
@@ -95,4 +101,5 @@ Future
  * option to include credentials and knife.rb
  * translate json back to rb?
 * option to run commands after node creation with "knife ssh"
- * intended for kicking off chef-client 
+ * intended for kicking off chef-client
+* support custom bootstrap templates
