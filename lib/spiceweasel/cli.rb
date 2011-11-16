@@ -31,10 +31,20 @@ class Spiceweasel::CLI
   :show_options => true,
   :exit => 0
 
+  option :knifeconfig,
+  :short => "-c CONFIG",
+  :long => "--knifeconfig CONFIG",
+  :description => "The knife.rb configuration file to use."
+
   option :rebuild,
   :short => "-r",
   :long => "--rebuild",
   :description => "Print the knife commands to be delete and recreate the infrastructure",
+  :boolean => true
+
+  option :siteinstall,
+  :long => "--siteinstall",
+  :description => "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
   :boolean => true
 
   option :version,
@@ -44,10 +54,5 @@ class Spiceweasel::CLI
   :boolean => true,
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0
-
-  option :knifeconfig,
-  :short => "-c CONFIG",
-  :long => "--knifeconfig CONFIG",
-  :description => "The knife.rb configuration file to use."
 
 end

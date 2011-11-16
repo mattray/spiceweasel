@@ -8,16 +8,11 @@ The [https://github.com/mattray/ravel-repo](https://github.com/mattray/ravel-rep
 
 The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.md) covers current, previous and future development milestones and contains the features backlog.
 
-
 Requirements
 ============
 Spiceweasel currently depends on `knife` to run commands for it. Infrastructure files must either end in .json or .yml to be processed.
 
-Written initially with Chef 0.9.12 (should still work) and continuing to develop with support for 0.10.
-
-Testing
--------
-Tested with Ubuntu 10.04 and Chef 0.9.16 and 0.10.4.
+Written and tested initially with Chef 0.9.12 (should still work) and continuing development with the 0.10 series.
 
 File Syntax
 ===========
@@ -153,7 +148,7 @@ From the `example.json`:
 
 Cookbooks
 ---------
-The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. If a version is passed, it is validated against an existing cookbook `metadata.rb` (it must match the `metadata.rb` string exactly) and if none is found, the missing cookbook is downloaded (without touching version control) and the command to untar it is provided. You may pass any additional arguments if necessary. The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. If a version is passed, it is validated against the existing cookbook `metadata.rb` and it must match the `metadata.rb` string exactly. You may pass any additional arguments if necessary. The YAML snippet
 
 ``` yaml
 cookbooks:
@@ -169,6 +164,7 @@ produces the knife commands
 knife cookbook upload apache2
 knife cookbook site download apt 1.1.0 --file cookbooks/apt.tgz
 tar -C cookbooks/ -xf cookbooks/apt.tgz
+rm -f cookbooks/apt.tgz
 knife cookbook upload apt
 knife cookbook upload mysql
 ```
@@ -294,13 +290,21 @@ spiceweasel path/to/infrastructure.yml
 
 This will generate the knife commands to build the described infrastructure. Infrastructure files must end in either `.json` or `.yml`.
 
---dryrun
---------
-This is the default action, printing the knife commands to be run without executing them.
+-c/--knifeconfig
+----------------
+Specify a knife.rb configuration file to use with the knife commands.
+
+--debug
+-------
+This provides verbose debugging messages.
 
 -d/--delete
 -----------
 The delete command will generate the knife commands to delete the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+
+--dryrun
+--------
+This is the default action, printing the knife commands to be run without executing them.
 
 -h/--help
 ---------
@@ -309,6 +313,10 @@ Print the currently-supported usage options for spiceweasel.
 -r/--rebuild
 ---------
 The rebuild command will generate the knife commands to delete and recreate the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+
+--siteinstall
+-------------
+Use the 'install' command with 'knife cookbook site' instead of the default 'download'.
 
 -v/--version
 ------------

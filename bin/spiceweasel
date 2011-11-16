@@ -13,6 +13,7 @@ begin
   cli = Spiceweasel::CLI.new
   cli.parse_options
   DEBUG = cli.config[:debug]
+  SITEINSTALL = cli.config[:siteinstall]
 rescue OptionParser::InvalidOption => e
   STDERR.puts e.message
   puts cli.opt_parser.to_s
