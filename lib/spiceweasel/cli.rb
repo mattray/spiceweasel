@@ -8,7 +8,7 @@ class Spiceweasel::CLI
 
   option :debug,
   :long => "--debug",
-  :description => "Verbose debugging messages.",
+  :description => "Verbose debugging messages",
   :boolean => true
 
   option :delete,
@@ -34,7 +34,12 @@ class Spiceweasel::CLI
   option :knifeconfig,
   :short => "-c CONFIG",
   :long => "--knifeconfig CONFIG",
-  :description => "The knife.rb configuration file to use."
+  :description => "Specify the knife.rb configuration file to use"
+
+  option :parallel,
+  :long => "--parallel",
+  :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands that are not order-dependent",
+  :boolean => true
 
   option :rebuild,
   :short => "-r",

@@ -11,20 +11,25 @@ class Spiceweasel::NodeList
         STDOUT.puts "DEBUG: node run_list: #{run_list}" if DEBUG
         Spiceweasel::RunList.new(run_list).validate(cookbook_list, environment_list, role_list)
         #provider support
-        if node.keys[0].start_with?("bluebox","ec2","openstack","rackspace","slicehost","terremark")
+        if node.keys[0].start_with?("bluebox","ec2","gandi","openstack","rackspace","slicehost","terremark","voxel")
           provider = node.keys[0].split()
           count = 1
           if (provider.length == 2)
             count = provider[1]
           end
-          #create the instances
+          @create += "echo \"" if PARALLEL
           count.to_i.times do
             @create += "knife #{provider[0]}#{options['knife_options']} server create #{node[node.keys[0]][1]}"
             if run_list.length > 0
-              @create += " -r '#{node[node.keys[0]][0].gsub(/ /,',')}'\n"
+              if PARALLEL
+                @create += " -r '#{node[node.keys[0]][0].gsub(/ /,',')}';"
+              else
+                @create += " -r '#{node[node.keys[0]][0].gsub(/ /,',')}'\n"
+              end
             end
           end
-        else #multinode support
+          @create += "\" | parallel -k\n" if PARALLEL
+        else #bootstrap support
           node.keys[0].split.each do |server|
             @create += "knife bootstrap#{options['knife_options']} #{server} #{node[node.keys[0]][1]}"
             if run_list.length > 0

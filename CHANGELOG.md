@@ -70,7 +70,7 @@ This is the current, previous and future development milestones and contains the
 =====
 * flag to enable 'knife cookbook site install' since we're using site download currently
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
-* use GNU parallel with knife?
+* use GNU parallel with knife for vendor-specific knife server creates
 * reprioritized backlog
 
 BACKLOG
