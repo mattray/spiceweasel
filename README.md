@@ -300,7 +300,7 @@ This provides verbose debugging messages.
 
 -d/--delete
 -----------
-The delete command will generate the knife commands to delete the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+The delete command will generate the knife commands to delete the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed. Node deletion will specify individual nodes, attempt to pass the list of nodes to the cloud provider for deletion, and finish with `knife node bulk delete`. If you are mixing individual nodes with cloud provider nodes it is possible that nodes may be missed from cloud provider deletion and you should double-check (ie. `knife ec2 server list`).
 
 --dryrun
 --------
