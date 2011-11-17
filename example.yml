@@ -33,7 +33,7 @@ nodes:
 - serverB serverC:
   - role[base]
   - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-- ec2 3:
+- ec2 4:
   - role[webserver] recipe[mysql::client]
   - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:

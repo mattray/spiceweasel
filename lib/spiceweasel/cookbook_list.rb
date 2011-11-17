@@ -20,8 +20,13 @@ class Spiceweasel::CookbookList
               exit(-1)
             end
           elsif !File.directory?("cookbooks/#{cb}")
-            @create += "knife cookbook#{options['knife_options']} site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{args}\n"
-            @create += "tar -C cookbooks/ -xf cookbooks/#{cb}.tgz\n"
+            if SITEINSTALL #use knife cookbook site install
+              @create += "knife cookbook#{options['knife_options']} site install #{cb} #{version} #{args}\n"
+            else #use knife cookbook site download, untar and then remove the tarball
+              @create += "knife cookbook#{options['knife_options']} site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{args}\n"
+              @create += "tar -C cookbooks/ -xf cookbooks/#{cb}.tgz\n"
+              @create += "rm -f cookbooks/#{cb}.tgz\n"
+            end
           end
         else
           STDERR.puts "cookbooks directory not found, validation and downloading skipped"

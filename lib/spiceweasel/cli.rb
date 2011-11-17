@@ -8,7 +8,7 @@ class Spiceweasel::CLI
 
   option :debug,
   :long => "--debug",
-  :description => "Verbose debugging messages.",
+  :description => "Verbose debugging messages",
   :boolean => true
 
   option :delete,
@@ -31,10 +31,25 @@ class Spiceweasel::CLI
   :show_options => true,
   :exit => 0
 
+  option :knifeconfig,
+  :short => "-c CONFIG",
+  :long => "--knifeconfig CONFIG",
+  :description => "Specify the knife.rb configuration file to use"
+
+  option :parallel,
+  :long => "--parallel",
+  :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands that are not order-dependent",
+  :boolean => true
+
   option :rebuild,
   :short => "-r",
   :long => "--rebuild",
   :description => "Print the knife commands to be delete and recreate the infrastructure",
+  :boolean => true
+
+  option :siteinstall,
+  :long => "--siteinstall",
+  :description => "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
   :boolean => true
 
   option :version,
@@ -44,10 +59,5 @@ class Spiceweasel::CLI
   :boolean => true,
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0
-
-  option :knifeconfig,
-  :short => "-c CONFIG",
-  :long => "--knifeconfig CONFIG",
-  :description => "The knife.rb configuration file to use."
 
 end
