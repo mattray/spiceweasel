@@ -8,7 +8,7 @@ class Spiceweasel::NodeList
         STDOUT.puts "DEBUG: node: #{node.keys[0]}" if DEBUG
         run_list = node[node.keys[0]][0].gsub(/ /,',').split(',')
         STDOUT.puts "DEBUG: node run_list: #{run_list}" if DEBUG
-        Spiceweasel::RunList.new(run_list).validate(cookbook_list, environment_list, role_list)
+        Spiceweasel::RunList.new(run_list).validate(cookbook_list, environment_list, role_list) unless NOVALIDATION
         #provider support
         if node.keys[0].start_with?("bluebox","ec2","gandi","openstack","rackspace","slicehost","terremark","voxel")
           provider = node.keys[0].split()

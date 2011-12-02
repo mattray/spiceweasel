@@ -36,6 +36,11 @@ class Spiceweasel::CLI
   :long => "--knifeconfig CONFIG",
   :description => "Specify the knife.rb configuration file to use"
 
+  option :novalidation,
+  :long => "--novalidation",
+  :description => "Disable validation",
+  :boolean => true
+
   option :parallel,
   :long => "--parallel",
   :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands that are not order-dependent",
