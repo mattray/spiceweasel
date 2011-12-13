@@ -33,7 +33,7 @@ class Spiceweasel::NodeList
           @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
         elsif node.keys[0].start_with?("windows") #windows node bootstrap support
           nodeline = node.keys[0].split()
-          provider = nodeline.pop.split('_') #split on 'windows_ssh' etc
+          provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
           nodeline.each do |server|
             @create += "knife bootstrap #{provider[0]} #{provider[1]}#{options['knife_options']} #{server} #{node[node.keys[0]][1]}"
             if run_list.length > 0
