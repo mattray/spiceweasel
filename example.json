@@ -18,6 +18,7 @@
     "roles":
     [
         {"base":[]},
+        {"iisserver":[]},
         {"monitoring":[]},
         {"webserver":[]}
     ],
@@ -67,6 +68,18 @@
          [
              "recipe[mysql],role[monitoring]",
              "--image 49 --flavor 2"
+         ]
+        },
+        {"windows_winrm winboxA":
+         [
+             "role[base],role[iisserver]",
+             "-x Administrator -P 'super_secret_password'"
+         ]
+        },
+        {"windows_ssh winboxB winboxC":
+         [
+             "role[base],role[iisserver]",
+             "-x Administrator -P 'super_secret_password'"
          ]
         }
     ]

@@ -36,6 +36,7 @@ environments:
 
 roles:
 - base:
+- iisserver:
 - monitoring:
 - webserver:
 
@@ -64,6 +65,12 @@ nodes:
 - rackspace 3:
   - recipe[mysql],role[monitoring]
   - --image 49 --flavor 2
+- windows_winrm winboxA:
+  - role[base],role[iisserver]
+  - -x Administrator -P 'super_secret_password'
+- windows_ssh winboxB winboxC:
+  - role[base],role[iisserver]
+  - -x Administrator -P 'super_secret_password'
 ```
 
 JSON
@@ -91,6 +98,7 @@ From the `example.json`:
     "roles":
     [
         {"base":[]},
+        {"iisserver":[]},
         {"monitoring":[]},
         {"webserver":[]}
     ],
@@ -141,6 +149,18 @@ From the `example.json`:
              "recipe[mysql],role[monitoring]",
              "--image 49 --flavor 2"
          ]
+        },
+        {"windows_winrm winboxA":
+         [
+             "role[base],role[iisserver]",
+             "-x Administrator -P 'super_secret_password'"
+         ]
+        },
+        {"windows_ssh winboxB winboxC":
+         [
+             "role[base],role[iisserver]",
+             "-x Administrator -P 'super_secret_password'"
+         ]
         }
     ]
 }
@@ -148,7 +168,7 @@ From the `example.json`:
 
 Cookbooks
 ---------
-The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. If a version is passed, it is validated against the existing cookbook `metadata.rb` and it must match the `metadata.rb` string exactly. You may pass any additional arguments if necessary. The YAML snippet
+The `cookbooks` section of the JSON or YAML file currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. If a version is passed, it is validated against the existing cookbook `metadata.rb` and it must match the `metadata.rb` string exactly. You may pass any additional arguments if necessary. The example YAML snippet
 
 ``` yaml
 cookbooks:
@@ -171,7 +191,7 @@ knife cookbook upload mysql
 
 Environments
 ------------
-The `environments` section of the JSON or YAML file currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` in the `environments` directory. The YAML snippet
+The `environments` section of the JSON or YAML file currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` in the `environments` directory. The example YAML snippet
 
 ``` yaml
 environments:
@@ -190,7 +210,7 @@ knife environment from file production.rb
 
 Roles
 -----
-The `roles` section of the JSON or YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The YAML snippet
+The `roles` section of the JSON or YAML file currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` in the `roles` directory. The example YAML snippet
 
 ``` yaml
 roles:
@@ -242,7 +262,7 @@ knife data bag from file passwords data_bags/passwords/rabbitmq.json --secret-fi
 
 Nodes
 -----
-The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. The YAML snippet
+The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. You may specify multiple nodes to have the same configuration by listing them separated by a space. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). The example YAML snippet
 
 ``` yaml
 nodes:
@@ -258,6 +278,12 @@ nodes:
 - rackspace 3:
   - recipe[mysql],role[monitoring]
   - --image 49 --flavor 2
+- windows_winrm winboxA:
+  - role[base],role[iisserver]
+  - -x Administrator -P 'super_secret_password'
+- windows_ssh winboxB winboxC:
+  - role[base],role[iisserver]
+  - -x Administrator -P 'super_secret_password'
 ```
 
 produces the knife commands
@@ -272,6 +298,9 @@ knife ec2 server create 'role[webserver],recipe[mysql::client]' -S mray -i ~/.ss
 knife rackspace server create 'recipe[mysql],role[monitoring]' --image 49 --flavor 2
 knife rackspace server create 'recipe[mysql],role[monitoring]' --image 49 --flavor 2
 knife rackspace server create 'recipe[mysql],role[monitoring]' --image 49 --flavor 2
+knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
+knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
+knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 ```
 
 Usage

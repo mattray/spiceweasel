@@ -40,10 +40,10 @@ nodes:
 - rackspace 3:
   - recipe[mysql],role[monitoring]
   - --image 49 --flavor 2
-- windows_winrm windowshost.with.winrm:
+- windows_winrm winboxA:
   - role[base],role[iisserver]
   - -x Administrator -P 'super_secret_password'
-- windows_ssh windowshost.with.ssh:
+- windows_ssh winboxB winboxC:
   - role[base],role[iisserver]
   - -x Administrator -P 'super_secret_password'
 
