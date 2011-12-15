@@ -73,6 +73,10 @@ This is the current, previous and future development milestones and contains the
 * use GNU parallel with knife for vendor-specific knife server creates
 * reprioritized backlog
 
+0.9.1
+=====
+* support for knife bootstrap windows winrm
+
 BACKLOG
 =======
 Next
