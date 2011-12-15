@@ -67,7 +67,7 @@ This is the current, previous and future development milestones and contains the
 * linked ravel-repo and php quickstart examples
 
 0.9
-=====
+===
 * flag to enable 'knife cookbook site install' since we're using site download currently
 * on provider delete take count of vendor-specific, delete if match (ec2 server delete and node delete)
 * use GNU parallel with knife for vendor-specific knife server creates
@@ -75,7 +75,26 @@ This is the current, previous and future development milestones and contains the
 
 0.9.1
 =====
-* support for knife bootstrap windows winrm
+* support for knife bootstrap windows
+
+1.0
+===
+* --no-validation to skip validation
+* validation for cookbooks
+ * check metadata.rb for their dependencies
+* validation for environments
+ * within environment files rather than the names of files (assumption that they are the same)
+ * cookbooks referenced in environments
+* validation for roles
+ * within role files rather than the names of files (assumption that they are the same)
+ * roles referenced in roles
+ * cookbooks referenced in roles
+ * recipes referenced in roles
+* validate data bags
+ * exist and items exist
+* validate node run_lists
+ * existing recipes and roles
+* validate custom bootstrap templates
 
 BACKLOG
 =======
@@ -83,16 +102,6 @@ Next
 ----
 * wildcards for environments and roles
 * make .yml files for every quickstart
-* VALIDATION
- * --no-validation to skip validation
- * validation for environments
- * validate custom bootstrap templates?
- * check metadata.rb of cookbooks for their dependencies
- * validate within role files rather than the names of files (assumption that they are the same)
- * validate cookbooks referenced in roles
- * validate within environment files rather than the names of files (assumption that they are the same)
- * validate cookbooks referenced in environments
- * validate recipes from cookbooks in run_lists
 
 Future
 ------
