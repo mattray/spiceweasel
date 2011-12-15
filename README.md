@@ -262,7 +262,7 @@ knife data bag from file passwords data_bags/passwords/rabbitmq.json --secret-fi
 
 Nodes
 -----
-The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. You may specify multiple nodes to have the same configuration by listing them separated by a space. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). The example YAML snippet
+The `nodes` section of the JSON or YAML file bootstraps a node for each entry where the entry is a hostname or provider and count. Each node requires 2 items after it in a sequence. The first item is the run_list and the second the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only recipes and roles listed in the file are used. You may specify multiple nodes to have the same configuration by listing them separated by a space. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. You may also use the `--parallel` flag with the providers, to run the commands simultaneously for faster deployment. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). The example YAML snippet
 
 ``` yaml
 nodes:
@@ -339,13 +339,17 @@ This is the default action, printing the knife commands to be run without execut
 ---------
 Print the currently-supported usage options for spiceweasel.
 
+--novalidation
+--------------
+Disable validation ensuring existence of the cookbooks, environments, roles, data bags and nodes in infrastructure file.
+
 --parallel
 ----------
-Use the GNU 'parallel' command to execute 'knife VENDOR server create' commands that may be parallelized.
+Use the GNU 'parallel' command to execute 'knife VENDOR server create' commands that may be run simultaneously.
 
 -r/--rebuild
 ---------
-The rebuild command will generate the knife commands to delete and recreate the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed. Currently all nodes from the system are deleted with `knife node bulk_delete`, specific-node support will be added in a future release.
+The rebuild command will generate the knife commands to delete and recreate the infrastructure described in the file. This includes each cookbook, role, data bag, environment and node listed.
 
 --siteinstall
 -------------
