@@ -4,6 +4,7 @@ class Spiceweasel::RunList
   end
 
   def validate(cookbooks, environments, roles)
+    STDOUT.puts "VALIDATION YO!"
     @run_list.each do |item|
       if item.start_with?("recipe")
         #recipe[foo] or recipe[foo::bar]

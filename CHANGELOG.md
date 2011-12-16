@@ -89,7 +89,6 @@ This is the current, previous and future development milestones and contains the
  * within role files rather than the names of files (assumption that they are the same)
  * roles referenced in roles
  * cookbooks referenced in roles
- * recipes referenced in roles
 * validate data bags
  * exist and items exist
 * validate node run_lists
