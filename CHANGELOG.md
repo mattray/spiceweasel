@@ -83,17 +83,18 @@ This is the current, previous and future development milestones and contains the
 * validation for cookbooks
  * check metadata.rb for their dependencies
 * validation for environments
- * within environment files rather than the names of files (assumption that they are the same)
+ * existence of files, handling both .json and .rb
+ * check names within files rather than the names of files
  * cookbooks referenced in environments
 * validation for roles
- * within role files rather than the names of files (assumption that they are the same)
+ * check names within files rather than the names of files
  * roles referenced in roles
  * cookbooks referenced in roles
 * validate data bags
  * exist and items exist
 * validate node run_lists
  * existing recipes and roles
-* validate custom bootstrap templates
+* validate custom bootstrap templates?
 
 BACKLOG
 =======

@@ -19,8 +19,9 @@
 class Spiceweasel::CookbookList
   def initialize(cookbooks = [], options = {})
     @create = @delete = ''
-    @cookbooks = {}
+    @cookbook_list = {}
     @dependencies = []
+    #validate each of the cookbooks specified in the manifest
     if cookbooks
       cookbooks.each do |cookbook|
         cb = cookbook.keys.first
@@ -42,12 +43,12 @@ class Spiceweasel::CookbookList
             end
           end
         else
-          STDERR.puts "cookbooks directory not found, validation and downloading skipped"
+          STDERR.puts "'cookbooks' directory not found, unable to validate, download and load cookbooks" unless NOVALIDATION
         end
         @create += "knife cookbook#{options['knife_options']} upload #{cb}\n"
         @delete += "knife cookbook#{options['knife_options']} delete #{cb} #{version} -y\n"
 
-        @cookbooks[cb] = version
+        @cookbook_list[cb] = version
       end
       validateDependencies() unless NOVALIDATION
     end
@@ -59,7 +60,7 @@ class Spiceweasel::CookbookList
     metadata = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^version/)[0].split()[1].gsub(/"/,'').to_s
     STDOUT.puts "DEBUG: cookbook metadata version: #{metadata}" if DEBUG
     if version and (metadata != version)
-      raise "Invalid version #{version} of '#{cookbook}' requested, #{metadata} is already in the cookbooks directory."
+      raise "Invalid version '#{version}' of '#{cookbook}' requested, '#{metadata}' is already in the cookbooks directory."
       exit(-1)
     end
     deps = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^depends/)
@@ -73,21 +74,22 @@ class Spiceweasel::CookbookList
       STDOUT.puts "DEBUG: #{cookbook} metadata depends: #{cbdep}" if DEBUG
       @dependencies << cbdep
     end
+    return @cookbook
   end
 
   #compare the list of cookbook deps with those specified
   def validateDependencies()
     @dependencies.each do |dep|
       if !member?(dep)
-        raise "Cookbook dependency #{dep} is missing from the list of cookbooks for the repository."
+        raise "Cookbook dependency '#{dep}' is missing from the list of cookbooks in the manifest."
         exit(-1)
       end
     end
   end
 
-  attr_reader :cookbooks, :create, :delete
+  attr_reader :cookbook_list, :create, :delete
 
   def member?(cookbook)
-    cookbooks.keys.include?(cookbook)
+    cookbook_list.keys.include?(cookbook)
   end
 end
