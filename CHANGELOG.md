@@ -80,6 +80,7 @@ This is the current, previous and future development milestones and contains the
 1.0
 ===
 * --no-validation to skip validation
+* switched from raising exceptions to just quitting with STDERR
 * validation for cookbooks
  * check metadata.rb for their dependencies
 * validation for environments
@@ -88,8 +89,8 @@ This is the current, previous and future development milestones and contains the
  * cookbooks referenced in environments
 * validation for roles
  * check names within files rather than the names of files
- * roles referenced in roles
  * cookbooks referenced in roles
+ * roles referenced in roles
 * validate data bags
  * exist and items exist
 * validate node run_lists
@@ -117,3 +118,5 @@ Future
  * -e/--execute execute the commands
  * catching return codes and retrying (with retry count?)
  * make the JSON calls directly with Chef APIs? spice?
+* ADDITIONAL VALIDATION
+ * environment-specific run_lists

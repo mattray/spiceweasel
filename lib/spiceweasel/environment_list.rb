@@ -42,8 +42,6 @@ class Spiceweasel::EnvironmentList
     end
   end
 
-  attr_reader :environment_list, :create, :delete
-
   #validate the content of the environment file
   def validate(environment, cookbooks)
     #validate the environments passed in match the name of either the .rb or .json
@@ -87,6 +85,8 @@ class Spiceweasel::EnvironmentList
       exit(-1)
     end
   end
+
+  attr_reader :environment_list, :create, :delete
 
   def member?(environment)
     environment_list.include?(environment)

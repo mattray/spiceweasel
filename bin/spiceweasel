@@ -70,7 +70,7 @@ delete = String.new()
 
 cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'], options)
 environment_list = Spiceweasel::EnvironmentList.new(input['environments'], cookbook_list, options)
-role_list = Spiceweasel::RoleList.new(input['roles'], options)
+role_list = Spiceweasel::RoleList.new(input['roles'], environment_list, cookbook_list, options)
 data_bag_list = Spiceweasel::DataBagList.new(input['data bags'], options)
 node_list = Spiceweasel::NodeList.new(input['nodes'], cookbook_list, environment_list, role_list, options)
 
