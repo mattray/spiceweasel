@@ -60,7 +60,7 @@ class Spiceweasel::CookbookList
     metadata = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^version/)[0].split()[1].gsub(/"/,'').to_s
     STDOUT.puts "DEBUG: cookbook metadata version: #{metadata}" if DEBUG
     if version and (metadata != version)
-      raise "Invalid version '#{version}' of '#{cookbook}' requested, '#{metadata}' is already in the cookbooks directory."
+      STDERR.puts "ERROR: Invalid version '#{version}' of '#{cookbook}' requested, '#{metadata}' is already in the cookbooks directory."
       exit(-1)
     end
     deps = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^depends/)
@@ -81,7 +81,7 @@ class Spiceweasel::CookbookList
   def validateDependencies()
     @dependencies.each do |dep|
       if !member?(dep)
-        raise "Cookbook dependency '#{dep}' is missing from the list of cookbooks in the manifest."
+        STDERR.puts "ERROR: Cookbook dependency '#{dep}' is missing from the list of cookbooks in the manifest."
         exit(-1)
       end
     end

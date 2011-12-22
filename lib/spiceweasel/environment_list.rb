@@ -49,7 +49,7 @@ class Spiceweasel::EnvironmentList
       #validate that the name inside the file matches
       name = File.open("environments/#{environment}.rb").grep(/^name/)[0].split()[1].gsub(/"/,'').to_s
       if !environment.eql?(name)
-        raise "Environment '#{environment}' listed in the manifest does not match the name '#{name}' within the environments/#{environment}.rb file."
+        STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{name}' within the environments/#{environment}.rb file."
         exit(-1)
       end
       #validate the cookbooks exist if they're mentioned
@@ -58,7 +58,7 @@ class Spiceweasel::EnvironmentList
         dep = cb.split()[1].gsub(/"/,'').gsub(/,/,'')
         STDOUT.puts "DEBUG: environment: '#{environment}' cookbook: '#{dep}'" if DEBUG
         if !cookbooks.member?(dep)
-          raise "Cookbook dependency '#{dep}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
+          STDERR.puts "ERROR: Cookbook dependency '#{dep}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
           exit(-1)
         end
       end
@@ -69,19 +69,19 @@ class Spiceweasel::EnvironmentList
       #validate that the name inside the file matches
       STDOUT.puts "DEBUG: environment: '#{environment}' name: '#{envfile[:name]}'" if DEBUG
       if !environment.eql?(envfile[:name])
-        raise "Environment '#{environment}' listed in the manifest does not match the name '#{envfile[:name]}' within the 'environments/#{environment}.json' file."
+        STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{envfile[:name]}' within the 'environments/#{environment}.json' file."
         exit(-1)
       end
       #validate the cookbooks exist if they're mentioned
       envfile[:cookbook_versions].keys.each do |cb|
         STDOUT.puts "DEBUG: environment: '#{environment}' cookbook: '#{cb}'" if DEBUG
         if !cookbooks.member?(cb.to_s)
-          raise "Cookbook dependency '#{cb}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
+          STDERR.puts "ERROR: Cookbook dependency '#{cb}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
           exit(-1)
         end
       end
     else #environment is not here
-      raise "Invalid Environment '#{environment}' listed in the manifest but not found in the environments directory."
+      STDERR.puts "ERROR: Invalid Environment '#{environment}' listed in the manifest but not found in the environments directory."
       exit(-1)
     end
   end

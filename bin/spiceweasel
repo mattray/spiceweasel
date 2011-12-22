@@ -52,15 +52,15 @@ begin
   elsif (file.end_with?(".json"))
     input = JSON.parse(File.read(ARGV.last))
   else
-    raise "Unknown file type, please use a file ending with either '.json' or '.yml'."
+    STDERR.puts "ERROR: Unknown file type, please use a file ending with either '.json' or '.yml'."
     exit(-1)
   end
 rescue JSON::ParserError => e
   STDERR.puts e.message
-  STDERR.puts "Parsing error in the infrastructure file provided."
+  STDERR.puts "ERROR: Parsing error in the infrastructure file provided."
   exit(-1)
 rescue Exception
-  STDERR.puts "No infrastructure .json or .yml file provided."
+  STDERR.puts "ERROR: No infrastructure .json or .yml file provided."
   puts cli.opt_parser.to_s
   exit(-1)
 end

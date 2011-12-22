@@ -80,7 +80,7 @@ This is the current, previous and future development milestones and contains the
 1.0
 ===
 * --no-validation to skip validation
-* switched from raising exceptions to just quitting with STDERR
+* switched from raising exceptions to just exiting with STDERR
 * validation for cookbooks
  * check metadata.rb for their dependencies
 * validation for environments
