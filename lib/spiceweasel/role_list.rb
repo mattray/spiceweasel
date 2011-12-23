@@ -19,15 +19,15 @@
 require 'json'
 
 class Spiceweasel::RoleList
-  def initialize(roles = [], environments = [], cookbooks = {}, options = {})
+  def initialize(roles = {}, environments = [], cookbooks = {}, options = {})
     @create = @delete = ''
     @role_list = []
     if roles
-      roles.each do |rl|
-        role = rl.keys[0]
+      flatroles = roles.collect {|x| x.keys}.flatten
+      flatroles.each do |role|
         STDOUT.puts "DEBUG: role: #{role}" if DEBUG
         if File.directory?("roles")
-          validate(role, environments, cookbooks) unless NOVALIDATION
+          validate(role, environments, cookbooks, flatroles) unless NOVALIDATION
         else
           STDERR.puts "ERROR: 'roles' directory not found, unable to validate or load roles" unless NOVALIDATION
         end
@@ -43,7 +43,7 @@ class Spiceweasel::RoleList
   end
 
   #validate the content of the role file
-  def validate(role, environments, cookbooks)
+  def validate(role, environments, cookbooks, roles)
     #validate the role passed in match the name of either the .rb or .json
     if File.exists?("roles/#{role}.rb")
       #validate that the name inside the file matches
@@ -53,21 +53,31 @@ class Spiceweasel::RoleList
         STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{name}' within the roles/#{role}.rb file."
         exit(-1)
       end
-      #validate the cookbooks exist if they're mentioned in run_lists
-      rolecbs = File.open("roles/#{role}.rb").grep(/recipe/)
-      rolecbs.each do |line|
+      #grab any lines with 'recipe[' or 'role['
+      rolerl = File.open("roles/#{role}.rb").grep(/recipe\[|role\[/)
+      rolerl.each do |line|
         STDOUT.puts "DEBUG: role: '#{role}' line: '#{line}'" if DEBUG
-        line.strip.split(',').each do |cb|
-          #split on the brackets and any colons
-          dep = cb.split(/\[|\]/)[1].split(':')[0]
-          STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{cb}': dep: '#{dep}'" if DEBUG
-          if !cookbooks.member?(dep)
-            STDERR.puts "ERROR: Cookbook dependency '#{dep}' from role '#{role}' is missing from the list of cookbooks in the manifest."
-            exit(-1)
+        line.strip.split(',').each do |rl|
+          if rl =~ /recipe\[/ #it's a cookbook
+            #split on the brackets and any colons
+            dep = rl.split(/\[|\]/)[1].split(':')[0]
+            STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{rl}': dep: '#{dep}'" if DEBUG
+            if !cookbooks.member?(dep)
+              STDERR.puts "ERROR: Cookbook dependency '#{dep}' from role '#{role}' is missing from the list of cookbooks in the manifest."
+              exit(-1)
+            end
+          elsif rl =~ /role\[/ #it's a role
+            #split on the brackets
+            dep = rl.split(/\[|\]/)[1]
+            STDOUT.puts "DEBUG: role: '#{role}' role: '#{rl}': dep: '#{dep}'" if DEBUG
+            if !roles.member?(dep)
+              STDERR.puts "ERROR: Role dependency '#{dep}' from role '#{role}' is missing from the list of roles in the manifest."
+              exit(-1)
+            end
           end
         end
       end
-      #validate any environment-specific runlists
+      #TODO validate any environment-specific runlists
     elsif File.exists?("roles/#{role}.json")
       #load the json, don't symbolize since we don't need json_class
       f = File.read("roles/#{role}.json")
@@ -78,17 +88,27 @@ class Spiceweasel::RoleList
         STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{rolefile[:name]}' within the 'roles/#{role}.json' file."
         exit(-1)
       end
-      STDOUT.puts "DEBUG: role: '#{role}' name: '#{rolefile}'" if DEBUG
-      #validate the cookbooks exist if they're mentioned in run_lists
-      rolefile[:run_list].each do |cb|
-        dep = cb.split(/\[|\]/)[1].split(':')[0]
-        STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{cb}': dep: '#{dep}'" if DEBUG
-        if !cookbooks.member?(cb.to_s)
-          STDERR.puts "ERROR: Cookbook dependency '#{cb}' from role '#{role}' is missing from the list of cookbooks in the manifest."
-          exit(-1)
+      #validate the cookbooks and roles exist if they're mentioned in run_lists
+      rolefile[:run_list].each do |rl|
+        if rl =~ /recipe\[/ #it's a cookbook
+          #split on the brackets and any colons
+          dep = rl.split(/\[|\]/)[1].split(':')[0]
+          STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{rl}': dep: '#{dep}'" if DEBUG
+          if !cookbooks.member?(dep)
+            STDERR.puts "ERROR: Cookbook dependency '#{dep}' from role '#{role}' is missing from the list of cookbooks in the manifest."
+            exit(-1)
+          end
+        elsif rl =~ /role\[/ #it's a role
+          #split on the brackets
+          dep = rl.split(/\[|\]/)[1]
+          STDOUT.puts "DEBUG: role: '#{role}' role: '#{rl}': dep: '#{dep}'" if DEBUG
+          if !roles.member?(dep)
+            STDERR.puts "ERROR: Role dependency '#{dep}' from role '#{role}' is missing from the list of roles in the manifest."
+            exit(-1)
+          end
         end
       end
-      #validate any environment-specific runlists
+      #TODO validate any environment-specific runlists
     else #role is not here
       STDERR.puts "ERROR: Invalid Role '#{role}' listed in the manifest but not found in the roles directory."
       exit(-1)
