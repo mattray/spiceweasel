@@ -93,6 +93,8 @@ This is the current, previous and future development milestones and contains the
  * roles referenced in roles
 * validate data bags
  * exist and items exist
+ * JSON parses and id matches
+ * secret key in place
 * validate node run_lists
  * existing recipes and roles
 * validate custom bootstrap templates?
@@ -101,7 +103,7 @@ BACKLOG
 =======
 Next
 ----
-* wildcards for environments and roles
+* wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
 * make .yml files for every quickstart
 
 Future
