@@ -23,5 +23,4 @@ module Spiceweasel
   autoload :RoleList, 'spiceweasel/role_list'
   autoload :DataBagList, 'spiceweasel/data_bag_list'
   autoload :NodeList, 'spiceweasel/node_list'
-  autoload :RunList, 'spiceweasel/run_list'
 end
