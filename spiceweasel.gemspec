@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email       = ["matt@opscode.com", "elliot.cm@gmail.com"]
   s.homepage    = "http://github.com/mattray/spiceweasel"
   s.summary     = %q{CLI for generating Chef knife commands from a simple YAML file.}
-  s.description = %q{This provides a CLI for generating knife commands to build Chef-managed infrastructure from a simple YAML file.}
+  s.description = %q{Provides a CLI tool for generating knife commands to build Chef-managed infrastructure from a simple YAML or JSON file.}
 
   s.rubyforge_project = "spiceweasel"
 
@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.executables   = Dir.glob('bin/**/*').map{ |f| File.basename(f) }
   s.require_path  = "lib"
 
-  s.add_dependency('chef')
   s.add_dependency('json')
   s.add_dependency('mixlib-cli')
   s.add_development_dependency('rspec')
