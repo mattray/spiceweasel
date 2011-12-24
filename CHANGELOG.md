@@ -84,10 +84,11 @@ This is the current, previous and future development milestones and contains the
 * validation for cookbooks
  * check metadata.rb for their dependencies
 * validation for environments
- * existence of files, handling both .json and .rb
+ * supports both .json and .rb
  * check names within files rather than the names of files
  * cookbooks referenced in environments
 * validation for roles
+ * supports both .json and .rb
  * check names within files rather than the names of files
  * cookbooks referenced in roles
  * roles referenced in roles
