@@ -4,8 +4,12 @@ require 'spiceweasel/version'
 class Spiceweasel::CLI
   include Mixlib::CLI
 
-  banner("Usage: spiceweasel [option] file")
+  banner("Usage: spiceweasel [option] file\n       spiceweasel [option] --extractlocal")
 
+  option :extractlocal,
+  :long => "--extractlocal",
+  :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a template to generate knife commands"
+  
   option :debug,
   :long => "--debug",
   :description => "Verbose debugging messages",
