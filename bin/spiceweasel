@@ -41,28 +41,32 @@ rescue OptionParser::InvalidOption => e
 end
 
 if cli.config[:knifeconfig]
-  options['knife_options']=" -c "+cli.config[:knifeconfig]
+  options['knife_options'] = " -c " + cli.config[:knifeconfig]
 end
 
-begin
-  file = ARGV.last
-  STDOUT.puts "DEBUG: file: #{file}" if cli.config[:debug]
-  if (file.end_with?(".yml"))
-    input = YAML.load_file ARGV.last
-  elsif (file.end_with?(".json"))
-    input = JSON.parse(File.read(ARGV.last))
-  else
-    STDERR.puts "ERROR: Unknown file type, please use a file ending with either '.json' or '.yml'."
+if cli.config[:extractlocal]
+  input = Spiceweasel::DirectoryExtractor.parse_objects
+else
+  begin
+    file = ARGV.last
+    STDOUT.puts "DEBUG: file: #{file}" if cli.config[:debug]
+    if (file.end_with?(".yml"))
+      input = YAML.load_file ARGV.last
+    elsif (file.end_with?(".json"))
+      input = JSON.parse(File.read(ARGV.last))
+    else
+      STDERR.puts "ERROR: Unknown file type, please use a file ending with either '.json' or '.yml'."
+      exit(-1)
+    end
+  rescue JSON::ParserError => e
+    STDERR.puts e.message
+    STDERR.puts "ERROR: Parsing error in the infrastructure file provided."
+    exit(-1)
+  rescue Exception
+    STDERR.puts "ERROR: No infrastructure .json or .yml file provided."
+    puts cli.opt_parser.to_s
     exit(-1)
   end
-rescue JSON::ParserError => e
-  STDERR.puts e.message
-  STDERR.puts "ERROR: Parsing error in the infrastructure file provided."
-  exit(-1)
-rescue Exception
-  STDERR.puts "ERROR: No infrastructure .json or .yml file provided."
-  puts cli.opt_parser.to_s
-  exit(-1)
 end
 
 create = String.new()
