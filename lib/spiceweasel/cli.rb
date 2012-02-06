@@ -8,6 +8,10 @@ class Spiceweasel::CLI
 
   option :extractlocal,
   :long => "--extractlocal",
+  :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a manifest to generate knife commands"
+
+  option :extractlocal,
+  :long => "--extractlocal",
   :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a template to generate knife commands"
   
   option :debug,
@@ -18,7 +22,7 @@ class Spiceweasel::CLI
   option :delete,
   :short => "-d",
   :long => "--delete",
-  :description => "Print the knife commands to be delete the infrastructure",
+  :description => "Print the knife commands to delete the infrastructure",
   :boolean => true
 
   option :dryrun,

@@ -1,7 +1,7 @@
 class Spiceweasel::CookbookParser
 
   attr_accessor :_name, :_dependencies, :_version
-   
+  
   def initialize(file_name)
     @_name = file_name.split('/').last
     @_dependencies = []
@@ -47,5 +47,5 @@ class Spiceweasel::CookbookParser
     end
     @_dependencies << {:cookbook => cookbook, :version => cookbook_version}
   end
-  
+
 end
