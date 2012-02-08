@@ -8,44 +8,57 @@ class Spiceweasel::CookbookParser
     @_version = ""
     @file_name = file_name
   end
+
+  def self.is_cookbook?(file_name)
+    return false unless Dir.exists?("cookbooks/#{file_name}")
+    return false unless File.exists?("cookbooks/#{file_name}/metadata.rb")
+    true    
+  end
   
-  def parse
-    return nil unless Dir.exists?("cookbooks/#{@file_name}")
+  def self.parse(file_name)
+    return nil unless self.is_cookbook?(file_name)
     
     begin
-      file = File.new("cookbooks/#{@file_name}/metadata.rb", "r")
+      file = File.new("cookbooks/#{file_name}/metadata.rb", "r")
     rescue 
-      STDERR.puts "WARNING: Could not retrieve cookbook information: #{@file_name}"
+      STDERR.puts "WARNING: Could not retrieve cookbook information: #{file_name}"
       return nil
     end
     
+    cookbook_info = {:name => file_name, :version => nil, :dependencies => [] }
     while (line = file.gets) 
-      if line.start_with?("name") || line.start_with?("version") || line.start_with?("depends")
-        begin
-          eval line
-        rescue
-          STDERR.puts "WARNING: Could not parse \"#{line}\" in cookbooks/#{@file_name}/metadata.rb"
-        end
-      end
+      cookbook_info[:name] = self.parse_line(line) if line.start_with?("name")
+      cookbook_info[:version] = self.parse_line(line) if line.start_with?("version")
+      cookbook_info[:dependencies] << self.parse_line(line) if line.start_with?("depends")
     end
     file.close
+    cookbook_info
     
   end
   
-  def name(*args)
-    @_name = args.shift
+  def self.parse_line(line)
+    begin
+      eval line
+    rescue
+      STDERR.puts "Warning: Couldnt parse line: #{line}"
+      return nil
+    end
   end
   
-  def version(*args)
-    @_version = args.shift
+  def self.name(*args) # Override metadata.rb DSL
+    args.shift
+  end
+  
+  def self.version(*args) # Override metadata.rb DSL
+    args.shift
   end
     
-  def depends(*args)
+  def self.depends(*args) # Override metadata.rb DSL
     cookbook = args.shift
     if args.length > 0
       cookbook_version = args.shift
     end
-    @_dependencies << {:cookbook => cookbook, :version => cookbook_version}
+    {:cookbook => cookbook, :version => cookbook_version}
   end
 
 end

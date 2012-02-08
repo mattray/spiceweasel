@@ -8,10 +8,6 @@ class Spiceweasel::CLI
 
   option :extractlocal,
   :long => "--extractlocal",
-  :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a manifest to generate knife commands"
-
-  option :extractlocal,
-  :long => "--extractlocal",
   :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a template to generate knife commands"
   
   option :debug,

@@ -6,9 +6,10 @@ class Spiceweasel::DirectoryExtractor
     cookbooks = []
     Dir.glob("cookbooks/*").each do |cookbook_full_path|
       cookbook = self.grab_filename_from_path cookbook_full_path
-      cookbook_object = Spiceweasel::CookbookParser.new(cookbook)
-      cookbook_object.parse
-      cookbooks << {:name => cookbook_object._name, :version => cookbook_object._version, :dependencies => cookbook_object._dependencies}
+      cookbook_object = Spiceweasel::CookbookParser.parse(cookbook)
+      unless cookbook_object.nil?
+        cookbooks << cookbook_object
+      end
     end
     cookbook_names = self.order_cookbooks_by_dependency cookbooks
     objects["cookbooks"] = cookbook_names unless cookbook_names.empty?
