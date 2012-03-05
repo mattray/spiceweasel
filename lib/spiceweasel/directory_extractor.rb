@@ -6,14 +6,14 @@ class Spiceweasel::DirectoryExtractor
     cookbooks = []
     Dir.glob("cookbooks/*").each do |cookbook_full_path|
       cookbook = self.grab_filename_from_path cookbook_full_path
-      cookbook_object = Spiceweasel::CookbookParser.parse(cookbook)
-      unless cookbook_object.nil?
-        cookbooks << cookbook_object
+      cookbook_data = Spiceweasel::CookbookData.new(cookbook)
+      if cookbook_data.is_readable?
+        cookbooks << cookbook_data.read
       end
     end
     cookbook_names = self.order_cookbooks_by_dependency cookbooks
     objects["cookbooks"] = cookbook_names unless cookbook_names.empty?
-    
+
     # ROLES
     roles = []    
     Dir.glob("roles/*.{rb,json}").each do |role_full_path|
