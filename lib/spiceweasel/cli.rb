@@ -4,8 +4,12 @@ require 'spiceweasel/version'
 class Spiceweasel::CLI
   include Mixlib::CLI
 
-  banner("Usage: spiceweasel [option] file")
+  banner("Usage: spiceweasel [option] file\n       spiceweasel [option] --extractlocal")
 
+  option :extractlocal,
+  :long => "--extractlocal",
+  :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a template to generate knife commands"
+  
   option :debug,
   :long => "--debug",
   :description => "Verbose debugging messages",
@@ -14,7 +18,7 @@ class Spiceweasel::CLI
   option :delete,
   :short => "-d",
   :long => "--delete",
-  :description => "Print the knife commands to be delete the infrastructure",
+  :description => "Print the knife commands to delete the infrastructure",
   :boolean => true
 
   option :dryrun,
