@@ -13,7 +13,7 @@ class Spiceweasel::NodeList
         STDOUT.puts "DEBUG: node: 'node[nname]' options: '#{noptions}'" if DEBUG
         validateOptions(nname, noptions, environments) unless NOVALIDATION
         #provider support
-        if nname.start_with?("bluebox ","clodo ","cs ","ec2 ","gandi ","openstack ","rackspace ","slicehost ","terremark ","voxel ")
+        if nname.start_with?("bluebox ","clodo ","cs ","ec2 ","gandi ","hp ","openstack ","rackspace ","slicehost ","terremark ","voxel ")
           provider = nname.split()
           count = 1
           if (provider.length == 2)
