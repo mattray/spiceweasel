@@ -35,6 +35,11 @@ class Spiceweasel::CLI
   :show_options => true,
   :exit => 0
 
+  option :serverurl,
+  :short => "-s SERVERURL",
+  :long => "--serverurl SERVERURL",
+  :description => "Specify the chef-server url to use"
+
   option :knifeconfig,
   :short => "-c CONFIG",
   :long => "--knifeconfig CONFIG",

@@ -41,7 +41,11 @@ rescue OptionParser::InvalidOption => e
 end
 
 if cli.config[:knifeconfig]
-  options['knife_options'] = " -c " + cli.config[:knifeconfig]
+  options['knife_options'] += " -c " + cli.config[:knifeconfig]
+end
+
+if cli.config[:serverurl]
+  options['knife_options'] += " -s " + cli.config[:serverurl]
 end
 
 if cli.config[:extractlocal]
