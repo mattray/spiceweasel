@@ -45,7 +45,7 @@ if cli.config[:knifeconfig]
 end
 
 if cli.config[:serverurl]
-  options['knife_options'] += " -s " + cli.config[:serverurl]
+  options['knife_options'] += " --server-url " + cli.config[:serverurl]
 end
 
 if cli.config[:extractlocal]
