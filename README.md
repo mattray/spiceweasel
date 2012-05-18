@@ -26,20 +26,17 @@ From the `example.yml`:
 cookbooks:
 - apache2:
 - apt:
-    - 1.1.1
+    - 1.2.0
 - mysql:
-
 environments:
 - development:
 - qa:
 - production:
-
 roles:
 - base:
 - iisserver:
 - monitoring:
 - webserver:
-
 data bags:
 - users:
   - alice
@@ -51,7 +48,6 @@ data bags:
   - secret secret_key
   - mysql
   - rabbitmq
-
 nodes:
 - serverA:
   - role[base]
@@ -84,7 +80,7 @@ From the `example.json`:
         {"apache2":[]},
         {"apt":
          [
-             "1.1.1"
+             "1.2.0"
          ]
         },
         {"mysql":[]}
@@ -174,7 +170,7 @@ The `cookbooks` section of the manifest currently supports `knife cookbook uploa
 cookbooks:
 - apache2:
 - apt:
-  - 1.1.0
+  - 1.2.0
 - mysql:
 ```
 
@@ -182,7 +178,7 @@ produces the knife commands
 
 ```
 knife cookbook upload apache2
-knife cookbook site download apt 1.1.0 --file cookbooks/apt.tgz
+knife cookbook site download apt 1.2.0 --file cookbooks/apt.tgz
 tar -C cookbooks/ -xf cookbooks/apt.tgz
 rm -f cookbooks/apt.tgz
 knife cookbook upload apt
@@ -253,8 +249,8 @@ knife data bag from file users alice.json
 knife data bag from file users bob.json
 knife data bag from file users chuck.json
 knife data bag create data
-knife data bag from file users dataA.json
-knife data bag from file users dataB.json
+knife data bag from file data dataA.json
+knife data bag from file data dataB.json
 knife data bag create passwords
 knife data bag from file passwords mysql.json --secret-file secret_key
 knife data bag from file passwords rabbitmq.json --secret-file secret_key
@@ -366,7 +362,7 @@ License and Author
 ==================
 Author: Matt Ray <matt@opscode.com>
 
-Copyright: 2011 Opscode, Inc
+Copyright: 2011-2012 Opscode, Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

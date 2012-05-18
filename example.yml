@@ -3,18 +3,15 @@ cookbooks:
 - apt:
     - 1.2.0
 - mysql:
-
 environments:
 - development:
 - qa:
 - production:
-
 roles:
 - base:
 - iisserver:
 - monitoring:
 - webserver:
-
 data bags:
 - users:
   - alice
@@ -26,7 +23,6 @@ data bags:
   - secret secret_key
   - mysql
   - rabbitmq
-
 nodes:
 - serverA:
   - role[base]
