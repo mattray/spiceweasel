@@ -36,7 +36,7 @@ This is the current, previous and future development milestones and contains the
 * add support for cookbook options
 
 0.7
-=============
+===
 * add support for environments
 * rescue from parser errors
 * update cookbook download syntax
@@ -63,7 +63,7 @@ This is the current, previous and future development milestones and contains the
 =====
 * fixed Issue #6, catch empty cookbooks, environments, roles, data bags and nodes.
 * fixed Issue #7, permissions in spiceweasel gem folder
-* fixed Issue #8, allow passthrough of knife options (in particular -c KNIFECONFIGFILES) through to the outputted knife commands. Patch by gmacid
+* fixed Issue #8, allow passthrough of knife options (in particular -c KNIFECONFIGFILES) through to the outputted knife commands. (GT Meakin)
 * linked ravel-repo and php quickstart examples
 
 0.9
@@ -100,10 +100,20 @@ This is the current, previous and future development milestones and contains the
  * existing recipes and roles
 * validate custom bootstrap templates?
 
+1.0.1
+=====
+* added knife-hp
+
+1.1
+===
+* Added functionality to extract all relevant cookbooks/roles/environments/databags/nodes from local chef-repo directory (GT Meakin)
+* Fixed a number of Ruby 1.8.7 issues (https://github.com/mattray/spiceweasel/issues/10)
+
 BACKLOG
 =======
 Next
 ----
+* all validation done by converting .rb files to Chef objects
 * wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
 * make .yml files for every quickstart
 
@@ -123,3 +133,4 @@ Future
  * make the JSON calls directly with Chef APIs? spice?
 * ADDITIONAL VALIDATION
  * environment-specific run_lists
+* Librarian integration?
