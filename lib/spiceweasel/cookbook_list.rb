@@ -65,13 +65,14 @@ class Spiceweasel::CookbookList
     end
     deps = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^depends/)
     deps.each do |dependency|
+      STDOUT.puts "DEBUG: cookbook #{cookbook} metadata dependency: #{dependency}" if DEBUG
       line = dependency.split()
       cbdep = ''
-      if line[1][0].eql?('"') #ignore variables and versions
+      if line[1] =~ /^"/ #ignore variables and versions
         cbdep = line[1].gsub(/"/,'')
         cbdep.gsub!(/\,/,'') if cbdep.end_with?(',')
       end
-      STDOUT.puts "DEBUG: #{cookbook} metadata depends: #{cbdep}" if DEBUG
+      STDOUT.puts "DEBUG: cookbook #{cookbook} metadata depends: #{cbdep}" if DEBUG
       @dependencies << cbdep
     end
     return @cookbook
@@ -79,6 +80,7 @@ class Spiceweasel::CookbookList
 
   #compare the list of cookbook deps with those specified
   def validateDependencies()
+    STDOUT.puts "DEBUG: cookbook validateDependencies: '#{@dependencies}'" if DEBUG
     @dependencies.each do |dep|
       if !member?(dep)
         STDERR.puts "ERROR: Cookbook dependency '#{dep}' is missing from the list of cookbooks in the manifest."

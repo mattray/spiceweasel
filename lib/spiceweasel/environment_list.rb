@@ -65,7 +65,7 @@ class Spiceweasel::EnvironmentList
     elsif File.exists?("environments/#{environment}.json")
       #load the json, don't symbolize since we don't need json_class
       f = File.read("environments/#{environment}.json")
-      envfile = JSON.parse(f, {symbolize_names: 'false'})
+      envfile = JSON.parse(f, {:symbolize_names => false})
       #validate that the name inside the file matches
       STDOUT.puts "DEBUG: environment: '#{environment}' name: '#{envfile[:name]}'" if DEBUG
       if !environment.eql?(envfile[:name])

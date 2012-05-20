@@ -81,7 +81,7 @@ class Spiceweasel::RoleList
     elsif File.exists?("roles/#{role}.json")
       #load the json, don't symbolize since we don't need json_class
       f = File.read("roles/#{role}.json")
-      rolefile = JSON.parse(f, {symbolize_names: 'false'})
+      rolefile = JSON.parse(f, {:symbolize_names => false})
       #validate that the name inside the file matches
       STDOUT.puts "DEBUG: role: '#{role}' name: '#{rolefile[:name]}'" if DEBUG
       if !role.eql?(rolefile[:name])
