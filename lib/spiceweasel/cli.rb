@@ -9,7 +9,7 @@ class Spiceweasel::CLI
   option :extractlocal,
   :long => "--extractlocal",
   :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a template to generate knife commands"
-  
+
   option :debug,
   :long => "--debug",
   :description => "Verbose debugging messages",
@@ -36,14 +36,14 @@ class Spiceweasel::CLI
   :exit => 0
 
   option :serverurl,
-  :short => "-s SERVERURL",
-  :long => "--serverurl SERVERURL",
-  :description => "Specify the chef-server url to use"
+  :short => "-s URL",
+  :long => "--server-url URL",
+  :description => "Specify the Chef Server URL"
 
   option :knifeconfig,
   :short => "-c CONFIG",
   :long => "--knifeconfig CONFIG",
-  :description => "Specify the knife.rb configuration file to use"
+  :description => "Specify the knife.rb configuration file"
 
   option :novalidation,
   :long => "--novalidation",
@@ -69,7 +69,7 @@ class Spiceweasel::CLI
   option :version,
   :short => "-v",
   :long => "--version",
-  :description => "Version",
+  :description => "Show spiceweasel version",
   :boolean => true,
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0
