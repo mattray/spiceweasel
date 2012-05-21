@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,15 +65,17 @@ class Spiceweasel::EnvironmentList
     elsif File.exists?("environments/#{environment}.json")
       #load the json, don't symbolize since we don't need json_class
       f = File.read("environments/#{environment}.json")
+      JSON.create_id = nil
       envfile = JSON.parse(f, {:symbolize_names => false})
+      STDOUT.puts "DEBUG: environment: '#{environment}' file: '#{envfile}'" if DEBUG
       #validate that the name inside the file matches
-      STDOUT.puts "DEBUG: environment: '#{environment}' name: '#{envfile[:name]}'" if DEBUG
-      if !environment.eql?(envfile[:name])
-        STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{envfile[:name]}' within the 'environments/#{environment}.json' file."
+      STDOUT.puts "DEBUG: environment: '#{environment}' name: '#{envfile['name']}'" if DEBUG
+      if !environment.eql?(envfile['name'])
+        STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{envfile['name']}' within the 'environments/#{environment}.json' file."
         exit(-1)
       end
       #validate the cookbooks exist if they're mentioned
-      envfile[:cookbook_versions].keys.each do |cb|
+      envfile['cookbook_versions'].keys.each do |cb|
         STDOUT.puts "DEBUG: environment: '#{environment}' cookbook: '#{cb}'" if DEBUG
         if !cookbooks.member?(cb.to_s)
           STDERR.puts "ERROR: Cookbook dependency '#{cb}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
