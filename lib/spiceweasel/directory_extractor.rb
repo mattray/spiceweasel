@@ -1,3 +1,22 @@
+#
+# Author:: Geoff Meakin
+# Author:: Matt Ray (<matt@opscode.com>)
+#
+# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 class Spiceweasel::DirectoryExtractor
 
   def self.parse_objects
@@ -6,6 +25,7 @@ class Spiceweasel::DirectoryExtractor
     cookbooks = []
     Dir.glob("cookbooks/*").each do |cookbook_full_path|
       cookbook = self.grab_filename_from_path cookbook_full_path
+      STDOUT.puts "DEBUG: dir_ext: cookbook: '#{cookbook}'" if DEBUG
       cookbook_data = Spiceweasel::CookbookData.new(cookbook)
       if cookbook_data.is_readable?
         cookbooks << cookbook_data.read
@@ -15,9 +35,10 @@ class Spiceweasel::DirectoryExtractor
     objects["cookbooks"] = cookbook_names unless cookbook_names.empty?
 
     # ROLES
-    roles = []    
+    roles = []
     Dir.glob("roles/*.{rb,json}").each do |role_full_path|
       role = self.grab_name_from_path role_full_path
+      STDOUT.puts "DEBUG: dir_ext: role: '#{role}'" if DEBUG
       roles << {role => nil}
     end
     objects["roles"] = roles unless roles.nil?
@@ -25,6 +46,7 @@ class Spiceweasel::DirectoryExtractor
     environments = []
     Dir.glob("environments/*.{rb,json}").each do |environment_full_path|
       environment = self.grab_name_from_path environment_full_path
+      STDOUT.puts "DEBUG: dir_ext: environment: '#{environment}'" if DEBUG
       environments << {environment => nil}
     end
     objects["environments"] = environments unless environments.empty?
@@ -32,8 +54,10 @@ class Spiceweasel::DirectoryExtractor
     data_bags = []
     Dir.glob("data_bags/*").each do |data_bag_full_path|
       data_bag = data_bag_full_path.split('/').last
+      STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}'" if DEBUG
       data_bag_items = []
       Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
+        STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'" if DEBUG
         data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
       end if Dir.exists?("#{data_bag_full_path}")
       data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
@@ -94,13 +118,13 @@ class Spiceweasel::DirectoryExtractor
           num_sorted_cookbooks_this_iteration += 1
           next
         end
-      
+
         left_to_sort << cookbook
 
       end
-      
+
     end
-    
+
     if left_to_sort.size > 0
       STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies between cookbooks: #{left_to_sort}"
       exit(-1)
@@ -110,7 +134,7 @@ class Spiceweasel::DirectoryExtractor
       output_cookbooks << {cookbook => nil}
     end
     output_cookbooks
-        
+
   end
-  
+
 end
