@@ -8,7 +8,15 @@ class Spiceweasel::CLI
 
   option :extractlocal,
   :long => "--extractlocal",
-  :description => "Use contents of local cookbooks/roles/environments/nodes/data_bags directories instead of a template to generate knife commands"
+  :description => "Use contents of local chef repository directories to generate knife commands to build infrastructure"
+
+  option :extractjson,
+  :long => "--extractjson",
+  :description => "Use contents of local chef repository directories to generate  JSON spiceweasel manifest"
+
+  option :extractyaml,
+  :long => "--extractyaml",
+  :description => "Use contents of local chef repository directories to generate  YAML spiceweasel manifest"
 
   option :debug,
   :long => "--debug",

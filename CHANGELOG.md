@@ -63,7 +63,7 @@ This is the current, previous and future development milestones and contains the
 =====
 * fixed Issue #6, catch empty cookbooks, environments, roles, data bags and nodes.
 * fixed Issue #7, permissions in spiceweasel gem folder
-* fixed Issue #8, allow passthrough of knife options (in particular -c KNIFECONFIGFILES) through to the outputted knife commands. (GT Meakin)
+* fixed Issue #8, allow passthrough of knife options (in particular -c KNIFECONFIGFILES) through to the outputted knife commands. (Geoff Meakin)
 * linked ravel-repo and php quickstart examples
 
 0.9
@@ -106,8 +106,9 @@ This is the current, previous and future development milestones and contains the
 
 1.1
 ===
-* Added functionality to extract all relevant cookbooks/roles/environments/databags/nodes from local chef-repo directory (GT Meakin)
+* Added functionality to extract all relevant cookbooks/roles/environments/databags/nodes from local chef-repo directory (Geoff Meakin)
 * Fixed a number of Ruby 1.8.7 issues (https://github.com/mattray/spiceweasel/issues/10)
+* Added --extractyaml & --extractjson to output YAML & JSON manifests
 
 BACKLOG
 =======
