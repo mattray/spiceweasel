@@ -12,11 +12,11 @@ class Spiceweasel::CLI
 
   option :extractjson,
   :long => "--extractjson",
-  :description => "Use contents of local chef repository directories to generate  JSON spiceweasel manifest"
+  :description => "Use contents of local chef repository directories to generate JSON spiceweasel manifest"
 
   option :extractyaml,
   :long => "--extractyaml",
-  :description => "Use contents of local chef repository directories to generate  YAML spiceweasel manifest"
+  :description => "Use contents of local chef repository directories to generate YAML spiceweasel manifest"
 
   option :debug,
   :long => "--debug",
