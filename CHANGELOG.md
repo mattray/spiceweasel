@@ -106,20 +106,24 @@ This is the current, previous and future development milestones and contains the
 
 1.1
 ===
-* Added functionality to extract all relevant cookbooks/roles/environments/databags/nodes from local chef-repo directory (Geoff Meakin)
-* Fixed a number of Ruby 1.8.7 issues (https://github.com/mattray/spiceweasel/issues/10)
+* [Added functionality to extract all relevant cookbooks/roles/environments/databags/nodes from local chef-repo directory](https://github.com/mattray/spiceweasel/issues/9) (Geoff Meakin)
+* [Fixed a number of Ruby 1.8.7 issues](https://github.com/mattray/spiceweasel/issues/10)
 * Added --extractyaml & --extractjson to output YAML & JSON manifests
 
 BACKLOG
 =======
-Next
-----
+1.2
+---
+* write out JSON or YAML files from --extract commands
 * all validation done by converting .rb files to Chef objects
-* wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
-* make .yml files for every quickstart
+* [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
+* [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
+* [Validation for encrypted data bag secret should expand path](https://github.com/mattray/spiceweasel/issues/13)
 
 Future
 ------
+* wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
+* make .yml files for every quickstart
 * CONVERT TO A KNIFE PLUGIN
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json

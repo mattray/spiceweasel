@@ -1,18 +1,18 @@
 Description
 ===========
-Spiceweasel is a command-line tool for batch loading Chef infrastructure from a file.. It provides a simple syntax in either JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present.
+Spiceweasel is a command-line tool for batch loading Chef infrastructure from a file. It provides a simple syntax in either JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present.
 
 The `examples` directory provides example manifests based on the Quick Starts provided at [http://help.opscode.com/kb/otherhelp](http://help.opscode.com/kb/otherhelp).
 
-The [https://github.com/mattray/ravel-repo](https://github.com/mattray/ravel-repo) provides a working example for bootstrapping a Chef repository with Spiceweasel.
+The [https://github.com/mattray/vbacd-repo](https://github.com/mattray/vbacd-repo) provides a working example for bootstrapping a Chef repository with Spiceweasel.
 
 The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.md) covers current, previous and future development milestones and contains the features backlog.
 
 Requirements
 ============
-Spiceweasel currently depends on `knife` to run commands for it, but does not explicitly depend on the `chef` gem. Infrastructure files must either end in .json or .yml to be processed.
+Spiceweasel currently depends on `knife` to run commands for it, but does not explicitly depend on the `chef` gem yet. Infrastructure files must either end in .json or .yml to be processed.
 
-Written and tested initially with Chef 0.9.12 (should still work) and continuing development with the 0.10 series.
+Written and tested initially with Chef 0.9.12 (should still work) and continuing development with the 0.10 series. It is tested with Ruby 1.8.7 and 1.9.2.
 
 File Syntax
 ===========
@@ -302,6 +302,25 @@ knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' 
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 ```
 
+Extract
+=======
+Spiceweasel may also be used to generate knife commands or Spiceweasel manifests in JSON or YAML.
+
+```
+spiceweasel --extractlocal
+```
+When run in your Chef repository generates the `knife` commands required to upload all the existing infrastructure that is found in the cookbooks, roles, environments and data bags directories with validation.
+
+```
+spiceweasel --extractjson
+```
+When run in your Chef repository generates JSON-formatted output that may be captured and used as your Spiceweasel manifest file.
+
+```
+spiceweasel --extractyaml
+```
+When run in your Chef repository generates YAML-formatted output that may be captured and used as your Spiceweasel manifest file.
+
 Usage
 =====
 To parse a spiceweasel manifest, run the following from your Chef repository directory:
@@ -318,6 +337,9 @@ spiceweasel path/to/infrastructure.yml
 
 This will generate the knife commands to build the described infrastructure. Infrastructure manifest files must end in either `.json` or `.yml`.
 
+OPTIONS
+=======
+
 -c/--knifeconfig
 ----------------
 Specify a knife.rb configuration file to use with the knife commands.
@@ -333,6 +355,10 @@ The delete command will generate the knife commands to delete the infrastructure
 --dryrun
 --------
 This is the default action, printing the knife commands to be run without executing them.
+
+--extractlocal
+--------------
+When run in a chef repository, this will print the knife commands
 
 -h/--help
 ---------
