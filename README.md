@@ -358,7 +358,15 @@ This is the default action, printing the knife commands to be run without execut
 
 --extractlocal
 --------------
-When run in a chef repository, this will print the knife commands
+When run in a chef repository, this will print the knife commands to be run.
+
+--extractjson
+--------------
+When run in a chef repository, this will print a new JSON manifest that may be used as input to Spiceweasel.
+
+--extractyaml
+--------------
+When run in a chef repository, this will print a new YAML manifest that may be used as input to Spiceweasel.
 
 -h/--help
 ---------
