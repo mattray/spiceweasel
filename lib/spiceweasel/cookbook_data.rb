@@ -29,7 +29,7 @@ class Spiceweasel::CookbookData
   end
 
   def is_readable?
-    return false unless Dir.exists?("cookbooks/#{@_name}")
+    return false unless File.directory?("cookbooks/#{@_name}")
     return false unless File.exists?("cookbooks/#{@_name}/metadata.rb")
     true
   end

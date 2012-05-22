@@ -59,7 +59,7 @@ class Spiceweasel::DirectoryExtractor
       Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
         STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'" if DEBUG
         data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
-      end if Dir.exists?("#{data_bag_full_path}")
+      end if File.directory?(data_bag_full_path)
       data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
     end
     objects["data bags"] = data_bags unless data_bags.empty?
