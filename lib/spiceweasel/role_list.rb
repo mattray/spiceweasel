@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,15 +81,16 @@ class Spiceweasel::RoleList
     elsif File.exists?("roles/#{role}.json")
       #load the json, don't symbolize since we don't need json_class
       f = File.read("roles/#{role}.json")
-      rolefile = JSON.parse(f, {symbolize_names: 'false'})
+      JSON.create_id = nil
+      rolefile = JSON.parse(f, {:symbolize_names => false})
       #validate that the name inside the file matches
-      STDOUT.puts "DEBUG: role: '#{role}' name: '#{rolefile[:name]}'" if DEBUG
-      if !role.eql?(rolefile[:name])
-        STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{rolefile[:name]}' within the 'roles/#{role}.json' file."
+      STDOUT.puts "DEBUG: role: '#{role}' name: '#{rolefile['name']}'" if DEBUG
+      if !role.eql?(rolefile['name'])
+        STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{rolefile['name']}' within the 'roles/#{role}.json' file."
         exit(-1)
       end
       #validate the cookbooks and roles exist if they're mentioned in run_lists
-      rolefile[:run_list].each do |rl|
+      rolefile['run_list'].each do |rl|
         if rl =~ /recipe\[/ #it's a cookbook
           #split on the brackets and any colons
           dep = rl.split(/\[|\]/)[1].split(':')[0]

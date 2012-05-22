@@ -4,7 +4,19 @@ require 'spiceweasel/version'
 class Spiceweasel::CLI
   include Mixlib::CLI
 
-  banner("Usage: spiceweasel [option] file")
+  banner("Usage: spiceweasel [option] file\n       spiceweasel [option] --extractlocal")
+
+  option :extractlocal,
+  :long => "--extractlocal",
+  :description => "Use contents of local chef repository directories to generate knife commands to build infrastructure"
+
+  option :extractjson,
+  :long => "--extractjson",
+  :description => "Use contents of local chef repository directories to generate JSON spiceweasel manifest"
+
+  option :extractyaml,
+  :long => "--extractyaml",
+  :description => "Use contents of local chef repository directories to generate YAML spiceweasel manifest"
 
   option :debug,
   :long => "--debug",
@@ -14,7 +26,7 @@ class Spiceweasel::CLI
   option :delete,
   :short => "-d",
   :long => "--delete",
-  :description => "Print the knife commands to be delete the infrastructure",
+  :description => "Print the knife commands to delete the infrastructure",
   :boolean => true
 
   option :dryrun,
@@ -31,10 +43,15 @@ class Spiceweasel::CLI
   :show_options => true,
   :exit => 0
 
+  option :serverurl,
+  :short => "-s URL",
+  :long => "--server-url URL",
+  :description => "Specify the Chef Server URL"
+
   option :knifeconfig,
   :short => "-c CONFIG",
   :long => "--knifeconfig CONFIG",
-  :description => "Specify the knife.rb configuration file to use"
+  :description => "Specify the knife.rb configuration file"
 
   option :novalidation,
   :long => "--novalidation",
@@ -60,7 +77,7 @@ class Spiceweasel::CLI
   option :version,
   :short => "-v",
   :long => "--version",
-  :description => "Version",
+  :description => "Show spiceweasel version",
   :boolean => true,
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0

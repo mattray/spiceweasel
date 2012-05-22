@@ -36,7 +36,7 @@ This is the current, previous and future development milestones and contains the
 * add support for cookbook options
 
 0.7
-=============
+===
 * add support for environments
 * rescue from parser errors
 * update cookbook download syntax
@@ -63,7 +63,7 @@ This is the current, previous and future development milestones and contains the
 =====
 * fixed Issue #6, catch empty cookbooks, environments, roles, data bags and nodes.
 * fixed Issue #7, permissions in spiceweasel gem folder
-* fixed Issue #8, allow passthrough of knife options (in particular -c KNIFECONFIGFILES) through to the outputted knife commands. Patch by gmacid
+* fixed Issue #8, allow passthrough of knife options (in particular -c KNIFECONFIGFILES) through to the outputted knife commands. (Geoff Meakin)
 * linked ravel-repo and php quickstart examples
 
 0.9
@@ -100,15 +100,32 @@ This is the current, previous and future development milestones and contains the
  * existing recipes and roles
 * validate custom bootstrap templates?
 
+1.0.1
+=====
+* added knife-hp
+
+1.1
+===
+* [Added functionality to extract all relevant cookbooks/roles/environments/databags/nodes from local chef-repo directory](https://github.com/mattray/spiceweasel/issues/9) (Geoff Meakin)
+* [Fixed a number of Ruby 1.8.7 issues](https://github.com/mattray/spiceweasel/issues/10)
+* Added --extractyaml & --extractjson to output YAML & JSON manifests
+
 BACKLOG
 =======
-Next
-----
-* wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
-* make .yml files for every quickstart
+1.2
+---
+* write out JSON or YAML files from --extract commands
+* sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
+* sanitize error messages to make sense for both extract & manifest
+* all validation done by converting .rb files to Chef objects
+* [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
+* [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
+* [Validation for encrypted data bag secret should expand path](https://github.com/mattray/spiceweasel/issues/13)
 
 Future
 ------
+* wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
+* make .yml files for every quickstart
 * CONVERT TO A KNIFE PLUGIN
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json
@@ -123,3 +140,4 @@ Future
  * make the JSON calls directly with Chef APIs? spice?
 * ADDITIONAL VALIDATION
  * environment-specific run_lists
+* Librarian integration?
