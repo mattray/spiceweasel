@@ -75,6 +75,7 @@ else
     puts cli.opt_parser.to_s
     exit(-1)
   end
+  STDOUT.puts "DEBUG: file input: #{input}" if DEBUG
 end
 
 create = String.new()
