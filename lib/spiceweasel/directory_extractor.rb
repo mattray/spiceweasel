@@ -106,12 +106,16 @@ class Spiceweasel::DirectoryExtractor
     end
     if scount > 0
       remainders = unsorted_cookbooks.collect {|x| x['name']}
-      deps = unsorted_cookbooks.collect {|x| x['dependencies'].collect {|x| x['cookbook']}}
-      STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies in cookbook(s): #{remainders} depend(s) on #{deps}"
-      exit(-1)
-    else
-      #hack to get the format same as yaml/json parse
-      return sorted_cookbooks.collect {|x| {x => nil} }
+      STDOUT.puts "DEBUG: dir_ext: remainders: '#{remainders}'" if DEBUG
+      if NOVALIDATION #stuff is missing, oh well
+        sorted_cookbooks.push(remainders).flatten!
+      else
+        deps = unsorted_cookbooks.collect {|x| x['dependencies'].collect {|x| x['cookbook']} - sorted_cookbooks}
+        STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies in cookbook(s): #{remainders} depend(s) on #{deps}"
+        exit(-1)
+      end
     end
+    #hack to get the format same as yaml/json parse
+    return sorted_cookbooks.collect {|x| {x => nil} }
   end
 end
