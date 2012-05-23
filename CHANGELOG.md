@@ -110,14 +110,18 @@ This is the current, previous and future development milestones and contains the
 * [Fixed a number of Ruby 1.8.7 issues](https://github.com/mattray/spiceweasel/issues/10)
 * Added --extractyaml & --extractjson to output YAML & JSON manifests
 
+1.1.1
+=====
+* fixed issue in cookbook dependency sorting
+
 BACKLOG
 =======
 1.2
 ---
+* all validation done by converting .rb files to Chef objects
 * write out JSON or YAML files from --extract commands
 * sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
 * sanitize error messages to make sense for both extract & manifest
-* all validation done by converting .rb files to Chef objects
 * [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
 * [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
 * [Validation for encrypted data bag secret should expand path](https://github.com/mattray/spiceweasel/issues/13)
