@@ -114,6 +114,10 @@ This is the current, previous and future development milestones and contains the
 =====
 * fixed issue in cookbook dependency sorting
 
+1.1.2
+=====
+* explicitly list broken/missing cookbooks during extracts, with --novalidation override
+
 BACKLOG
 =======
 1.2
