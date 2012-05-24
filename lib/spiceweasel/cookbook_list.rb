@@ -46,7 +46,7 @@ class Spiceweasel::CookbookList
           STDERR.puts "'cookbooks' directory not found, unable to validate, download and load cookbooks" unless NOVALIDATION
         end
         @create += "knife cookbook#{options['knife_options']} upload #{cb}\n"
-        @delete += "knife cookbook#{options['knife_options']} delete #{cb} #{version} -y\n"
+        @delete += "knife cookbook#{options['knife_options']} delete #{cb} #{version} -a -y\n"
 
         @cookbook_list[cb] = version
       end
