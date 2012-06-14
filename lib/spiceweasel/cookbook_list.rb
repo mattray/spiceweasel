@@ -67,13 +67,12 @@ class Spiceweasel::CookbookList
     deps.each do |dependency|
       STDOUT.puts "DEBUG: cookbook #{cookbook} metadata dependency: #{dependency}" if DEBUG
       line = dependency.split()
-      cbdep = ''
       if line[1] =~ /^"/ #ignore variables and versions
         cbdep = line[1].gsub(/"/,'')
         cbdep.gsub!(/\,/,'') if cbdep.end_with?(',')
+        STDOUT.puts "DEBUG: cookbook #{cookbook} metadata depends: #{cbdep}" if DEBUG
+        @dependencies << cbdep
       end
-      STDOUT.puts "DEBUG: cookbook #{cookbook} metadata depends: #{cbdep}" if DEBUG
-      @dependencies << cbdep
     end
     return @cookbook
   end
