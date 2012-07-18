@@ -20,7 +20,7 @@
 class Spiceweasel::DirectoryExtractor
 
   def self.parse_objects
-    objects = {"cookbooks" => nil, "roles" => nil, "environments" => nil, "data bags" => nil, "nodes" => nil}
+    objects = {"cookbooks" => nil, "roles" => nil, "environments" => nil, "data_bags" => nil, "nodes" => nil}
     # COOKBOOKS
     cookbooks = []
     Dir.glob("cookbooks/*").each do |cookbook_full_path|
@@ -63,7 +63,7 @@ class Spiceweasel::DirectoryExtractor
       end if File.directory?(data_bag_full_path)
       data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
     end
-    objects["data bags"] = data_bags unless data_bags.empty?
+    objects["data_bags"] = data_bags unless data_bags.empty?
     # NODES
     # TODO: Cant use this yet as node_list.rb doesnt support node from file syntax but expects the node info to be part of the objects passed in
     # nodes = []
@@ -111,7 +111,7 @@ class Spiceweasel::DirectoryExtractor
         sorted_cookbooks.push(remainders).flatten!
       else
         deps = unsorted_cookbooks.collect {|x| x['dependencies'].collect {|x| x['cookbook']} - sorted_cookbooks}
-        STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies in cookbook(s): #{remainders} depend(s) on #{deps}"
+        STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies in cookbook(s): #{remainders.join(' ')} depend(s) on #{deps.join(' ')}"
         exit(-1)
       end
     end

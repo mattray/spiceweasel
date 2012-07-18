@@ -12,7 +12,7 @@ roles:
 - iisserver:
 - monitoring:
 - webserver:
-data bags:
+data_bags:
 - users:
   - alice
   - bob

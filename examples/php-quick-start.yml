@@ -59,7 +59,7 @@ roles:
 - mediawiki:
 - mediawiki_load_balancer:
 
-data bags:
+data_bags:
 - apps:
   - mediawiki
 

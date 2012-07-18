@@ -18,8 +18,10 @@
 # limitations under the License.
 #
 
+require 'rubygems'
 require 'json'
 require 'yaml'
+require 'pp'
 
 require 'spiceweasel'
 
@@ -40,7 +42,7 @@ begin
 rescue OptionParser::InvalidOption => e
   STDERR.puts e.message
   puts cli.opt_parser.to_s
-  exit(-1)
+n  exit(-1)
 end
 
 if cli.config[:knifeconfig]
@@ -53,7 +55,7 @@ end
 
 if EXTRACTLOCAL || EXTRACTJSON || EXTRACTYAML
   input = Spiceweasel::DirectoryExtractor.parse_objects
-  STDOUT.puts "DEBUG: extract input: #{input}" if DEBUG
+  STDOUT.puts "DEBUG: extract input: #{PP.pp(input)}" if DEBUG
 else
   begin
     file = ARGV.last
@@ -85,11 +87,15 @@ end
 create = String.new()
 delete = String.new()
 
-cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'], options)
-environment_list = Spiceweasel::EnvironmentList.new(input['environments'], cookbook_list, options)
-role_list = Spiceweasel::RoleList.new(input['roles'], environment_list, cookbook_list, options)
-data_bag_list = Spiceweasel::DataBagList.new(input['data bags'], options)
-node_list = Spiceweasel::NodeList.new(input['nodes'], cookbook_list, environment_list, role_list, options)
+# This is a total hack to ensure the original input data structure does
+# not get modified. (Deep copy)
+input_copy = Marshal.load(Marshal.dump(input))
+
+cookbook_list = Spiceweasel::CookbookList.new(input_copy['cookbooks'], options)
+environment_list = Spiceweasel::EnvironmentList.new(input_copy['environments'], cookbook_list, options)
+role_list = Spiceweasel::RoleList.new(input_copy['roles'], environment_list, cookbook_list, options)
+data_bag_list = Spiceweasel::DataBagList.new(input_copy['data_bags'].dup, options)
+node_list = Spiceweasel::NodeList.new(input_copy['nodes'], cookbook_list, environment_list, role_list, options)
 
 create += cookbook_list.create
 create += environment_list.create

@@ -37,7 +37,7 @@ roles:
 - iisserver:
 - monitoring:
 - webserver:
-data bags:
+data_bags:
 - users:
   - alice
   - bob
@@ -98,7 +98,7 @@ From the `example.json`:
         {"monitoring":[]},
         {"webserver":[]}
     ],
-    "data bags":
+    "data_bags":
     [
         {"users":
          [
@@ -225,10 +225,10 @@ knife role from file webserver.rb
 
 Data Bags
 ---------
-The `data bags` section of the manifest currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the proper `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `"*"`). Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). Validation is done to ensure the JSON is properly formatted, the id matches and any secret keys are in the correct locations. Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet
+The `data_bags` section of the manifest currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the proper `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `"*"`). Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). Validation is done to ensure the JSON is properly formatted, the id matches and any secret keys are in the correct locations. Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet
 
 ``` yaml
-data bags:
+data_bags:
 - users:
   - alice
   - bob

@@ -22,7 +22,7 @@
         {"monitoring":[]},
         {"webserver":[]}
     ],
-    "data bags":
+    "data_bags":
     [
         {"users":
          [
