@@ -23,7 +23,7 @@ class Spiceweasel::NodeList
               if CHEF_PRE_10
                   @create += "knife #{provider}#{options['knife_options']} server create #{run_list} #{noptions} -N \'#{nodename}\'\n"
               else
-                  @create += "knife #{provider}#{options['knife_options']} server create -r #{run_list} #{noptions} -N \'#{nodename}\'\n"
+                  @create += "knife #{provider}#{options['knife_options']} server create -r #{run_list.gsub(' ', ',')} #{noptions} -N \'#{nodename}\'\n"
               end
               @delete += "knife #{provider} server delete -y \'#{nodename}\'\n"
           elsif provider == "windows" #windows node bootstrap support
@@ -42,7 +42,7 @@ class Spiceweasel::NodeList
             if CHEF_PRE_10
               @create += "knife bootstrap#{options['knife_options']} \'#{nodename}\' #{run_list} #{noptions} -N \'#{nodename}\'\n"
             else
-              @create += "knife bootstrap#{options['knife_options']} \'#{nodename}\' -r #{run_list} #{noptions} -N \'#{nodename}\'\n"
+              @create += "knife bootstrap#{options['knife_options']} \'#{nodename}\' -r #{run_list.gsub(' ', ',')} #{noptions} -N \'#{nodename}\'\n"
             end
             @delete += "knife node#{options['knife_options']} delete \'#{nodename}\' -y\n"
           end

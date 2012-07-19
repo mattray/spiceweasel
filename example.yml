@@ -24,21 +24,11 @@ data_bags:
   - mysql
   - rabbitmq
 nodes:
-- serverA:
-  - role[base]
-  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-- serverB serverC:
-  - role[base]
-  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production
-- ec2 4:
-  - role[webserver] recipe[mysql::client]
-  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
-- rackspace 3:
-  - recipe[mysql],role[monitoring]
-  - --image 49 --flavor 2
-- windows_winrm winboxA:
-  - role[base],role[iisserver]
-  - -x Administrator -P 'super_secret_password'
-- windows_ssh winboxB winboxC:
-  - role[base],role[iisserver]
-  - -x Administrator -P 'super_secret_password'
+  - name: mysql-server
+    count: 3
+    type: ec2
+    run_list: role[mysql] recipe[hello]
+    options: -S 'key-pair' -i '~/.ssh/key.pem' -x ubuntu -G inside-db -I ami-123fsdf1 -f m1.large
+  - name: http
+    run_list: role[apache2]
+    options: -i '~/.ssh/key.pem' -x myuser 

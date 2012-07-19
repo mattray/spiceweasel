@@ -49,25 +49,16 @@ data_bags:
   - mysql
   - rabbitmq
 nodes:
-- serverA:
-  - role[base]
-  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-- serverB serverC:
-  - role[base]
-  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production
-- ec2 3:
-  - role[webserver] recipe[mysql::client]
-  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
-- rackspace 3:
-  - recipe[mysql],role[monitoring]
-  - --image 49 --flavor 2
-- windows_winrm winboxA:
-  - role[base],role[iisserver]
-  - -x Administrator -P 'super_secret_password'
-- windows_ssh winboxB winboxC:
-  - role[base],role[iisserver]
-  - -x Administrator -P 'super_secret_password'
+  - name: mysql-server
+    count: 3
+    type: ec2
+    run_list: role[mysql] recipe[hello]
+    options: -S 'key-pair' -i '~/.ssh/key.pem' -x ubuntu -G inside-db -I ami-123fsdf1 -f m1.large
+  - name: http
+    run_list: role[apache2]
+    options: -i '~/.ssh/key.pem' -x myuser
 ```
+
 
 JSON
 ----
@@ -258,48 +249,27 @@ knife data bag from file passwords rabbitmq.json --secret-file secret_key
 
 Nodes
 -----
-The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment.
-
-The first item after the node is the run_list and the second are the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only cookbooks and roles listed in the manifest are used. Validation on the options ensures that any Environments referenced are also listed. You may specify multiple nodes to have the same configuration by listing them separated by a space. The example YAML snippet
+The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. 
 
 ``` yaml
 nodes:
-- serverA:
-  - role[base]
-  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems
-- serverB serverC:
-  - role[base]
-  - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production
-- ec2 3:
-  - role[webserver] recipe[mysql::client]
-  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
-- rackspace 3:
-  - recipe[mysql],role[monitoring]
-  - --image 49 --flavor 2
-- windows_winrm winboxA:
-  - role[base],role[iisserver]
-  - -x Administrator -P 'super_secret_password'
-- windows_ssh winboxB winboxC:
-  - role[base],role[iisserver]
-  - -x Administrator -P 'super_secret_password'
+  - name: mysql-server
+    count: 3
+    type: ec2
+    run_list: role[mysql] recipe[hello]
+    options: -S 'key-pair' -i '~/.ssh/key.pem' -x ubuntu -G inside-db -I ami-123fsdf1 -f m1.large
+  - name: http
+    run_list: role[apache2]
+    options: -i '~/.ssh/key.pem' -x myuser
 ```
 
 produces the knife commands
 
 ```
-knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -r 'role[base]'
-knife bootstrap serverB -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production -r 'role[base]'
-knife bootstrap serverC -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production -r 'role[base]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife rackspace server create --image 49 --flavor 2 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 --flavor 2 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 --flavor 2 -r 'recipe[mysql],role[monitoring]'
-knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
-knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
-knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
+knife ec2 server create -r role[mysql],recipe[hello] -S 'key-pair' -i '~/.ssh/key.pem' -x ubuntu -G inside-db -I ami-123fsdf1 -f m1.large -N 'mysql-server-01'
+knife ec2 server create -r role[mysql],recipe[hello] -S 'key-pair' -i '~/.ssh/key.pem' -x ubuntu -G inside-db -I ami-123fsdf1 -f m1.large -N 'mysql-server-02'
+knife ec2 server create -r role[mysql],recipe[hello] -S 'key-pair' -i '~/.ssh/key.pem' -x ubuntu -G inside-db -I ami-123fsdf1 -f m1.large -N 'mysql-server-03'
+knife bootstrap 'http-01' -r role[apache2] -i '~/.ssh/key.pem' -x myuser -N 'http-01'
 ```
 
 Extract
