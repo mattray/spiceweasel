@@ -3,55 +3,48 @@ class Spiceweasel::NodeList
     @create = @delete = ''
     if nodes
       nodes.each do |node|
-        nname = node.keys[0]
+        nname = node["name"]
         STDOUT.puts "DEBUG: node: '#{nname}'" if DEBUG
-        #convert spaces to commas, drop multiple commas
-        run_list = node[nname][0].gsub(/ /,',').gsub(/,+/,',')
+
+        run_list = node["run_list"]
         STDOUT.puts "DEBUG: node: 'node[nname]' run_list: '#{run_list}'" if DEBUG
         validateRunList(nname, run_list, cookbooks, roles) unless NOVALIDATION
-        noptions = node[nname][1]
+
+        noptions = node["options"]
         STDOUT.puts "DEBUG: node: 'node[nname]' options: '#{noptions}'" if DEBUG
         validateOptions(nname, noptions, environments) unless NOVALIDATION
+
         #provider support
-        if nname.start_with?("bluebox ","clodo ","cs ","ec2 ","gandi ","hp ","openstack ","rackspace ","slicehost ","terremark ","voxel ")
-          provider = nname.split()
-          count = 1
-          if (provider.length == 2)
-            count = provider[1]
-          end
-          if PARALLEL
-            @create += "seq #{count} | parallel -j 0 -v \""
-            @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}"
-            if run_list.length > 0
-              @create += " -r '#{run_list}'\"\n"
-            end
-          else
-            count.to_i.times do
-              @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}"
+        provider = node["type"]
+        count = node["count"] || 1
+        count.to_i.times do |num|
+          nodename = "%s-%02d" % [nname, num + 1]
+          if ["bluebox","clodo","cs","ec2","gandi","hp","openstack","rackspace","slicehost","terremark","voxel"].include?(provider)
+              if CHEF_PRE_10
+                  @create += "knife #{provider}#{options['knife_options']} server create #{run_list} #{noptions} -N \'#{nodename}\'\n"
+              else
+                  @create += "knife #{provider}#{options['knife_options']} server create -r #{run_list} #{noptions} -N \'#{nodename}\'\n"
+              end
+              @delete += "knife #{provider} server delete -y \'#{nodename}\'\n"
+          elsif provider == "windows" #windows node bootstrap support
+            #TODO Fix this section
+            nodeline = nname.split()
+            provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
+            nodeline.each do |server|
+              @create += "knife bootstrap #{provider[0]} #{provider[1]}#{options['knife_options']} #{server} #{noptions}\n"
               if run_list.length > 0
                 @create += " -r '#{run_list}'\n"
               end
+              @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
             end
-          end
-          @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
-        elsif nname.start_with?("windows") #windows node bootstrap support
-          nodeline = nname.split()
-          provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
-          nodeline.each do |server|
-            @create += "knife bootstrap #{provider[0]} #{provider[1]}#{options['knife_options']} #{server} #{noptions}"
-            if run_list.length > 0
-              @create += " -r '#{run_list}'\n"
+            @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
+          else #node bootstrap support
+            if CHEF_PRE_10
+              @create += "knife bootstrap#{options['knife_options']} \'#{nodename}\' #{run_list} #{noptions} -N \'#{nodename}\'\n"
+            else
+              @create += "knife bootstrap#{options['knife_options']} \'#{nodename}\' -r #{run_list} #{noptions} -N \'#{nodename}\'\n"
             end
-            @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
-          end
-          @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
-        else #node bootstrap support
-          nname.split.each do |server|
-            @create += "knife bootstrap#{options['knife_options']} #{server} #{noptions}"
-            if run_list.length > 0
-              @create += " -r '#{run_list}'\n"
-            end
-            @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
+            @delete += "knife node#{options['knife_options']} delete \'#{nodename}\' -y\n"
           end
         end
       end

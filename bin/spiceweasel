@@ -33,7 +33,7 @@ begin
   cli = Spiceweasel::CLI.new
   cli.parse_options
   DEBUG = cli.config[:debug]
-  PARALLEL = cli.config[:parallel]
+  CHEF_PRE_10 = cli.config[:chef_pre_10]
   SITEINSTALL = cli.config[:siteinstall]
   NOVALIDATION = cli.config[:novalidation]
   EXTRACTLOCAL = cli.config[:extractlocal]
@@ -94,7 +94,7 @@ input_copy = Marshal.load(Marshal.dump(input))
 cookbook_list = Spiceweasel::CookbookList.new(input_copy['cookbooks'], options)
 environment_list = Spiceweasel::EnvironmentList.new(input_copy['environments'], cookbook_list, options)
 role_list = Spiceweasel::RoleList.new(input_copy['roles'], environment_list, cookbook_list, options)
-data_bag_list = Spiceweasel::DataBagList.new(input_copy['data_bags'].dup, options)
+data_bag_list = Spiceweasel::DataBagList.new(input_copy['data_bags'], options)
 node_list = Spiceweasel::NodeList.new(input_copy['nodes'], cookbook_list, environment_list, role_list, options)
 
 create += cookbook_list.create

@@ -58,9 +58,9 @@ class Spiceweasel::CLI
   :description => "Disable validation",
   :boolean => true
 
-  option :parallel,
-  :long => "--parallel",
-  :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands that are not order-dependent",
+  option :chef_pre_10,
+  :long => "--chef-pre-10",
+  :description => "Print knife commands using syntax for pre chef 10 versions of knife",
   :boolean => true
 
   option :rebuild,
