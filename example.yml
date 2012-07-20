@@ -27,8 +27,10 @@ nodes:
   - name: mysql-server
     count: 3
     type: ec2
-    run_list: role[mysql] recipe[hello]
+    run_list: 
+     - "role[mysql]"
+     - "recipe[hello]"
     options: -S 'key-pair' -i '~/.ssh/key.pem' -x ubuntu -G inside-db -I ami-123fsdf1 -f m1.large
   - name: http
-    run_list: role[apache2]
+    run_list: ["role[apache2]"]
     options: -i '~/.ssh/key.pem' -x myuser 
