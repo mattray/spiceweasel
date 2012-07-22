@@ -19,6 +19,7 @@ class Spiceweasel::NodeList
         count = node["count"] || 1
         count.to_i.times do |num|
           nodename = "%s-%02d" % [nname, num + 1]
+          host = node["host"] || nodename
           if ["bluebox","clodo","cs","ec2","gandi","hp","openstack","rackspace","slicehost","terremark","voxel"].include?(provider)
               if CHEF_PRE_10
                   @create += "knife #{provider}#{options['knife_options']} server create \'#{run_list.join("' '")}\' #{noptions} -N \'#{nodename}\'\n"
@@ -40,9 +41,9 @@ class Spiceweasel::NodeList
             @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
           else #node bootstrap support
             if CHEF_PRE_10
-              @create += "knife bootstrap#{options['knife_options']} \'#{nodename}\' \'#{run_list.join("' '")}\' #{noptions} -N \'#{nodename}\'\n"
+              @create += "knife bootstrap#{options['knife_options']} \'#{host}\' \'#{run_list.join("' '")}\' #{noptions} -N \'#{nodename}\'\n"
             else
-              @create += "knife bootstrap#{options['knife_options']} \'#{nodename}\' -r \'#{run_list.join(',')}\' #{noptions} -N \'#{nodename}\'\n"
+              @create += "knife bootstrap#{options['knife_options']} \'#{host}\' -r \'#{run_list.join(',')}\' #{noptions} -N \'#{nodename}\'\n"
             end
             @delete += "knife node#{options['knife_options']} delete \'#{nodename}\' -y\n"
           end
