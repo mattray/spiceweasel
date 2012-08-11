@@ -3,7 +3,9 @@ This is the current, previous and future development milestones and contains the
 1.2.0
 =====
 DO* librarian-chef support "cookbooks:" -> "librarian:"
+DO* auto name by number cloud instances
 * YAML wildcards should be quoted (Joshua Timberman)
+* Don't add empty strings to the cookbook dependency list (Chris Griego)
 
 1.1.3
 =====
