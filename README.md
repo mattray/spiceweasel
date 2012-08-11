@@ -12,7 +12,7 @@ Requirements
 ============
 Spiceweasel currently depends on `knife` to run commands for it, but does not explicitly depend on the `chef` gem yet. Infrastructure files must either end in .json or .yml to be processed.
 
-Written and tested initially with Chef 0.9.12 (should still work) and continuing development with the 0.10 series. It is tested with Ruby 1.8.7 and 1.9.2.
+Written and tested initially with Chef 0.9.12 (should still work) and continuing development with the 10. series. It is tested with Ruby 1.8.7 and 1.9.2.
 
 File Syntax
 ===========
@@ -60,7 +60,7 @@ nodes:
   - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:
   - recipe[mysql],role[monitoring]
-  - --image 49 --flavor 2
+  - --image 49 --flavor 2 --node-name rs{{n}}.example.com
 - windows_winrm winboxA:
   - role[base],role[iisserver]
   - -x Administrator -P 'super_secret_password'
@@ -143,7 +143,7 @@ From the `example.json`:
         {"rackspace 3":
          [
              "recipe[mysql],role[monitoring]",
-             "--image 49 --flavor 2"
+             "--image 49 --flavor 2 --node-name rs{{n}}.example.com"
          ]
         },
         {"windows_winrm winboxA":
@@ -258,7 +258,7 @@ knife data bag from file passwords rabbitmq.json --secret-file secret_key
 
 Nodes
 -----
-The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. If you want to give your nodes names while use `--parallel`, simply pass `-N NAME{}` or `--node-name NAME{}` and the `{}` will be substituted by a number.
+The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. If you want to give your nodes names, simply pass `-N NAME{{n}}` or `--node-name NAME{{n}}` and the `{{n}}` will be substituted by a number (works with or without --parallel).
 
 The first item after the node is the run_list and the second are the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only cookbooks and roles listed in the manifest are used. Validation on the options ensures that any Environments referenced are also listed. You may specify multiple nodes to have the same configuration by listing them separated by a space. The example YAML snippet
 
@@ -275,7 +275,7 @@ nodes:
   - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:
   - recipe[mysql],role[monitoring]
-  - --image 49 --flavor 2
+  - --image 49 --flavor 2 --node-name rs{{n}}.example.com
 - windows_winrm winboxA:
   - role[base],role[iisserver]
   - -x Administrator -P 'super_secret_password'
@@ -294,21 +294,21 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife rackspace server create --image 49 --flavor 2 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 --flavor 2 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 --flavor 2 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 --flavor 2 --node-name rs1.example.com -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 --flavor 2 --node-name rs2.example.com -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 --flavor 2 --node-name rs3.example.com -r 'recipe[mysql],role[monitoring]'
 knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 ```
 
-Using `--parallel` with the following block and the `-N webserver{}`
+Using `--parallel` with the following block and the `-N webserver{{n}}`
 
 ``` yaml
 nodes:
 - ec2 3:
   - role[webserver]
-  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -N webserver{}
+  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -N webserver{{n}}
 ```
 
 produces the following:
