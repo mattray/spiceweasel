@@ -1,5 +1,10 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
+1.2.0
+=====
+DO* librarian-chef support "cookbooks:" -> "librarian:"
+* YAML wildcards should be quoted (Joshua Timberman)
+
 1.1.3
 =====
 * Handle deleting an environment that has had multiple versions of cookbooks uploaded (Mike Fiedler)
