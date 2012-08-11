@@ -258,7 +258,7 @@ knife data bag from file passwords rabbitmq.json --secret-file secret_key
 
 Nodes
 -----
-The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment.
+The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. If you want to give your nodes names while use `--parallel`, simply pass `-N NAME{}` or `--node-name NAME{}` and the `{}` will be substituted by a number.
 
 The first item after the node is the run_list and the second are the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only cookbooks and roles listed in the manifest are used. Validation on the options ensures that any Environments referenced are also listed. You may specify multiple nodes to have the same configuration by listing them separated by a space. The example YAML snippet
 
@@ -301,6 +301,23 @@ knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password
 knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 ```
+
+Using `--parallel` with the following block and the `-N webserver{}`
+
+``` yaml
+nodes:
+- ec2 3:
+  - role[webserver]
+  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -N webserver{}
+```
+
+produces the following:
+
+```
+seq 3 | parallel -j 0 -v "knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -N webserver{} -r 'role[base],role[tc],role[users]'"
+```
+
+which generates nodes named "webserver1", "webserver2" and "webserver3".
 
 Extract
 =======
