@@ -23,23 +23,23 @@ class Spiceweasel::DataBagList
     @create = @delete = ''
     if data_bags
       if !File.directory?("data_bags")
-        STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items" unless NOVALIDATION
+        STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items" unless Spiceweasel::NOVALIDATION
       end
       data_bags.each do |data_bag|
         db = data_bag.keys[0]
-        STDOUT.puts "DEBUG: data bag: #{db}" if DEBUG
+        STDOUT.puts "DEBUG: data bag: #{db}" if Spiceweasel::DEBUG
         if !File.directory?("data_bags/#{db}")
-          STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items" unless NOVALIDATION
+          STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items" unless Spiceweasel::NOVALIDATION
         end
         @create += "knife data bag#{options['knife_options']} create #{db}\n"
         @delete += "knife data bag#{options['knife_options']} delete #{db} -y\n"
         items = data_bag[db] || []
         secret = nil
         while item = items.shift
-          STDOUT.puts "DEBUG: data bag #{db} item: #{item}" if DEBUG
+          STDOUT.puts "DEBUG: data bag #{db} item: #{item}" if Spiceweasel::DEBUG
           if item.start_with?("secret")
             secret = item.split()[1]
-            if !File.exists?(secret) and !NOVALIDATION
+            if !File.exists?(secret) and !Spiceweasel::NOVALIDATION
               STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
               exit(-1)
             end
@@ -48,10 +48,10 @@ class Spiceweasel::DataBagList
           if item =~ /\*/ #wildcard support, will fail if directory not present
             files = Dir.glob("data_bags/#{db}/#{item}.json")
             items += files.collect {|x| x[x.rindex('/')+1..-6]}
-            STDOUT.puts "DEBUG: found items '#{items}' for data bag: #{db}" if DEBUG
+            STDOUT.puts "DEBUG: found items '#{items}' for data bag: #{db}" if Spiceweasel::DEBUG
             next
           end
-          validateItem(db, item) unless NOVALIDATION
+          validateItem(db, item) unless Spiceweasel::NOVALIDATION
           if secret
             @create += "knife data bag#{options['knife_options']} from file #{db} #{item}.json --secret-file #{secret}\n"
           else

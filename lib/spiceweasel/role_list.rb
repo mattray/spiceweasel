@@ -25,11 +25,11 @@ class Spiceweasel::RoleList
     if roles
       flatroles = roles.collect {|x| x.keys}.flatten
       flatroles.each do |role|
-        STDOUT.puts "DEBUG: role: #{role}" if DEBUG
+        STDOUT.puts "DEBUG: role: #{role}" if Spiceweasel::DEBUG
         if File.directory?("roles")
-          validate(role, environments, cookbooks, flatroles) unless NOVALIDATION
+          validate(role, environments, cookbooks, flatroles) unless Spiceweasel::NOVALIDATION
         else
-          STDERR.puts "ERROR: 'roles' directory not found, unable to validate or load roles" unless NOVALIDATION
+          STDERR.puts "ERROR: 'roles' directory not found, unable to validate or load roles" unless Spiceweasel::NOVALIDATION
         end
         if File.exists?("roles/#{role}.json")
           @create += "knife role#{options['knife_options']} from file #{role}.json\n"
@@ -48,7 +48,7 @@ class Spiceweasel::RoleList
     if File.exists?("roles/#{role}.rb")
       #validate that the name inside the file matches
       name = File.open("roles/#{role}.rb").grep(/^name/)[0].split()[1].gsub(/"/,'').to_s
-      STDOUT.puts "DEBUG: role: '#{role}' name: '#{name}'" if DEBUG
+      STDOUT.puts "DEBUG: role: '#{role}' name: '#{name}'" if Spiceweasel::DEBUG
       if !role.eql?(name)
         STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{name}' within the roles/#{role}.rb file."
         exit(-1)
@@ -56,12 +56,12 @@ class Spiceweasel::RoleList
       #grab any lines with 'recipe[' or 'role['
       rolerl = File.open("roles/#{role}.rb").grep(/recipe\[|role\[/)
       rolerl.each do |line|
-        STDOUT.puts "DEBUG: role: '#{role}' line: '#{line}'" if DEBUG
+        STDOUT.puts "DEBUG: role: '#{role}' line: '#{line}'" if Spiceweasel::DEBUG
         line.strip.split(',').each do |rl|
           if rl =~ /recipe\[/ #it's a cookbook
             #split on the brackets and any colons
             dep = rl.split(/\[|\]/)[1].split(':')[0]
-            STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{rl}': dep: '#{dep}'" if DEBUG
+            STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{rl}': dep: '#{dep}'" if Spiceweasel::DEBUG
             if !cookbooks.member?(dep)
               STDERR.puts "ERROR: Cookbook dependency '#{dep}' from role '#{role}' is missing from the list of cookbooks in the manifest."
               exit(-1)
@@ -69,7 +69,7 @@ class Spiceweasel::RoleList
           elsif rl =~ /role\[/ #it's a role
             #split on the brackets
             dep = rl.split(/\[|\]/)[1]
-            STDOUT.puts "DEBUG: role: '#{role}' role: '#{rl}': dep: '#{dep}'" if DEBUG
+            STDOUT.puts "DEBUG: role: '#{role}' role: '#{rl}': dep: '#{dep}'" if Spiceweasel::DEBUG
             if !roles.member?(dep)
               STDERR.puts "ERROR: Role dependency '#{dep}' from role '#{role}' is missing from the list of roles in the manifest."
               exit(-1)
@@ -84,7 +84,7 @@ class Spiceweasel::RoleList
       JSON.create_id = nil
       rolefile = JSON.parse(f, {:symbolize_names => false})
       #validate that the name inside the file matches
-      STDOUT.puts "DEBUG: role: '#{role}' name: '#{rolefile['name']}'" if DEBUG
+      STDOUT.puts "DEBUG: role: '#{role}' name: '#{rolefile['name']}'" if Spiceweasel::DEBUG
       if !role.eql?(rolefile['name'])
         STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{rolefile['name']}' within the 'roles/#{role}.json' file."
         exit(-1)
@@ -94,7 +94,7 @@ class Spiceweasel::RoleList
         if rl =~ /recipe\[/ #it's a cookbook
           #split on the brackets and any colons
           dep = rl.split(/\[|\]/)[1].split(':')[0]
-          STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{rl}': dep: '#{dep}'" if DEBUG
+          STDOUT.puts "DEBUG: role: '#{role}' cookbook: '#{rl}': dep: '#{dep}'" if Spiceweasel::DEBUG
           if !cookbooks.member?(dep)
             STDERR.puts "ERROR: Cookbook dependency '#{dep}' from role '#{role}' is missing from the list of cookbooks in the manifest."
             exit(-1)
@@ -102,7 +102,7 @@ class Spiceweasel::RoleList
         elsif rl =~ /role\[/ #it's a role
           #split on the brackets
           dep = rl.split(/\[|\]/)[1]
-          STDOUT.puts "DEBUG: role: '#{role}' role: '#{rl}': dep: '#{dep}'" if DEBUG
+          STDOUT.puts "DEBUG: role: '#{role}' role: '#{rl}': dep: '#{dep}'" if Spiceweasel::DEBUG
           if !roles.member?(dep)
             STDERR.puts "ERROR: Role dependency '#{dep}' from role '#{role}' is missing from the list of roles in the manifest."
             exit(-1)
