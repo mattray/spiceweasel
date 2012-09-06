@@ -21,13 +21,13 @@ class Spiceweasel::NodeList
           end
           if Spiceweasel::PARALLEL
             @create += "seq #{count} | parallel -j 0 -v \""
-            @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/{{n}}/, '{}')
+            @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/\{\{n\}\}/, '{}')
             if run_list.length > 0
               @create += " -r '#{run_list}'\"\n"
             end
           else
             count.to_i.times do |i|
-              @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/{{n}}/, (i + 1).to_s)
+              @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/\{\{n\}\}/, (i + 1).to_s)
               if run_list.length > 0
                 @create += " -r '#{run_list}'\n"
               end
@@ -47,7 +47,7 @@ class Spiceweasel::NodeList
           @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
         else #node bootstrap support
           nname.split.each_with_index do |server, i|
-            @create += "knife bootstrap#{options['knife_options']} #{server} #{noptions}".gsub(/{{n}}/, (i + 1).to_s)
+            @create += "knife bootstrap#{options['knife_options']} #{server} #{noptions}".gsub(/\{\{n\}\}/, (i + 1).to_s)
             if run_list.length > 0
               @create += " -r '#{run_list}'\n"
             end
