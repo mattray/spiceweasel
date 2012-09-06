@@ -25,13 +25,13 @@ class Spiceweasel::DirectoryExtractor
     cookbooks = []
     Dir.glob("cookbooks/*").each do |cookbook_full_path|
       cookbook = cookbook_full_path.split('/').last
-      STDOUT.puts "DEBUG: dir_ext: cookbook: '#{cookbook}'" if DEBUG
+      STDOUT.puts "DEBUG: dir_ext: cookbook: '#{cookbook}'" if Spiceweasel::DEBUG
       cookbook_data = Spiceweasel::CookbookData.new(cookbook)
       if cookbook_data.is_readable?
         cookbooks << cookbook_data.read
       end
     end
-    STDOUT.puts "DEBUG: dir_ext: cookbooks: '#{cookbooks}'" if DEBUG
+    STDOUT.puts "DEBUG: dir_ext: cookbooks: '#{cookbooks}'" if Spiceweasel::DEBUG
     cookbooks = self.order_cookbooks_by_dependency(cookbooks)
     objects["cookbooks"] = cookbooks unless cookbooks.empty?
 
@@ -39,7 +39,7 @@ class Spiceweasel::DirectoryExtractor
     roles = []
     Dir.glob("roles/*.{rb,json}").each do |role_full_path|
       role = self.grab_name_from_path(role_full_path)
-      STDOUT.puts "DEBUG: dir_ext: role: '#{role}'" if DEBUG
+      STDOUT.puts "DEBUG: dir_ext: role: '#{role}'" if Spiceweasel::DEBUG
       roles << {role => nil}
     end
     objects["roles"] = roles unless roles.nil?
@@ -47,7 +47,7 @@ class Spiceweasel::DirectoryExtractor
     environments = []
     Dir.glob("environments/*.{rb,json}").each do |environment_full_path|
       environment = self.grab_name_from_path(environment_full_path)
-      STDOUT.puts "DEBUG: dir_ext: environment: '#{environment}'" if DEBUG
+      STDOUT.puts "DEBUG: dir_ext: environment: '#{environment}'" if Spiceweasel::DEBUG
       environments << {environment => nil}
     end
     objects["environments"] = environments unless environments.empty?
@@ -55,10 +55,10 @@ class Spiceweasel::DirectoryExtractor
     data_bags = []
     Dir.glob("data_bags/*").each do |data_bag_full_path|
       data_bag = data_bag_full_path.split('/').last
-      STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}'" if DEBUG
+      STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}'" if Spiceweasel::DEBUG
       data_bag_items = []
       Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
-        STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'" if DEBUG
+        STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'" if Spiceweasel::DEBUG
         data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
       end if File.directory?(data_bag_full_path)
       data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
@@ -102,12 +102,12 @@ class Spiceweasel::DirectoryExtractor
         unsorted_cookbooks.push(cookbook)
         scount = scount + 1
       end
-      STDOUT.puts "DEBUG: dir_ext: sorted_cookbooks: '#{sorted_cookbooks}' #{scount}" if DEBUG
+      STDOUT.puts "DEBUG: dir_ext: sorted_cookbooks: '#{sorted_cookbooks}' #{scount}" if Spiceweasel::DEBUG
     end
     if scount > 0
       remainders = unsorted_cookbooks.collect {|x| x['name']}
-      STDOUT.puts "DEBUG: dir_ext: remainders: '#{remainders}'" if DEBUG
-      if NOVALIDATION #stuff is missing, oh well
+      STDOUT.puts "DEBUG: dir_ext: remainders: '#{remainders}'" if Spiceweasel::DEBUG
+      if Spiceweasel::NOVALIDATION #stuff is missing, oh well
         sorted_cookbooks.push(remainders).flatten!
       else
         deps = unsorted_cookbooks.collect {|x| x['dependencies'].collect {|x| x['cookbook']} - sorted_cookbooks}

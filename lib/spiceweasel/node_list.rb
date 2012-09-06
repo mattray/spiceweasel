@@ -4,14 +4,14 @@ class Spiceweasel::NodeList
     if nodes
       nodes.each do |node|
         nname = node.keys[0]
-        STDOUT.puts "DEBUG: node: '#{nname}'" if DEBUG
+        STDOUT.puts "DEBUG: node: '#{nname}'" if Spiceweasel::DEBUG
         #convert spaces to commas, drop multiple commas
         run_list = node[nname][0].gsub(/ /,',').gsub(/,+/,',')
-        STDOUT.puts "DEBUG: node: 'node[nname]' run_list: '#{run_list}'" if DEBUG
-        validateRunList(nname, run_list, cookbooks, roles) unless NOVALIDATION
+        STDOUT.puts "DEBUG: node: 'node[nname]' run_list: '#{run_list}'" if Spiceweasel::DEBUG
+        validateRunList(nname, run_list, cookbooks, roles) unless Spiceweasel::NOVALIDATION
         noptions = node[nname][1]
-        STDOUT.puts "DEBUG: node: 'node[nname]' options: '#{noptions}'" if DEBUG
-        validateOptions(nname, noptions, environments) unless NOVALIDATION
+        STDOUT.puts "DEBUG: node: 'node[nname]' options: '#{noptions}'" if Spiceweasel::DEBUG
+        validateOptions(nname, noptions, environments) unless Spiceweasel::NOVALIDATION
         #provider support
         if nname.start_with?("bluebox ","clodo ","cs ","ec2 ","gandi ","hp ","openstack ","rackspace ","slicehost ","terremark ","voxel ")
           provider = nname.split()
@@ -19,7 +19,7 @@ class Spiceweasel::NodeList
           if (provider.length == 2)
             count = provider[1]
           end
-          if PARALLEL
+          if Spiceweasel::PARALLEL
             @create += "seq #{count} | parallel -j 0 -v \""
             @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/{{n}}/, '{}')
             if run_list.length > 0

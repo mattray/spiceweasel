@@ -6,6 +6,7 @@ This is the current, previous and future development milestones and contains the
 * YAML wildcards should be quoted (Joshua Timberman)
 * Don't add empty strings to the cookbook dependency list (Chris Griego)
 * handle single and double-quoted quoting styles in metadata.rb (Fletcher Nichol)
+* Remove the already initialized constant error (John Dewey)
 
 1.1.3
 =====
