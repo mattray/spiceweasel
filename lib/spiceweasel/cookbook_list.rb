@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -67,8 +67,8 @@ class Spiceweasel::CookbookList
     deps.each do |dependency|
       STDOUT.puts "DEBUG: cookbook #{cookbook} metadata dependency: #{dependency}" if DEBUG
       line = dependency.split()
-      if line[1] =~ /^"/ #ignore variables and versions
-        cbdep = line[1].gsub(/"/,'')
+      if line[1] =~ /^["']/ #ignore variables and versions
+        cbdep = line[1].gsub(/["']/,'')
         cbdep.gsub!(/\,/,'') if cbdep.end_with?(',')
         STDOUT.puts "DEBUG: cookbook #{cookbook} metadata depends: #{cbdep}" if DEBUG
         @dependencies << cbdep
