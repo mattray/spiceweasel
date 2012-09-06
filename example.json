@@ -67,7 +67,7 @@
         {"rackspace 3":
          [
              "recipe[mysql],role[monitoring]",
-             "--image 49 --flavor 2"
+             "--image 49 --flavor 2 -N db{{n}}"
          ]
         },
         {"windows_winrm winboxA":

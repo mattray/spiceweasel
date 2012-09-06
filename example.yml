@@ -18,7 +18,7 @@ data bags:
   - bob
   - chuck
 - data:
-  - *
+  - "*"
 - passwords:
   - secret secret_key
   - mysql
@@ -35,7 +35,7 @@ nodes:
   - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:
   - recipe[mysql],role[monitoring]
-  - --image 49 --flavor 2
+  - --image 49 --flavor 2 -N db{{n}}
 - windows_winrm winboxA:
   - role[base],role[iisserver]
   - -x Administrator -P 'super_secret_password'

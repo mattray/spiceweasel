@@ -1,5 +1,13 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
+1.2.0
+=====
+* properly auto name by number provider instances (Fletcher Nichol & Michael Beuken)
+* YAML wildcards should be quoted (Joshua Timberman)
+* Don't add empty strings to the cookbook dependency list (Chris Griego)
+* handle single and double-quoted quoting styles in metadata.rb (Fletcher Nichol)
+* Remove the already initialized constant error (John Dewey)
+
 1.1.3
 =====
 * Handle deleting an environment that has had multiple versions of cookbooks uploaded (Mike Fiedler)
@@ -139,6 +147,7 @@ BACKLOG
 
 Future
 ------
+* librarian-chef support "cookbooks:" -> "librarian:"
 * wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
 * make .yml files for every quickstart
 * CONVERT TO A KNIFE PLUGIN
