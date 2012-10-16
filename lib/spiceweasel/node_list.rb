@@ -22,9 +22,14 @@ class Spiceweasel::NodeList
           host = node["host"] || nodename
           if ["bluebox","clodo","cs","ec2","gandi","hp","openstack","rackspace","slicehost","terremark","voxel"].include?(provider)
               if CHEF_PRE_10
-                  @create += "knife #{provider}#{options['knife_options']} server create \'#{run_list.join("' '")}\' #{noptions} -N \'#{nodename}\'\n"
+                  @create += "knife #{provider}#{options['knife_options']} server create \'#{run_list.join("' '")}\' #{noptions}"
               else
-                  @create += "knife #{provider}#{options['knife_options']} server create -r \'#{run_list.join(',')}\' #{noptions} -N \'#{nodename}\'\n"
+                  @create += "knife #{provider}#{options['knife_options']} server create -r \'#{run_list.join(',')}\' #{noptions}"
+              end
+              if noptions["-N"] or SKIP_NODENAME
+                @create += "\n"
+              else
+                @create += " -N \'#{nodename}\'\n"
               end
               @delete += "knife #{provider} server delete -y \'#{nodename}\'\n"
           elsif provider == "windows" #windows node bootstrap support
