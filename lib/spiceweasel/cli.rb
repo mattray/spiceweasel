@@ -82,4 +82,8 @@ class Spiceweasel::CLI
   :proc => lambda {|v| puts "Spiceweasel: #{Spiceweasel::VERSION}" },
   :exit => 0
 
+  option :skip_nodename,
+  :long => '--skip_nodename',
+  :boolean => true
+
 end
