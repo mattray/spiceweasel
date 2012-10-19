@@ -53,10 +53,10 @@ class Spiceweasel::CLI
   :long => "--knifeconfig CONFIG",
   :description => "Specify the knife.rb configuration file"
 
-  option :novalidation,
-  :long => "--novalidation",
-  :description => "Disable validation",
-  :boolean => true
+  option :validation,
+  :long => "--validation",
+  :description => "Enable validation",
+  :boolean => false
 
   option :chef_pre_10,
   :long => "--chef-pre-10",

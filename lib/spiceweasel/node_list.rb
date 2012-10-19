@@ -8,25 +8,40 @@ class Spiceweasel::NodeList
 
         run_list = node["run_list"]
         STDOUT.puts "DEBUG: node: 'node[nname]' run_list: '#{run_list}'" if DEBUG
-        validateRunList(nname, run_list, cookbooks, roles) unless NOVALIDATION
+        validateRunList(nname, run_list, cookbooks, roles) if VALIDATION
 
-        noptions = node["options"]
+        # If were an array, join together to make a string. This allows for yaml
+        # anchor and alias usage within the config file.
+        noptions = node["options"].kind_of?(Array) ? node["options"].join(' ') : \
+                   node["options"]
         STDOUT.puts "DEBUG: node: 'node[nname]' options: '#{noptions}'" if DEBUG
-        validateOptions(nname, noptions, environments) unless NOVALIDATION
+        validateOptions(nname, noptions, environments) if VALIDATION
 
-        #provider support
+        #provider supportp
         provider = node["type"]
         count = node["count"] || 1
         count.to_i.times do |num|
-          nodename = "%s-%02d" % [nname, num + 1]
-          host = node["host"] || nodename
+          host = node["host"] 
           if ["bluebox","clodo","cs","ec2","gandi","hp","openstack","rackspace","slicehost","terremark","voxel"].include?(provider)
               if CHEF_PRE_10
-                  @create += "knife #{provider}#{options['knife_options']} server create \'#{run_list.join("' '")}\' #{noptions} -N \'#{nodename}\'\n"
+                  @create << "knife #{provider}#{options['knife_options']} server create \'#{run_list.join("' '")}\' #{noptions}".gsub(/\{\{n\}\}/, "%02d" % (num + 1))
               else
-                  @create += "knife #{provider}#{options['knife_options']} server create -r \'#{run_list.join(',')}\' #{noptions} -N \'#{nodename}\'\n"
+                  @create << "knife #{provider}#{options['knife_options']} server create -r \'#{run_list.join(',')}\' #{noptions}".gsub(/\{\{n\}\}/, "%02d" % (num + 1))
               end
-              @delete += "knife #{provider} server delete -y \'#{nodename}\'\n"
+
+              # Rotate around the configured AZ's.
+              if node.key?("availability_zones")
+                  az_num = num % node["availability_zones"].length
+                  @create += "-Z #{node['availability_zones'][az_num]}"
+              end
+
+              if node.key?("groups")
+                  @create += " -g #{node['groups'].join(',')}"
+              end
+
+              @create << "\n"
+
+              #@delete += "knife #{provider} server delete -y \'#{host}\'\n"
           elsif provider == "windows" #windows node bootstrap support
             #TODO Fix this section
             nodeline = nname.split()
@@ -38,14 +53,20 @@ class Spiceweasel::NodeList
               end
               @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
             end
-            @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
+            #@delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
           else #node bootstrap support
             if CHEF_PRE_10
-              @create += "knife bootstrap#{options['knife_options']} \'#{host}\' \'#{run_list.join("' '")}\' #{noptions} -N \'#{nodename}\'\n"
+              @create += "knife bootstrap#{options['knife_options']} \'#{host}\' \'#{run_list.join("' '")}\' #{noptions}".gsub(/\{\{n\}\}/, "%02d" % (num + 1))
             else
-              @create += "knife bootstrap#{options['knife_options']} \'#{host}\' -r \'#{run_list.join(',')}\' #{noptions} -N \'#{nodename}\'\n"
+              @create += "knife bootstrap#{options['knife_options']} \'#{host}\' -r \'#{run_list.join(',')}\' #{noptions}".gsub(/\{\{n\}\}/, "%02d" % (num + 1))
             end
-            @delete += "knife node#{options['knife_options']} delete \'#{nodename}\' -y\n"
+            #@delete += "knife node#{options['knife_options']} delete \'#{nodename}\' -y\n"
+
+            if node.key?("groups")
+                  @create += " -g #{node['groups'].join(',')}"
+            end
+
+            @create << "\n"
           end
         end
       end

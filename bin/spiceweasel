@@ -35,7 +35,7 @@ begin
   DEBUG = cli.config[:debug]
   CHEF_PRE_10 = cli.config[:chef_pre_10]
   SITEINSTALL = cli.config[:siteinstall]
-  NOVALIDATION = cli.config[:novalidation]
+  VALIDATION = cli.config[:validation]
   EXTRACTLOCAL = cli.config[:extractlocal]
   EXTRACTYAML = cli.config[:extractyaml]
   EXTRACTJSON = cli.config[:extractjson]
