@@ -1,5 +1,19 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
+knife role from file roles/*.rb
+https://gist.github.com/3752021
+
+
+1.3.0 TODO
+=====
+* useful error messages for missing files like metadata.rb
+* librarian-chef support "cookbooks:" -> "librarian:"
+* wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
+
+1.2.1
+=====
+* Ruby syntax cleanup per https://github.com/styleguide/ruby
+
 1.2.0
 =====
 * properly auto name by number provider instances (Fletcher Nichol & Michael Beuken)
@@ -147,8 +161,6 @@ BACKLOG
 
 Future
 ------
-* librarian-chef support "cookbooks:" -> "librarian:"
-* wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
 * make .yml files for every quickstart
 * CONVERT TO A KNIFE PLUGIN
  * knife batch create from file infrastructure.yml
