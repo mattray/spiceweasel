@@ -24,7 +24,7 @@ class Spiceweasel::CookbookData
   def initialize(file_name)
     @_name = file_name.split('/').last
     @_dependencies = []
-    @_version = ""
+    @_version = ''
     @file_name = file_name
   end
 
@@ -40,7 +40,7 @@ class Spiceweasel::CookbookData
     else
       raise IOError, "Cannot open or read cookbooks/#{@_name}/metadata.rb!"
     end
-    {'name' => @_name, 'version' => @_version, 'dependencies' => @_dependencies }
+    { 'name' => @_name, 'version' => @_version, 'dependencies' => @_dependencies }
   end
 
   def name(*args) # Override metadata.rb DSL
@@ -56,7 +56,7 @@ class Spiceweasel::CookbookData
     if args.length > 0
       cookbook_version = args.shift
     end
-    @_dependencies << {'cookbook' => cookbook, 'version' => cookbook_version}
+    @_dependencies += {'cookbook' => cookbook, 'version' => cookbook_version}
   end
 
   def method_missing(m, *args, &block)

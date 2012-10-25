@@ -20,10 +20,10 @@
 class Spiceweasel::DirectoryExtractor
 
   def self.parse_objects
-    objects = {"cookbooks" => nil, "roles" => nil, "environments" => nil, "data bags" => nil, "nodes" => nil}
+    objects = {'cookbooks' => nil, 'roles' => nil, 'environments' => nil, 'data bags' => nil, 'nodes' => nil}
     # COOKBOOKS
     cookbooks = []
-    Dir.glob("cookbooks/*").each do |cookbook_full_path|
+    Dir.glob('cookbooks/*').each do |cookbook_full_path|
       cookbook = cookbook_full_path.split('/').last
       STDOUT.puts "DEBUG: dir_ext: cookbook: '#{cookbook}'" if Spiceweasel::DEBUG
       cookbook_data = Spiceweasel::CookbookData.new(cookbook)
@@ -33,7 +33,7 @@ class Spiceweasel::DirectoryExtractor
     end
     STDOUT.puts "DEBUG: dir_ext: cookbooks: '#{cookbooks}'" if Spiceweasel::DEBUG
     cookbooks = self.order_cookbooks_by_dependency(cookbooks)
-    objects["cookbooks"] = cookbooks unless cookbooks.empty?
+    objects['cookbooks'] = cookbooks unless cookbooks.empty?
 
     # ROLES
     roles = []
@@ -42,7 +42,7 @@ class Spiceweasel::DirectoryExtractor
       STDOUT.puts "DEBUG: dir_ext: role: '#{role}'" if Spiceweasel::DEBUG
       roles << {role => nil}
     end
-    objects["roles"] = roles unless roles.nil?
+    objects['roles'] = roles unless roles.nil?
     # ENVIRONMENTS
     environments = []
     Dir.glob("environments/*.{rb,json}").each do |environment_full_path|
@@ -50,10 +50,10 @@ class Spiceweasel::DirectoryExtractor
       STDOUT.puts "DEBUG: dir_ext: environment: '#{environment}'" if Spiceweasel::DEBUG
       environments << {environment => nil}
     end
-    objects["environments"] = environments unless environments.empty?
+    objects['environments'] = environments unless environments.empty?
     # DATA BAGS
     data_bags = []
-    Dir.glob("data_bags/*").each do |data_bag_full_path|
+    Dir.glob('data_bags/*').each do |data_bag_full_path|
       data_bag = data_bag_full_path.split('/').last
       STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}'" if Spiceweasel::DEBUG
       data_bag_items = []
@@ -63,7 +63,7 @@ class Spiceweasel::DirectoryExtractor
       end if File.directory?(data_bag_full_path)
       data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
     end
-    objects["data bags"] = data_bags unless data_bags.empty?
+    objects['data bags'] = data_bags unless data_bags.empty?
     # NODES
     # TODO: Cant use this yet as node_list.rb doesnt support node from file syntax but expects the node info to be part of the objects passed in
     # nodes = []
@@ -71,14 +71,14 @@ class Spiceweasel::DirectoryExtractor
     #   node = self.grab_name_from_path(node_full_path)
     #   nodes  << {node => nil}
     # end
-    # objects["nodes"] = nodes unless nodes.empty?
+    # objects['nodes'] = nodes unless nodes.empty?
 
     objects
   end
 
   def self.grab_name_from_path(path)
     name = path.split('/').last.split('.')
-    if name.length>1
+    if name.length > 1
       name.pop
     end
     name.join('.')
@@ -116,6 +116,6 @@ class Spiceweasel::DirectoryExtractor
       end
     end
     #hack to get the format same as yaml/json parse
-    return sorted_cookbooks.collect {|x| {x => nil} }
+    sorted_cookbooks.collect { |x| { x => nil } }
   end
 end

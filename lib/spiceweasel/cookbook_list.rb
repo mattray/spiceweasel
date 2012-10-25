@@ -25,9 +25,9 @@ class Spiceweasel::CookbookList
     if cookbooks
       cookbooks.each do |cookbook|
         cb = cookbook.keys.first
-        if cookbook[cb] and cookbook[cb].length > 0
-          version = cookbook[cb][0].to_s || ""
-          args = cookbook[cb][1] || ""
+        if cookbook[cb] && cookbook[cb].length > 0
+          version = cookbook[cb][0].to_s || ''
+          args = cookbook[cb][1] || ''
         end
         STDOUT.puts "DEBUG: cookbook: #{cb} #{version}" if Spiceweasel::DEBUG
         if File.directory?("cookbooks")
@@ -59,7 +59,7 @@ class Spiceweasel::CookbookList
     #check metadata.rb for requested version
     metadata = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^version/)[0].split()[1].gsub(/"/,'').to_s
     STDOUT.puts "DEBUG: cookbook metadata version: #{metadata}" if Spiceweasel::DEBUG
-    if version and (metadata != version)
+    if version && metadata != version
       STDERR.puts "ERROR: Invalid version '#{version}' of '#{cookbook}' requested, '#{metadata}' is already in the cookbooks directory."
       exit(-1)
     end
@@ -74,7 +74,7 @@ class Spiceweasel::CookbookList
         @dependencies << cbdep
       end
     end
-    return @cookbook
+    @cookbook
   end
 
   #compare the list of cookbook deps with those specified
