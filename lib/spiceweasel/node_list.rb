@@ -36,7 +36,11 @@ class Spiceweasel::NodeList
               end
 
               if node.key?("groups")
+                if CHEF_PRE_10
+                  @create += " -G #{node['groups'].join(',')}"
+                else
                   @create += " -g #{node['groups'].join(',')}"
+                end
               end
 
               @create << "\n"
