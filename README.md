@@ -159,19 +159,22 @@ From the `example.json`:
         }
     ],
     "clusters":
-    {"amazon":
-     [
-         "ec2 1":
-         [
-             "role[mysql]",
-             "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium"
-         ],
-         "ec2 3":
-         [
-             "role[webserver] recipe[mysql::client]",
-             "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small"
-         ]
-     ]
+    {
+        "amazon":
+        [
+            {"ec2 1":
+             [
+                 "role[mysql]",
+                 "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium"
+             ]
+            },
+            {"ec2 3":
+             [
+                 "role[webserver] recipe[mysql::client]",
+                 "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small"
+             ]
+            }
+        ]
     }
 }
 ```
