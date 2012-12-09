@@ -55,9 +55,6 @@ nodes:
 - serverB serverC:
   - role[base]
   - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production
-- ec2 3:
-  - role[webserver] recipe[mysql::client]
-  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:
   - recipe[mysql],role[monitoring]
   - --image 49 --flavor 2 --node-name rs{{n}}.example.com
@@ -67,6 +64,14 @@ nodes:
 - windows_ssh winboxB winboxC:
   - role[base],role[iisserver]
   - -x Administrator -P 'super_secret_password'
+clusters:
+  amazon:
+  - ec2 1:
+    - role[mysql]
+    - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium
+  - ec2 3:
+    - role[webserver] recipe[mysql::client]
+    - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 ```
 
 JSON
@@ -134,12 +139,6 @@ From the `example.json`:
              "-i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production"
          ]
         },
-        {"ec2 3":
-         [
-             "role[webserver] recipe[mysql::client]",
-             "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small"
-         ]
-        },
         {"rackspace 3":
          [
              "recipe[mysql],role[monitoring]",
@@ -158,7 +157,22 @@ From the `example.json`:
              "-x Administrator -P 'super_secret_password'"
          ]
         }
-    ]
+    ],
+    "clusters":
+    {"amazon":
+     [
+         "ec2 1":
+         [
+             "role[mysql]",
+             "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium"
+         ],
+         "ec2 3":
+         [
+             "role[webserver] recipe[mysql::client]",
+             "-S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small"
+         ]
+     ]
+    }
 }
 ```
 
@@ -258,7 +272,7 @@ knife data bag from file passwords rabbitmq.json --secret-file secret_key
 
 Nodes
 -----
-The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. If you want to give your nodes names, simply pass `-N NAME{{n}}` or `--node-name NAME{{n}}` and the `{{n}}` will be substituted by a number (works with or without --parallel).
+The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. If you want to give your nodes names, simply pass `-N NAME{{n}}` or `--node-name NAME{{n}}` and the `{{n}}` will be substituted by a number (works with or without `--parallel`).
 
 The first item after the node is the run_list and the second are the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only cookbooks and roles listed in the manifest are used. Validation on the options ensures that any Environments referenced are also listed. You may specify multiple nodes to have the same configuration by listing them separated by a space. The example YAML snippet
 
@@ -270,9 +284,6 @@ nodes:
 - serverB serverC:
   - role[base]
   - -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production
-- ec2 3:
-  - role[webserver] recipe[mysql::client]
-  - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 - rackspace 3:
   - recipe[mysql],role[monitoring]
   - --image 49 --flavor 2 --node-name rs{{n}}.example.com
@@ -290,10 +301,6 @@ produces the knife commands
 knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -r 'role[base]'
 knife bootstrap serverB -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production -r 'role[base]'
 knife bootstrap serverC -i ~/.ssh/mray.pem -x user --sudo -d ubuntu10.04-gems -E production -r 'role[base]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
 knife rackspace server create --image 49 --flavor 2 --node-name rs1.example.com -r 'recipe[mysql],role[monitoring]'
 knife rackspace server create --image 49 --flavor 2 --node-name rs2.example.com -r 'recipe[mysql],role[monitoring]'
 knife rackspace server create --image 49 --flavor 2 --node-name rs3.example.com -r 'recipe[mysql],role[monitoring]'
@@ -318,6 +325,32 @@ seq 3 | parallel -j 0 -v "knife ec2 server create -S mray -i ~/.ssh/mray.pem -x 
 ```
 
 which generates nodes named "webserver1", "webserver2" and "webserver3".
+
+Clusters
+--------
+Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `cluster` section is a special case of `node`, where each member of the named cluster in the manifest will be tagged to ensure that the entire cluster may be created, refreshed and destroyed in sync. The node syntax is the same as that under `nodes`, the only addition is the cluster name.
+
+```
+clusters:
+  amazon:
+  - ec2 1:
+    - role[mysql]
+    - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium
+  - ec2 3:
+    - role[webserver] recipe[mysql::client]
+    - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
+```
+
+produces the knife commands
+
+```
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -r 'role[mysql]' -j '{ "tags": [ "amazon+rolemysql" ] }'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]' -j '{ "tags": [ "amazon+rolewebserverrecipemysqlclient" ] }'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]' -j '{ "tags": [ "amazon+rolewebserverrecipemysqlclient" ] }'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]' -j '{ "tags": [ "amazon+rolewebserverrecipemysqlclient" ] }'
+```
+
+While the addition of the tags is not particularly attractive, it allows us to find the members of the cluster by their run list and add to the cluster if the size has changed.
 
 Extract
 =======

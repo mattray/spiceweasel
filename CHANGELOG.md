@@ -1,14 +1,32 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-knife role from file roles/*.rb
-https://gist.github.com/3752021
-
-
-1.3.0 TODO
+1.5.0
 =====
+
+1.5.0 TODO
+=====
+* cluster definitions
+ * create
+   * create a cluster_TAG
+   * strip ' ',[]:
+   * knife search node 'tags:amazon+*'
+ * refresh
+   * search on tag for completion
+   * knife search node 'tags:amazon+rolewebserverrecipemysqlclient'
+ * delete
+   * delete on tag
+   * knife search node 'tags:amazon+*'
+* EXECUTE THE COMMANDS
+ * -e/--execute execute the commands
+ * catching return codes and retrying (with retry count?)
+ * make the JSON calls directly with Chef APIs? spice/ridley?
 * useful error messages for missing files like metadata.rb
-* librarian-chef support "cookbooks:" -> "librarian:"
 * wildcards for environments and roles http://tickets.opscode.com/browse/CHEF-1911
+  * knife role from file roles/*.rb
+* all validation done by converting .rb files to Chef objects
+  * https://gist.github.com/3752021
+* RE: encrypted data bags.  I want all our encrypted data bags to be checked into git encrypted, and when we run spice weasel it is able to import them into the chef server, using the specified encrypted data bag.  Not sure if this already works this way, I haven't tested.  However, we are building a jenkins job which IPMI resets our bare metal.  Once the system comes up, it is bootstrapped with a chef server, cobbler, etc..  Spicewesel will then be used to import everything into the fresh chef server.  I need a way to handle encrypted data bags populating the server.  If it can handle pre-encrypted files, and import properly that would be awesome.  I assume it does, just need to test it (Not really a spice weasel thing, unless of course it doesn't support this, then spice weasel doing it for us would be great). :)
+
 
 1.2.1
 =====
@@ -149,31 +167,30 @@ https://gist.github.com/3752021
 
 BACKLOG
 =======
-1.2
----
-* all validation done by converting .rb files to Chef objects
-* write out JSON or YAML files from --extract commands
-* sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
-* sanitize error messages to make sense for both extract & manifest
+* Librarian integration
+  * replace "cookbooks:" -> "librarian:"
+  * cookbooks-librarian:
+  * code has to understand switch
+  * load in the librarian file
+  * output the knife commands
+  * validate the librarian cookbooks vs. roles, environments and run lists
+* Berkshelf integration
+  * replace "cookbooks:" -> "berkshelf:"
+  * same expectations as the Librarian cookbooks
 * [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
 * [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
 * [Validation for encrypted data bag secret should expand path](https://github.com/mattray/spiceweasel/issues/13)
-
-Future
-------
 * make .yml files for every quickstart
 * CONVERT TO A KNIFE PLUGIN
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json
  * knife batch rebuild from file infrastructure.yml
 * EXTRACT EXISTING INFRASTRUCTURE
+ * write out JSON or YAML files from --extract commands
  * knife batch extract to a tarball named for the organization
  * option to include credentials and knife.rb
  * translate json back to rb?
-* EXECUTE THE COMMANDS
- * -e/--execute execute the commands
- * catching return codes and retrying (with retry count?)
- * make the JSON calls directly with Chef APIs? spice?
+ * sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
+* sanitize error messages to make sense for both extract & manifest
 * ADDITIONAL VALIDATION
  * environment-specific run_lists
-* Librarian integration?
