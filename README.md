@@ -22,7 +22,7 @@ In order to be more explicit and enable a richer set of options, the syntax for 
 
 ### New Cookbooks Syntax ###
 
-The only currently supported key is `version`.
+The currently supported keys are `version` and `options`.
 
 ### New Data Bags Syntax ###
 
