@@ -38,13 +38,14 @@ Clusters support is completely new, please refer to the Cluster section for docu
 
 ## Cookbooks ##
 
-The `cookbooks` section of the manifest currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. If a version is passed, it is validated against the existing cookbook `metadata.rb` and it must match the `metadata.rb` string exactly. You may pass any additional arguments if necessary. Assuming the apt cookbook was not present, the example YAML snippet
+The `cookbooks` section of the manifest currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. If a version is passed, it is validated against the existing cookbook `metadata.rb` and it must match the `metadata.rb` string exactly. You may pass any additional options if necessary. Assuming the apt cookbook was not present, the example YAML snippet
 
 ``` yaml
 cookbooks:
 - apache2:
 - apt:
     version: 1.2.0
+    options: --freeze
 - mysql:
 ```
 
@@ -55,7 +56,7 @@ knife cookbook upload apache2
 knife cookbook site download apt 1.2.0 --file cookbooks/apt.tgz
 tar -C cookbooks/ -xf cookbooks/apt.tgz
 rm -f cookbooks/apt.tgz
-knife cookbook upload apt
+knife cookbook upload apt --freeze
 knife cookbook upload mysql
 ```
 

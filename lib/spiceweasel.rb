@@ -18,7 +18,7 @@
 
 module Spiceweasel
   autoload :CLI, 'spiceweasel/cli'
-  autoload :CookbookList, 'spiceweasel/cookbook_list'
+  autoload :Cookbooks, 'spiceweasel/cookbooks'
   autoload :EnvironmentList, 'spiceweasel/environment_list'
   autoload :RoleList, 'spiceweasel/role_list'
   autoload :DataBagList, 'spiceweasel/data_bag_list'

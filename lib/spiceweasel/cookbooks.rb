@@ -16,28 +16,32 @@
 # limitations under the License.
 #
 
-class Spiceweasel::CookbookList
+class Spiceweasel::Cookbooks
+
+  attr_reader :cookbook_list, :create, :delete
+
   def initialize(cookbooks = [], options = {})
     @create = @delete = ''
     @cookbook_list = {}
     @dependencies = []
     #validate each of the cookbooks specified in the manifest
     if cookbooks
+      STDOUT.puts "DEBUG: cookbooks: #{cookbooks}" if Spiceweasel::DEBUG
       cookbooks.each do |cookbook|
         cb = cookbook.keys.first
-        if cookbook[cb] && cookbook[cb].length > 0
-          version = cookbook[cb][0].to_s || ''
-          args = cookbook[cb][1] || ''
+        if cookbook[cb]
+          version = cookbook[cb]['version']
+          opts = cookbook[cb]['options']
         end
-        STDOUT.puts "DEBUG: cookbook: #{cb} #{version}" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: cookbook: #{cb} #{version} #{opts}" if Spiceweasel::DEBUG
         if File.directory?("cookbooks")
-          if File.directory?("cookbooks/#{cb}")
+          if File.directory?("cookbooks/#{cb}") #TODO use the name from metadata
             validateMetadata(cb,version) unless Spiceweasel::NOVALIDATION
           else
             if Spiceweasel::SITEINSTALL #use knife cookbook site install
-              @create += "knife cookbook#{options['knife_options']} site install #{cb} #{version} #{args}\n"
+              @create += "knife cookbook#{options['knife_options']} site install #{cb} #{version} #{opts}\n"
             else #use knife cookbook site download, untar and then remove the tarball
-              @create += "knife cookbook#{options['knife_options']} site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{args}\n"
+              @create += "knife cookbook#{options['knife_options']} site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{opts}\n"
               @create += "tar -C cookbooks/ -xf cookbooks/#{cb}.tgz\n"
               @create += "rm -f cookbooks/#{cb}.tgz\n"
             end
@@ -45,10 +49,9 @@ class Spiceweasel::CookbookList
         else
           STDERR.puts "'cookbooks' directory not found, unable to validate, download and load cookbooks" unless Spiceweasel::NOVALIDATION
         end
-        @create += "knife cookbook#{options['knife_options']} upload #{cb}\n"
+        @create += "knife cookbook#{options['knife_options']} upload #{cb} #{opts}\n"
         @delete += "knife cookbook#{options['knife_options']} delete #{cb} #{version} -a -y\n"
-
-        @cookbook_list[cb] = version
+        @cookbook_list[cb] = version #used for validation
       end
       validateDependencies() unless Spiceweasel::NOVALIDATION
     end
@@ -87,8 +90,6 @@ class Spiceweasel::CookbookList
       end
     end
   end
-
-  attr_reader :cookbook_list, :create, :delete
 
   def member?(cookbook)
     cookbook_list.keys.include?(cookbook)

@@ -3,6 +3,7 @@ This is the current, previous and future development milestones and contains the
 # 2.0.0 #
 
 * Refresh of the YAML/JSON syntax in order to support a richer set of options and be more explicit.
+* renamed Spiceweasel classes to match the manifest items (cookbooks, environments, roles, data bags, and nodes)
 
 # 2.0.0 TODO #
 * fix all classes for the new syntax
@@ -18,6 +19,8 @@ This is the current, previous and future development milestones and contains the
    * delete on tag
    * knife search node 'tags:amazon+*'
 * move Ruby out of bin/spiceweasel
+* clean up the way options are passed around throughout the system
+* convert test.sh to spec tests
 * EXECUTE THE COMMANDS
  * -e/--execute execute the commands
  * catching return codes and retrying (with retry count?)

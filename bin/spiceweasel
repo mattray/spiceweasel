@@ -85,19 +85,19 @@ end
 create = String.new()
 delete = String.new()
 
-cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'], options)
-environment_list = Spiceweasel::EnvironmentList.new(input['environments'], cookbook_list, options)
-role_list = Spiceweasel::RoleList.new(input['roles'], environment_list, cookbook_list, options)
+cookbooks = Spiceweasel::Cookbooks.new(input['cookbooks'], options)
+environment_list = Spiceweasel::EnvironmentList.new(input['environments'], cookbooks, options)
+role_list = Spiceweasel::RoleList.new(input['roles'], environment_list, cookbooks, options)
 data_bag_list = Spiceweasel::DataBagList.new(input['data bags'], options)
-node_list = Spiceweasel::NodeList.new(input['nodes'], cookbook_list, environment_list, role_list, options)
+node_list = Spiceweasel::NodeList.new(input['nodes'], cookbooks, environment_list, role_list, options)
 
-create += cookbook_list.create
+create += cookbooks.create
 create += environment_list.create
 create += role_list.create
 create += data_bag_list.create
 create += node_list.create
 
-delete += cookbook_list.delete
+delete += cookbooks.delete
 delete += environment_list.delete
 delete += role_list.delete
 delete += data_bag_list.delete
