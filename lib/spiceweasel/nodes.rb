@@ -18,6 +18,8 @@
 
 class Spiceweasel::Nodes
 
+  PROVIDERS = %w{bluebox clodo cs ec2 gandi hp lxc openstack rackspace slicehost terremark voxel}
+
   attr_reader :create, :delete
 
   def initialize(nodes, cookbooks, environments, roles, options = {})
@@ -25,18 +27,20 @@ class Spiceweasel::Nodes
     if nodes
       STDOUT.puts "DEBUG: nodes: #{nodes}" if Spiceweasel::DEBUG
       nodes.each do |node|
-        nname = node.keys[0]
-        STDOUT.puts "DEBUG: node: '#{nname}'" if Spiceweasel::DEBUG
-        #convert spaces to commas, drop multiple commas
-        run_list = node[nname][0].gsub(/ /,',').gsub(/,+/,',')
-        STDOUT.puts "DEBUG: node: 'node[nname]' run_list: '#{run_list}'" if Spiceweasel::DEBUG
-        validateRunList(nname, run_list, cookbooks, roles) unless Spiceweasel::NOVALIDATION
-        noptions = node[nname][1]
-        STDOUT.puts "DEBUG: node: 'node[nname]' options: '#{noptions}'" if Spiceweasel::DEBUG
-        validateOptions(nname, noptions, environments) unless Spiceweasel::NOVALIDATION
+        name = node.keys.first
+        STDOUT.puts "DEBUG: node: '#{node[name]}'" if Spiceweasel::DEBUG
+        if node[name]
+          #convert spaces to commas, drop multiple commas
+          run_list = node[name]['run_list'].gsub(/ /,',').gsub(/,+/,',')
+          STDOUT.puts "DEBUG: node: '#{node[name]}' run_list: '#{run_list}'" if Spiceweasel::DEBUG
+          validateRunList(name, run_list, cookbooks, roles) unless Spiceweasel::NOVALIDATION
+          noptions = node[name]['options']
+          STDOUT.puts "DEBUG: node: '#{node[name]}' options: '#{noptions}'" if Spiceweasel::DEBUG
+          validateOptions(name, noptions, environments) unless Spiceweasel::NOVALIDATION
+        end
         #provider support
-        if nname.start_with?("bluebox ","clodo ","cs ","ec2 ","gandi ","hp ","openstack ","rackspace ","slicehost ","terremark ","voxel ")
-          provider = nname.split()
+        provider = name.split()
+        if PROVIDERS.member?(provider[0])
           count = 1
           if provider.length == 2
             count = provider[1]
@@ -44,7 +48,7 @@ class Spiceweasel::Nodes
           if Spiceweasel::PARALLEL
             @create += "seq #{count} | parallel -j 0 -v \""
             @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/\{\{n\}\}/, '{}')
-            if run_list.length > 0
+            if run_list
               @create += " -r '#{run_list}'\"\n"
             end
           else
@@ -56,24 +60,30 @@ class Spiceweasel::Nodes
             end
           end
           @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
-        elsif nname.start_with?("windows") #windows node bootstrap support
-          nodeline = nname.split()
+        elsif name.start_with?("windows") #windows node bootstrap support
+          nodeline = name.split()
           provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
           nodeline.each do |server|
             @create += "knife bootstrap #{provider[0]} #{provider[1]}#{options['knife_options']} #{server} #{noptions}"
-            if run_list.length > 0
+            if run_list
               @create += " -r '#{run_list}'\n"
+            else
+              @create += "\n"
             end
             @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
+            @delete += "knife client#{options['knife_options']} delete #{server} -y\n"
           end
           @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
         else #node bootstrap support
-          nname.split.each_with_index do |server, i|
+          name.split.each_with_index do |server, i|
             @create += "knife bootstrap#{options['knife_options']} #{server} #{noptions}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-            if run_list.length > 0
+            if run_list
               @create += " -r '#{run_list}'\n"
+            else
+              @create += "\n"
             end
             @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
+            @delete += "knife client#{options['knife_options']} delete #{server} -y\n"
           end
         end
       end

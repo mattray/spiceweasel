@@ -30,7 +30,7 @@ The supported keys are `items` (an array of the data bag items) and `secret` for
 
 ### New Nodes Syntax ###
 
-The supported keys are `run_list` and `options` and their values are both still strings.
+The supported keys are `run_list` and `options` and their values are strings.
 
 ### New Clusters Syntax ###
 
@@ -138,9 +138,7 @@ knife data bag from file passwords rabbitmq.json --secret-file secret_key_filena
 
 ## Nodes ##
 
-The `nodes` section of the manifest bootstraps a node for each entry where the entry is a hostname or provider and count. A shortcut syntax for bulk-creating nodes with various providers where the line starts with the provider and ends with the number of nodes to be provisioned. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node requires 2 items after it in a sequence. You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. If you want to give your nodes names, simply pass `-N NAME{{n}}` or `--node-name NAME{{n}}` and the `{{n}}` will be substituted by a number (works with or without `--parallel`).
-
-The first item after the node is the run_list and the second are the CLI options used. The run_list may be space or comma-delimited. Validation is performed on the run_list components to ensure that only cookbooks and roles listed in the manifest are used. Validation on the options ensures that any Environments referenced are also listed. You may specify multiple nodes to have the same configuration by listing them separated by a space. The example YAML snippet
+The `nodes` section of the manifest bootstraps a node for each entry given a hostname or a provider with a count. Windows nodes need to specify either `windows_winrm` or `windows_ssh` depending on the protocol used, followed by the name of the node(s). Each node may have a `run_list` and `options`. The `run_list` may be space or comma-delimited. Validation is performed on the `run_list` components to ensure that only `cookbooks` and `roles` listed in the manifest are used. Validation on the options ensures that any `environments` referenced are also listed. You may specify multiple nodes to have the same configuration by listing them separated by a space. If you want to give your nodes names, simply pass `-N NAME{{n}}` or `--node-name NAME{{n}}` and the `{{n}}` will be substituted by a number. The example YAML snippet
 
 ``` yaml
 nodes:
@@ -175,7 +173,7 @@ knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' 
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 ```
 
-Using `--parallel` with the following block and the `-N webserver{{n}}`
+You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. Using `--parallel` with the following block and the `-N webserver{{n}}`:
 
 ``` yaml
 nodes:
@@ -265,7 +263,7 @@ This provides verbose debugging messages.
 
 ## -d/--delete ##
 
-The delete command will generate the knife commands to delete the infrastructure described in the manifest. This includes each cookbook, environment, role, data bag and node listed. Node deletion will specify individual nodes, attempt to pass the list of nodes to the cloud provider for deletion, and finish with `knife node bulk delete`. If you are mixing individual nodes with cloud provider nodes it is possible that nodes may be missed from cloud provider deletion and you should double-check (ie. `knife ec2 server list`).
+The delete command will generate the knife commands to delete the infrastructure described in the manifest. This includes each cookbook, environment, role, data bag and node listed. Node deletion will specify individual nodes and their clients, and attempt to pass the list of nodes to the cloud provider for deletion, and finish with `knife node bulk delete`. If you are mixing individual nodes with cloud provider nodes it is possible that nodes may be missed from cloud provider deletion and you should double-check (ie. `knife ec2 server list`).
 
 ## --dryrun ##
 
