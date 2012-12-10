@@ -22,11 +22,11 @@ In order to be more explicit and enable a richer set of options, the syntax for 
 
 ### New Cookbooks Syntax ###
 
-The currently supported keys are `version` and `options`.
+The currently supported keys are `version` and `options` and their values are strings.
 
 ### New Data Bags Syntax ###
 
-The supported keys are `items` (an array of the data bag items) and `secret` for passing a secret key.
+The supported keys are `items` (an array of the data bag items) and `secret` for passing a secret key string.
 
 ### New Nodes Syntax ###
 
