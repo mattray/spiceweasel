@@ -28,14 +28,14 @@ class Spiceweasel::Nodes
       STDOUT.puts "DEBUG: nodes: #{nodes}" if Spiceweasel::DEBUG
       nodes.each do |node|
         name = node.keys.first
-        STDOUT.puts "DEBUG: node: '#{node[name]}'" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: node: '#{name}' '#{node[name]}'" if Spiceweasel::DEBUG
         if node[name]
           #convert spaces to commas, drop multiple commas
           run_list = node[name]['run_list'].gsub(/ /,',').gsub(/,+/,',')
-          STDOUT.puts "DEBUG: node: '#{node[name]}' run_list: '#{run_list}'" if Spiceweasel::DEBUG
+          STDOUT.puts "DEBUG: node: '#{name}' run_list: '#{run_list}'" if Spiceweasel::DEBUG
           validateRunList(name, run_list, cookbooks, roles) unless Spiceweasel::NOVALIDATION
           noptions = node[name]['options']
-          STDOUT.puts "DEBUG: node: '#{node[name]}' options: '#{noptions}'" if Spiceweasel::DEBUG
+          STDOUT.puts "DEBUG: node: '#{name}' options: '#{noptions}'" if Spiceweasel::DEBUG
           validateOptions(name, noptions, environments) unless Spiceweasel::NOVALIDATION
         end
         #provider support
