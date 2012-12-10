@@ -2,7 +2,7 @@
 
 Spiceweasel is a command-line tool for batch loading Chef infrastructure from a file. It provides a simple syntax in either JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present.
 
-The `examples` directory provides example manifests based on the Quick Starts provided at [http://help.opscode.com/kb/otherhelp](http://help.opscode.com/kb/otherhelp). The [https://github.com/mattray/vbacd-repo](https://github.com/mattray/vbacd-repo) provides a working example for bootstrapping a Chef repository with Spiceweasel.
+The `examples` directory provides example manifests based on the Quick Starts provided at http://help.opscode.com/kb/otherhelp. The https://github.com/mattray/vbacd-repo provides a working example for bootstrapping a Chef repository with Spiceweasel.
 
 The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.md) covers current, previous and future development milestones and contains the features backlog.
 
@@ -14,7 +14,7 @@ Written and tested initially with Chef 0.9.12 (may still work) and continuing de
 
 # File Syntax #
 
-The syntax for the Spiceweasel file may be either JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the `example.yml` or `example.json` for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
+The syntax for the Spiceweasel file may be either JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [example.json](https://github.com/mattray/spiceweasel/blob/master/example.json) or [example.yml](https://github.com/mattray/spiceweasel/blob/master/example.yml)  for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
 
 ## Manifest syntax changes in Spiceweasel 2.0 ##
 
