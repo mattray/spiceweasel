@@ -23,6 +23,7 @@ module Spiceweasel
   autoload :Roles, 'spiceweasel/roles'
   autoload :DataBags, 'spiceweasel/data_bags'
   autoload :Nodes, 'spiceweasel/nodes'
+  autoload :Clusters, 'spiceweasel/clusters'
   autoload :DirectoryExtractor, 'spiceweasel/directory_extractor'
   autoload :CookbookData, 'spiceweasel/cookbook_data'
 end

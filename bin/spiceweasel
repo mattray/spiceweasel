@@ -90,21 +90,22 @@ environments = Spiceweasel::Environments.new(input['environments'], cookbooks, o
 roles = Spiceweasel::Roles.new(input['roles'], environments, cookbooks, options)
 data_bags = Spiceweasel::DataBags.new(input['data bags'], options)
 nodes = Spiceweasel::Nodes.new(input['nodes'], cookbooks, environments, roles, options)
+clusters = Spiceweasel::Clusters.new(input['clusters'], cookbooks, environments, roles, options)
 
 create += cookbooks.create
 create += environments.create
 create += roles.create
 create += data_bags.create
 create += nodes.create
+create += clusters.create
 
 delete += cookbooks.delete
 delete += environments.delete
 delete += roles.delete
 delete += data_bags.delete
 delete += nodes.delete
+delete += clusters.delete
 
-#just print the knife commands, do not execute
-#if cli.config[:dryrun]
 if cli.config[:delete]
   puts delete unless delete.empty?
 elsif cli.config[:rebuild]
@@ -119,7 +120,3 @@ else
     puts create unless create.empty?
   end
 end
-#else
-#eventually we will execute instead of printing knife commands
-#puts "BAM!"
-#end
