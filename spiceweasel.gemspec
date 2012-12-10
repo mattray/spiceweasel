@@ -5,11 +5,11 @@ Gem::Specification.new do |s|
   s.name        = "spiceweasel"
   s.version     = Spiceweasel::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Matt Ray", "Elliot Crosby-McCullough"]
-  s.email       = ["matt@opscode.com", "elliot.cm@gmail.com"]
+  s.authors     = ["Matt Ray"]
+  s.email       = ["matt@opscode.com"]
   s.homepage    = "http://github.com/mattray/spiceweasel"
-  s.summary     = %q{CLI for generating Chef knife commands from a simple YAML file.}
-  s.description = %q{Provides a CLI tool for generating knife commands to build Chef-managed infrastructure from a simple YAML or JSON file.}
+  s.summary     = %q{CLI for generating Chef knife commands from a simple JSON or YAML file.}
+  s.description = %q{Provides a CLI tool for generating knife commands to build Chef-managed infrastructure from a simple JSON or YAML file.}
 
   s.rubyforge_project = "spiceweasel"
 
