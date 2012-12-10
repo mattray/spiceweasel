@@ -25,6 +25,7 @@ class Spiceweasel::DataBags
   def initialize(data_bags = [], options = {})
     @create = @delete = ''
     if data_bags
+      STDOUT.puts "DEBUG: data bags: #{data_bags}" if Spiceweasel::DEBUG
       if !File.directory?("data_bags")
         STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items" unless Spiceweasel::NOVALIDATION
       end

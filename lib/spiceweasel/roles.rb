@@ -26,6 +26,7 @@ class Spiceweasel::Roles
     @create = @delete = ''
     @role_list = []
     if roles
+      STDOUT.puts "DEBUG: roles: #{roles}" if Spiceweasel::DEBUG
       flatroles = roles.collect {|x| x.keys}.flatten
       flatroles.each do |role|
         STDOUT.puts "DEBUG: role: #{role}" if Spiceweasel::DEBUG

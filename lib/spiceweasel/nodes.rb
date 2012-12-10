@@ -23,6 +23,7 @@ class Spiceweasel::Nodes
   def initialize(nodes, cookbooks, environments, roles, options = {})
     @create = @delete = ''
     if nodes
+      STDOUT.puts "DEBUG: nodes: #{nodes}" if Spiceweasel::DEBUG
       nodes.each do |node|
         nname = node.keys[0]
         STDOUT.puts "DEBUG: node: '#{nname}'" if Spiceweasel::DEBUG

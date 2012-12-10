@@ -26,6 +26,7 @@ class Spiceweasel::Environments
     @create = @delete = ''
     @environment_list = []
     if environments
+      STDOUT.puts "DEBUG: environments: #{environments}" if Spiceweasel::DEBUG
       environments.each do |env|
         environment = env.keys[0]
         STDOUT.puts "DEBUG: environment: #{environment}" if Spiceweasel::DEBUG
