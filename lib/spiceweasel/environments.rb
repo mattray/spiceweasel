@@ -18,7 +18,10 @@
 
 require 'json'
 
-class Spiceweasel::EnvironmentList
+class Spiceweasel::Environments
+
+  attr_reader :environment_list, :create, :delete
+
   def initialize(environments = [], cookbooks = {}, options = {})
     @create = @delete = ''
     @environment_list = []
@@ -88,9 +91,8 @@ class Spiceweasel::EnvironmentList
     end
   end
 
-  attr_reader :environment_list, :create, :delete
-
   def member?(environment)
     environment_list.include?(environment)
   end
+
 end

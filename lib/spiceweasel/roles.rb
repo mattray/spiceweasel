@@ -18,7 +18,10 @@
 
 require 'json'
 
-class Spiceweasel::RoleList
+class Spiceweasel::Roles
+
+  attr_reader :role_list, :create, :delete
+
   def initialize(roles = {}, environments = [], cookbooks = {}, options = {})
     @create = @delete = ''
     @role_list = []
@@ -116,9 +119,8 @@ class Spiceweasel::RoleList
     end
   end
 
-  attr_reader :role_list, :create, :delete
-
   def member?(role)
     role_list.include?(role)
   end
+
 end

@@ -16,7 +16,10 @@
 # limitations under the License.
 #
 
-class Spiceweasel::NodeList
+class Spiceweasel::Nodes
+
+  attr_reader :create, :delete
+
   def initialize(nodes, cookbooks, environments, roles, options = {})
     @create = @delete = ''
     if nodes
@@ -112,5 +115,4 @@ class Spiceweasel::NodeList
     end
   end
 
-  attr_reader :create, :delete
 end

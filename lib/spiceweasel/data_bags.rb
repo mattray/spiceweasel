@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@
 
 require 'json'
 
-class Spiceweasel::DataBagList
+class Spiceweasel::DataBags
+
+  attr_reader :create, :delete
+
   def initialize(data_bags = [], options = {})
     @create = @delete = ''
     if data_bags
@@ -77,5 +80,4 @@ class Spiceweasel::DataBagList
     end
   end
 
-  attr_reader :create, :delete
 end

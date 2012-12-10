@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@
 module Spiceweasel
   autoload :CLI, 'spiceweasel/cli'
   autoload :Cookbooks, 'spiceweasel/cookbooks'
-  autoload :EnvironmentList, 'spiceweasel/environment_list'
-  autoload :RoleList, 'spiceweasel/role_list'
-  autoload :DataBagList, 'spiceweasel/data_bag_list'
-  autoload :NodeList, 'spiceweasel/node_list'
+  autoload :Environments, 'spiceweasel/environments'
+  autoload :Roles, 'spiceweasel/roles'
+  autoload :DataBags, 'spiceweasel/data_bags'
+  autoload :Nodes, 'spiceweasel/nodes'
   autoload :DirectoryExtractor, 'spiceweasel/directory_extractor'
   autoload :CookbookData, 'spiceweasel/cookbook_data'
 end

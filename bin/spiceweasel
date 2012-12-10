@@ -3,7 +3,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -86,22 +86,22 @@ create = String.new()
 delete = String.new()
 
 cookbooks = Spiceweasel::Cookbooks.new(input['cookbooks'], options)
-environment_list = Spiceweasel::EnvironmentList.new(input['environments'], cookbooks, options)
-role_list = Spiceweasel::RoleList.new(input['roles'], environment_list, cookbooks, options)
-data_bag_list = Spiceweasel::DataBagList.new(input['data bags'], options)
-node_list = Spiceweasel::NodeList.new(input['nodes'], cookbooks, environment_list, role_list, options)
+environments = Spiceweasel::Environments.new(input['environments'], cookbooks, options)
+roles = Spiceweasel::Roles.new(input['roles'], environments, cookbooks, options)
+data_bags = Spiceweasel::DataBags.new(input['data bags'], options)
+nodes = Spiceweasel::Nodes.new(input['nodes'], cookbooks, environments, roles, options)
 
 create += cookbooks.create
-create += environment_list.create
-create += role_list.create
-create += data_bag_list.create
-create += node_list.create
+create += environments.create
+create += roles.create
+create += data_bags.create
+create += nodes.create
 
 delete += cookbooks.delete
-delete += environment_list.delete
-delete += role_list.delete
-delete += data_bag_list.delete
-delete += node_list.delete
+delete += environments.delete
+delete += roles.delete
+delete += data_bags.delete
+delete += nodes.delete
 
 #just print the knife commands, do not execute
 #if cli.config[:dryrun]
