@@ -26,31 +26,33 @@ class Spiceweasel::DataBags
     @create = @delete = ''
     if data_bags
       STDOUT.puts "DEBUG: data bags: #{data_bags}" if Spiceweasel::DEBUG
-      if !File.directory?("data_bags")
-        STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items" unless Spiceweasel::NOVALIDATION
-      end
       data_bags.each do |data_bag|
-        db = data_bag.keys[0]
-        STDOUT.puts "DEBUG: data bag: #{db}" if Spiceweasel::DEBUG
-        if !File.directory?("data_bags/#{db}")
-          STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items" unless Spiceweasel::NOVALIDATION
+        db = data_bag.keys.first
+        #check directories
+        if !File.directory?("data_bags") && !Spiceweasel::NOVALIDATION
+          STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
+          exit(-1)
+        end
+        if !File.directory?("data_bags/#{db}") && !Spiceweasel::NOVALIDATION
+          STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
+          exit(-1)
         end
         @create += "knife data bag#{options['knife_options']} create #{db}\n"
         @delete += "knife data bag#{options['knife_options']} delete #{db} -y\n"
-        items = data_bag[db] || []
-        secret = nil
+        if data_bag[db]
+          items = data_bag[db]['items']
+          secret = data_bag[db]['secret']
+          if secret && !File.exists?(secret) && !Spiceweasel::NOVALIDATION
+            STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
+            exit(-1)
+          end
+        end
+        items = [] if items.nil?
+        STDOUT.puts "DEBUG: data bag: #{db} #{secret} #{items}" if Spiceweasel::DEBUG
         while item = items.shift
           STDOUT.puts "DEBUG: data bag #{db} item: #{item}" if Spiceweasel::DEBUG
-          if item.start_with?("secret")
-            secret = item.split()[1]
-            if !File.exists?(secret) and !Spiceweasel::NOVALIDATION
-              STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
-              exit(-1)
-            end
-            next
-          end
           if item =~ /\*/ #wildcard support, will fail if directory not present
-            files = Dir.glob("data_bags/#{db}/#{item}.json")
+            files = Dir.glob("data_bags/#{db}/*.json")
             items += files.collect {|x| x[x.rindex('/')+1..-6]}
             STDOUT.puts "DEBUG: found items '#{items}' for data bag: #{db}" if Spiceweasel::DEBUG
             next

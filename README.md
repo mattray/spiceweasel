@@ -100,9 +100,9 @@ knife role from file monitoring.rb
 knife role from file webserver.rb
 ```
 
-## Data Bags ##
+n## Data Bags ##
 
-The `data bags` section of the manifest currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the proper `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `"*"`). Encrypted data bags are supported by listing `secret filename` as the first item (where `filename` is the secret key to be used). Validation is done to ensure the JSON is properly formatted, the id matches and any secret keys are in the correct locations. Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet
+The `data bags` section of the manifest currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the proper `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `"*"`). Encrypted data bags are supported by using the `secret: secret_key_filename` attribute. Validation is done to ensure the JSON is properly formatted, the id matches and any secret key files are in the correct locations. Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet
 
 ``` yaml
 data bags:
@@ -115,7 +115,7 @@ data bags:
     items:
     - "*"
 - passwords:
-    secret: secret_key
+    secret: secret_key_filename
     items:
     - mysql
     - rabbitmq
@@ -132,8 +132,8 @@ knife data bag create data
 knife data bag from file data dataA.json
 knife data bag from file data dataB.json
 knife data bag create passwords
-knife data bag from file passwords mysql.json --secret-file secret_key
-knife data bag from file passwords rabbitmq.json --secret-file secret_key
+knife data bag from file passwords mysql.json --secret-file secret_key_filename
+knife data bag from file passwords rabbitmq.json --secret-file secret_key_filename
 ```
 
 ## Nodes ##
