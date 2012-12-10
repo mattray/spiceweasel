@@ -28,20 +28,20 @@ class Spiceweasel::Environments
     if environments
       STDOUT.puts "DEBUG: environments: #{environments}" if Spiceweasel::DEBUG
       environments.each do |env|
-        environment = env.keys[0]
-        STDOUT.puts "DEBUG: environment: #{environment}" if Spiceweasel::DEBUG
+        name = env.keys[0]
+        STDOUT.puts "DEBUG: environment: #{name}" if Spiceweasel::DEBUG
         if File.directory?("environments")
-          validate(environment, cookbooks) unless Spiceweasel::NOVALIDATION
+          validate(name, cookbooks) unless Spiceweasel::NOVALIDATION
         else
           STDERR.puts "'environments' directory not found, unable to validate or load environments" unless Spiceweasel::NOVALIDATION
         end
-        if File.exists?("environments/#{environment}.json")
-          @create += "knife environment#{options['knife_options']} from file #{environment}.json\n"
+        if File.exists?("environments/#{name}.json")
+          @create += "knife environment#{options['knife_options']} from file #{name}.json\n"
         else #assume no .json means they want .rb and catchall for misssing dir
-          @create += "knife environment#{options['knife_options']} from file #{environment}.rb\n"
+          @create += "knife environment#{options['knife_options']} from file #{name}.rb\n"
         end
-        @delete += "knife environment#{options['knife_options']} delete #{environment} -y\n"
-        @environment_list << environment
+        @delete += "knife environment#{options['knife_options']} delete #{name} -y\n"
+        @environment_list << name
       end
     end
   end

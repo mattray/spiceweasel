@@ -28,30 +28,30 @@ class Spiceweasel::Cookbooks
     if cookbooks
       STDOUT.puts "DEBUG: cookbooks: #{cookbooks}" if Spiceweasel::DEBUG
       cookbooks.each do |cookbook|
-        cb = cookbook.keys.first
-        if cookbook[cb]
-          version = cookbook[cb]['version']
-          opts = cookbook[cb]['options']
+        name = cookbook.keys.first
+        if cookbook[name]
+          version = cookbook[name]['version']
+          opts = cookbook[name]['options']
         end
-        STDOUT.puts "DEBUG: cookbook: #{cb} #{version} #{opts}" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: cookbook: #{name} #{version} #{opts}" if Spiceweasel::DEBUG
         if File.directory?("cookbooks")
-          if File.directory?("cookbooks/#{cb}") #TODO use the name from metadata
-            validateMetadata(cb,version) unless Spiceweasel::NOVALIDATION
+          if File.directory?("cookbooks/#{name}") #TODO use the name from metadata
+            validateMetadata(name,version) unless Spiceweasel::NOVALIDATION
           else
             if Spiceweasel::SITEINSTALL #use knife cookbook site install
-              @create += "knife cookbook#{options['knife_options']} site install #{cb} #{version} #{opts}\n"
+              @create += "knife cookbook#{options['knife_options']} site install #{name} #{version} #{opts}\n"
             else #use knife cookbook site download, untar and then remove the tarball
-              @create += "knife cookbook#{options['knife_options']} site download #{cb} #{version} --file cookbooks/#{cb}.tgz #{opts}\n"
-              @create += "tar -C cookbooks/ -xf cookbooks/#{cb}.tgz\n"
-              @create += "rm -f cookbooks/#{cb}.tgz\n"
+              @create += "knife cookbook#{options['knife_options']} site download #{name} #{version} --file cookbooks/#{name}.tgz #{opts}\n"
+              @create += "tar -C cookbooks/ -xf cookbooks/#{name}.tgz\n"
+              @create += "rm -f cookbooks/#{name}.tgz\n"
             end
           end
         else
           STDERR.puts "'cookbooks' directory not found, unable to validate, download and load cookbooks" unless Spiceweasel::NOVALIDATION
         end
-        @create += "knife cookbook#{options['knife_options']} upload #{cb} #{opts}\n"
-        @delete += "knife cookbook#{options['knife_options']} delete #{cb} #{version} -a -y\n"
-        @cookbook_list[cb] = version #used for validation
+        @create += "knife cookbook#{options['knife_options']} upload #{name} #{opts}\n"
+        @delete += "knife cookbook#{options['knife_options']} delete #{name} #{version} -a -y\n"
+        @cookbook_list[name] = version #used for validation
       end
       validateDependencies() unless Spiceweasel::NOVALIDATION
     end
