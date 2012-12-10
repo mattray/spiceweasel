@@ -14,7 +14,7 @@ Written and tested initially with Chef 0.9.12 (may still work) and continuing de
 
 # File Syntax #
 
-The syntax for the Spiceweasel file may be either JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [example.json](https://github.com/mattray/spiceweasel/blob/master/example.json) or [example.yml](https://github.com/mattray/spiceweasel/blob/master/example.yml)  for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
+The syntax for the Spiceweasel file may be either JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [examples/example.json](https://github.com/mattray/spiceweasel/blob/master/examples/example.json) or [examples/example.yml](https://github.com/mattray/spiceweasel/blob/master/examples/example.yml) for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
 
 ## Manifest syntax changes in Spiceweasel 2.0 ##
 
