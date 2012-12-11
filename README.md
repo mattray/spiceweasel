@@ -196,22 +196,22 @@ Clusters are not a type supported by Chef, this is a logical construct added by 
 
 ```
 clusters:
-  amazon:
+- amazon:
   - ec2 1:
-    - role[mysql]
-    - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium
+      run_list: role[mysql]
+      options: -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium
   - ec2 3:
-    - role[webserver] recipe[mysql::client]
-    - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
+      run_list: role[webserver] recipe[mysql::client]
+      options: -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 ```
 
 produces the knife commands
 
 ```
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -r 'role[mysql]' -j '{ "tags": [ "amazon+rolemysql" ] }'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]' -j '{ "tags": [ "amazon+rolewebserverrecipemysqlclient" ] }'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]' -j '{ "tags": [ "amazon+rolewebserverrecipemysqlclient" ] }'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]' -j '{ "tags": [ "amazon+rolewebserverrecipemysqlclient" ] }'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -j '{"tags":["amazon+rolemysql"]}' -r 'role[mysql]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
 ```
 
 While the addition of the tags is not particularly attractive, it allows us to find the members of the cluster by their run list and add to the cluster if the size has changed.
