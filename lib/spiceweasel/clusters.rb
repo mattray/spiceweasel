@@ -16,34 +16,38 @@
 # limitations under the License.
 #
 
-class Spiceweasel::Clusters
+module Spiceweasel
 
-  attr_reader :create, :delete
+  class Clusters
 
-  def initialize(clusters, cookbooks, environments, roles, options = {})
-    @create = @delete = ''
-    if clusters
-      STDOUT.puts "DEBUG: clusters: #{clusters}" if Spiceweasel::DEBUG
-      clusters.each do |cluster|
-        cluster_name = cluster.keys.first
-        STDOUT.puts "DEBUG: cluster: '#{cluster_name}' '#{cluster[cluster_name]}'" if Spiceweasel::DEBUG
-        # add a tag to the Nodes
-        cluster[cluster_name].each do |node|
-          node_name = node.keys.first
-          run_list = node[node_name]['run_list'] || ''
-          options = node[node_name]['options'] || ''
-          # cluster tag is the cluster name + runlist
-          tag = " -j '{\"tags\":[\"#{cluster_name}+#{run_list.gsub(/[ ,\[\]:]/, '')}\"]}'"
-          STDOUT.puts "DEBUG: cluster: #{cluster_name}:#{node_name}:tag:#{tag}" if Spiceweasel::DEBUG
-          #push the tag back on the options
-          node[node_name]['options'] = options + tag
+    attr_reader :create, :delete
+
+    def initialize(clusters, cookbooks, environments, roles, options = {})
+      @create = @delete = ''
+      if clusters
+        STDOUT.puts "DEBUG: clusters: #{clusters}" if Spiceweasel::DEBUG
+        clusters.each do |cluster|
+          cluster_name = cluster.keys.first
+          STDOUT.puts "DEBUG: cluster: '#{cluster_name}' '#{cluster[cluster_name]}'" if Spiceweasel::DEBUG
+          # add a tag to the Nodes
+          cluster[cluster_name].each do |node|
+            node_name = node.keys.first
+            run_list = node[node_name]['run_list'] || ''
+            options = node[node_name]['options'] || ''
+            # cluster tag is the cluster name + runlist
+            tag = " -j '{\"tags\":[\"#{cluster_name}+#{run_list.gsub(/[ ,\[\]:]/, '')}\"]}'"
+            STDOUT.puts "DEBUG: cluster: #{cluster_name}:#{node_name}:tag:#{tag}" if Spiceweasel::DEBUG
+            #push the tag back on the options
+            node[node_name]['options'] = options + tag
+          end
+          STDOUT.puts "DEBUG: cluster2: '#{cluster_name}' '#{cluster[cluster_name]}'" if Spiceweasel::DEBUG
+          # let's reuse the Nodes logic
+          nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles, options)
+          @create += nodes.create
+          @delete += nodes.delete
         end
-        STDOUT.puts "DEBUG: cluster2: '#{cluster_name}' '#{cluster[cluster_name]}'" if Spiceweasel::DEBUG
-        # let's reuse the Nodes logic
-        nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles, options)
-        @create += nodes.create
-        @delete += nodes.delete
       end
     end
+
   end
 end
