@@ -27,8 +27,8 @@ require 'spiceweasel/roles'
 require 'spiceweasel/data_bags'
 require 'spiceweasel/nodes'
 require 'spiceweasel/clusters'
-# require 'spiceweasel/directory_extractor'
-# require 'spiceweasel/cookbook_data'
+require 'spiceweasel/directory_extractor'
+require 'spiceweasel/cookbook_data'
 
 module Spiceweasel
   class CLI
@@ -128,24 +128,37 @@ module Spiceweasel
     attr_reader :manifest
 
     def run
-      parse_and_validate_input
+      if Spiceweasel::Config[:extractlocal] || Spiceweasel::Config[:extractjson] || Spiceweasel::Config[:extractyaml]
+        @manifest = Spiceweasel::DirectoryExtractor.parse_objects
+      else
+        parse_and_validate_input
+      end
+      Spiceweasel::Log.debug("file manifest: #{@manifest}")
 
-      cookbooks = Cookbooks.new(manifest['cookbooks'], options)
-      environments = Environments.new(manifest['environments'], cookbooks, options)
-      roles = Roles.new(manifest['roles'], environments, cookbooks, options)
-      data_bags = DataBags.new(manifest['data bags'], options)
-      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, options)
-      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, options)
+      cookbooks = Cookbooks.new(manifest['cookbooks'])
+      environments = Environments.new(manifest['environments'], cookbooks)
+      roles = Roles.new(manifest['roles'], environments, cookbooks)
+      data_bags = DataBags.new(manifest['data bags'])
+      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
+      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
 
-      # require 'pry'
-      # binding.pry
+      create = cookbooks.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
+      delete = cookbooks.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
 
-      puts cookbooks.create
-      puts environments.create
-      puts roles.create
-      puts data_bags.create
-      puts nodes.create
-      puts clusters.create
+      if Spiceweasel::Config[:delete]
+        puts delete unless delete.empty?
+      elsif Spiceweasel::Config[:rebuild]
+        puts delete unless delete.empty?
+        puts create unless create.empty?
+      else
+        if Spiceweasel::Config[:extractjson]
+          puts JSON.pretty_generate(input)
+        elsif Spiceweasel::Config[:extractyaml]
+          puts input.to_yaml
+        else
+          puts create unless create.empty?
+        end
+      end
       exit 0
     end
 
@@ -161,6 +174,12 @@ module Spiceweasel
       ARGV << "-h" if ARGV.empty?
       begin
         parse_options
+        if Spiceweasel::Config[:knifeconfig]
+          Spiceweasel::Config[:knife_options] = "-c #{Spiceweasel::Config[:knifeconfig]} "
+        end
+        if Spiceweasel::Config[:serverurl]
+          Spiceweasel::Config[:knife_options] += "--server-url #{Spiceweasel::Config[:serverurl]} "
+        end
       rescue OptionParser::InvalidOption => e
         STDERR.puts e.message
         puts opt_parser.to_s
@@ -179,7 +198,7 @@ module Spiceweasel
         file = ARGV.last
         Spiceweasel::Log.debug("file: #{file}")
         if !File.file?(file)
-          STDERR.puts "ERROR: Invalid manifest .json or .yml file provided."
+          STDERR.puts "ERROR: #{file} is an invalid manifest file, please check your path."
           exit(-1)
         end
         if (file.end_with?(".yml"))
@@ -203,7 +222,6 @@ module Spiceweasel
         puts opt_parser.to_s
         exit(-1)
       end
-      Spiceweasel::Log.debug("file manifest: #{@manifest}")
     end
 
   end

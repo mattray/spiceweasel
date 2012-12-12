@@ -21,7 +21,7 @@ module Spiceweasel
 
     attr_reader :cookbook_list, :create, :delete
 
-    def initialize(cookbooks = [], options = {})
+    def initialize(cookbooks = [])
       @create = @delete = ''
       @cookbook_list = {}
       @dependencies = []
@@ -32,17 +32,17 @@ module Spiceweasel
           name = cookbook.keys.first
           if cookbook[name]
             version = cookbook[name]['version']
-            opts = cookbook[name]['options']
+            options = cookbook[name]['options']
           end
-          Spiceweasel::Log.debug("cookbook: #{name} #{version} #{opts}")
+          Spiceweasel::Log.debug("cookbook: #{name} #{version} #{options}")
           if File.directory?("cookbooks")
             if File.directory?("cookbooks/#{name}") #TODO use the name from metadata
               validateMetadata(name,version) unless Spiceweasel::Config[:novalidation]
             else
               if Spiceweasel::Config[:siteinstall] #use knife cookbook site install
-                @create += "knife cookbook#{options['knife_options']} site install #{name} #{version} #{opts}\n"
+                @create += "knife cookbook#{Spiceweasel::Config[:knife_options]} site install #{name} #{version} #{options}\n"
               else #use knife cookbook site download, untar and then remove the tarball
-                @create += "knife cookbook#{options['knife_options']} site download #{name} #{version} --file cookbooks/#{name}.tgz #{opts}\n"
+                @create += "knife cookbook#{Spiceweasel::Config[:knife_options]} site download #{name} #{version} --file cookbooks/#{name}.tgz #{options}\n"
                 @create += "tar -C cookbooks/ -xf cookbooks/#{name}.tgz\n"
                 @create += "rm -f cookbooks/#{name}.tgz\n"
               end
@@ -51,8 +51,8 @@ module Spiceweasel
             STDERR.puts "ERROR: 'cookbooks' directory not found, unable to validate, download and load cookbooks"
             exit(-1)
           end
-          @create += "knife cookbook#{options['knife_options']} upload #{name} #{opts}\n"
-          @delete += "knife cookbook#{options['knife_options']} delete #{name} #{version} -a -y\n"
+          @create += "knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{name} #{options}\n"
+          @delete += "knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y\n"
           @cookbook_list[name] = version #used for validation
         end
         validateDependencies() unless Spiceweasel::Config[:novalidation]

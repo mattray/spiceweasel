@@ -23,7 +23,7 @@ module Spiceweasel
 
     attr_reader :create, :delete
 
-    def initialize(nodes, cookbooks, environments, roles, options = {})
+    def initialize(nodes, cookbooks, environments, roles)
       @create = @delete = ''
       if nodes
         Spiceweasel::Log.debug("nodes: #{nodes}")
@@ -35,9 +35,9 @@ module Spiceweasel
             run_list = node[name]['run_list'].gsub(/ /,',').gsub(/,+/,',')
             Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
             validateRunList(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
-            noptions = node[name]['options']
-            Spiceweasel::Log.debug("node: '#{name}' options: '#{noptions}'")
-            validateOptions(name, noptions, environments) unless Spiceweasel::Config[:novalidation]
+            options = node[name]['options']
+            Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
+            validateOptions(name, options, environments) unless Spiceweasel::Config[:novalidation]
           end
           #provider support
           provider = name.split()
@@ -48,48 +48,48 @@ module Spiceweasel
             end
             if Spiceweasel::Config[:parallel]
               @create += "seq #{count} | parallel -j 0 -v \""
-              @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/\{\{n\}\}/, '{}')
+              @create += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
               if run_list
                 @create += " -r '#{run_list}'\"\n"
               end
             else
               count.to_i.times do |i|
-                @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+                @create += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
                 if run_list.length > 0
                   @create += " -r '#{run_list}'\n"
                 end
               end
             end
-            @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
+            @delete += "knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y\n"
           elsif name.start_with?("windows") #windows node bootstrap support
             nodeline = name.split()
             provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
             nodeline.each do |server|
-              @create += "knife bootstrap #{provider[0]} #{provider[1]}#{options['knife_options']} #{server} #{noptions}"
+              @create += "knife bootstrap #{provider[0]} #{provider[1]}#{Spiceweasel::Config[:knife_options]} #{server} #{options}"
               if run_list
                 @create += " -r '#{run_list}'\n"
               else
                 @create += "\n"
               end
-              @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
-              @delete += "knife client#{options['knife_options']} delete #{server} -y\n"
+              @delete += "knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y\n"
+              @delete += "knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y\n"
             end
-            @delete += "knife node#{options['knife_options']} list | xargs knife #{provider[0]} server delete -y\n"
+            @delete += "knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y\n"
           else #node bootstrap support
             name.split.each_with_index do |server, i|
-              @create += "knife bootstrap#{options['knife_options']} #{server} #{noptions}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+              @create += "knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
               if run_list
                 @create += " -r '#{run_list}'\n"
               else
                 @create += "\n"
               end
-              @delete += "knife node#{options['knife_options']} delete #{server} -y\n"
-              @delete += "knife client#{options['knife_options']} delete #{server} -y\n"
+              @delete += "knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y\n"
+              @delete += "knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y\n"
             end
           end
         end
       end
-      @delete += "knife node#{options['knife_options']} bulk delete .* -y\n"
+      @delete += "knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y\n"
     end
 
     #ensure run_list contents are listed previously.

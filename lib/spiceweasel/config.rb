@@ -28,6 +28,8 @@ module Spiceweasel
     log_level :info
     log_location STDOUT
 
+    knife_options ''
+
     # do we really need these?
     delete false
     dryrun true

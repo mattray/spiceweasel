@@ -23,7 +23,7 @@ module Spiceweasel
 
     attr_reader :role_list, :create, :delete
 
-    def initialize(roles = {}, environments = [], cookbooks = {}, options = {})
+    def initialize(roles = {}, environments = [], cookbooks = {})
       @create = @delete = ''
       @role_list = []
       if roles
@@ -38,11 +38,11 @@ module Spiceweasel
             exit(-1)
           end
           if File.exists?("roles/#{role}.json")
-            @create += "knife role#{options['knife_options']} from file #{role}.json\n"
+            @create += "knife role#{Spiceweasel::Config[:knife_options]} from file #{role}.json\n"
           else #assume no .json means they want .rb and catchall for misssing dir
-            @create += "knife role#{options['knife_options']} from file #{role}.rb\n"
+            @create += "knife role#{Spiceweasel::Config[:knife_options]} from file #{role}.rb\n"
           end
-          @delete += "knife role#{options['knife_options']} delete #{role} -y\n"
+          @delete += "knife role#{Spiceweasel::Config[:knife_options]} delete #{role} -y\n"
           @role_list << role
         end
       end
