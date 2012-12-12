@@ -34,7 +34,8 @@ module Spiceweasel
   class CLI
     include Mixlib::CLI
 
-    banner('Usage: spiceweasel [option] file\n       spiceweasel [option] --extractlocal')
+    banner('Usage: spiceweasel [option] file
+       spiceweasel [option] --extractlocal')
 
     option :debug,
     :long => '--debug',
