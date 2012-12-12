@@ -47,8 +47,9 @@ module Spiceweasel
                 @create += "rm -f cookbooks/#{name}.tgz\n"
               end
             end
-          else
-            STDERR.puts "'cookbooks' directory not found, unable to validate, download and load cookbooks" unless Spiceweasel::Config[:novalidation]
+          elsif !Spiceweasel::Config[:novalidation]
+            STDERR.puts "ERROR: 'cookbooks' directory not found, unable to validate, download and load cookbooks"
+            exit(-1)
           end
           @create += "knife cookbook#{options['knife_options']} upload #{name} #{opts}\n"
           @delete += "knife cookbook#{options['knife_options']} delete #{name} #{version} -a -y\n"

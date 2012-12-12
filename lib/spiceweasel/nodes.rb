@@ -26,17 +26,17 @@ module Spiceweasel
     def initialize(nodes, cookbooks, environments, roles, options = {})
       @create = @delete = ''
       if nodes
-        STDOUT.puts "DEBUG: nodes: #{nodes}" if Spiceweasel::Config[:debug]
+        Spiceweasel::Log.debug("nodes: #{nodes}")
         nodes.each do |node|
           name = node.keys.first
-          STDOUT.puts "DEBUG: node: '#{name}' '#{node[name]}'" if Spiceweasel::Config[:debug]
+          Spiceweasel::Log.debug("node: '#{name}' '#{node[name]}'")
           if node[name]
             #convert spaces to commas, drop multiple commas
             run_list = node[name]['run_list'].gsub(/ /,',').gsub(/,+/,',')
-            STDOUT.puts "DEBUG: node: '#{name}' run_list: '#{run_list}'" if Spiceweasel::Config[:debug]
+            Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
             validateRunList(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
             noptions = node[name]['options']
-            STDOUT.puts "DEBUG: node: '#{name}' options: '#{noptions}'" if Spiceweasel::Config[:debug]
+            Spiceweasel::Log.debug("node: '#{name}' options: '#{noptions}'")
             validateOptions(name, noptions, environments) unless Spiceweasel::Config[:novalidation]
           end
           #provider support

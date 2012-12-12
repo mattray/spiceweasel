@@ -24,10 +24,10 @@ module Spiceweasel
     def initialize(clusters, cookbooks, environments, roles, options = {})
       @create = @delete = ''
       if clusters
-        STDOUT.puts "DEBUG: clusters: #{clusters}" if Spiceweasel::Config[:debug]
+        Spiceweasel::Log.debug("clusters: #{clusters}")
         clusters.each do |cluster|
           cluster_name = cluster.keys.first
-          STDOUT.puts "DEBUG: cluster: '#{cluster_name}' '#{cluster[cluster_name]}'" if Spiceweasel::Config[:debug]
+          Spiceweasel::Log.debug("cluster: '#{cluster_name}' '#{cluster[cluster_name]}'")
           # add a tag to the Nodes
           cluster[cluster_name].each do |node|
             node_name = node.keys.first
@@ -35,11 +35,11 @@ module Spiceweasel
             options = node[node_name]['options'] || ''
             # cluster tag is the cluster name + runlist
             tag = " -j '{\"tags\":[\"#{cluster_name}+#{run_list.gsub(/[ ,\[\]:]/, '')}\"]}'"
-            STDOUT.puts "DEBUG: cluster: #{cluster_name}:#{node_name}:tag:#{tag}" if Spiceweasel::Config[:debug]
+            Spiceweasel::Log.debug("cluster: #{cluster_name}:#{node_name}:tag:#{tag}")
             #push the tag back on the options
             node[node_name]['options'] = options + tag
           end
-          STDOUT.puts "DEBUG: cluster2: '#{cluster_name}' '#{cluster[cluster_name]}'" if Spiceweasel::Config[:debug]
+          Spiceweasel::Log.debug("cluster2: '#{cluster_name}' '#{cluster[cluster_name]}'")
           # let's reuse the Nodes logic
           nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles, options)
           @create += nodes.create

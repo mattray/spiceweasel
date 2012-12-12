@@ -26,7 +26,7 @@ module Spiceweasel
     def initialize(data_bags = [], options = {})
       @create = @delete = ''
       if data_bags
-        STDOUT.puts "DEBUG: data bags: #{data_bags}" if Spiceweasel::Config[:debug]
+        Spiceweasel::Log.debug("data bags: #{data_bags}")
         data_bags.each do |data_bag|
           db = data_bag.keys.first
           #check directories
@@ -49,13 +49,13 @@ module Spiceweasel
             end
           end
           items = [] if items.nil?
-          STDOUT.puts "DEBUG: data bag: #{db} #{secret} #{items}" if Spiceweasel::Config[:debug]
+          Spiceweasel::Log.debug("data bag: #{db} #{secret} #{items}")
           while item = items.shift
-            STDOUT.puts "DEBUG: data bag #{db} item: #{item}" if Spiceweasel::Config[:debug]
+            Spiceweasel::Log.debug("data bag #{db} item: #{item}")
             if item =~ /\*/ #wildcard support, will fail if directory not present
               files = Dir.glob("data_bags/#{db}/*.json")
               items += files.collect {|x| x[x.rindex('/')+1..-6]}
-              STDOUT.puts "DEBUG: found items '#{items}' for data bag: #{db}" if Spiceweasel::Config[:debug]
+              Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db}")
               next
             end
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]

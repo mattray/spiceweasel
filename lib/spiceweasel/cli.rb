@@ -22,11 +22,11 @@ require 'yaml'
 
 require 'spiceweasel'
 require 'spiceweasel/cookbooks'
-# require 'spiceweasel/environments'
-# require 'spiceweasel/roles'
-# require 'spiceweasel/data_bags'
-# require 'spiceweasel/nodes'
-# require 'spiceweasel/clusters'
+require 'spiceweasel/environments'
+require 'spiceweasel/roles'
+require 'spiceweasel/data_bags'
+require 'spiceweasel/nodes'
+require 'spiceweasel/clusters'
 # require 'spiceweasel/directory_extractor'
 # require 'spiceweasel/cookbook_data'
 
@@ -130,11 +130,21 @@ module Spiceweasel
       parse_and_validate_input
 
       cookbooks = Cookbooks.new(manifest['cookbooks'], options)
+      environments = Environments.new(manifest['environments'], cookbooks, options)
+      roles = Roles.new(manifest['roles'], environments, cookbooks, options)
+      data_bags = DataBags.new(manifest['data bags'], options)
+      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, options)
+      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, options)
 
       # require 'pry'
       # binding.pry
 
       puts cookbooks.create
+      puts environments.create
+      puts roles.create
+      puts data_bags.create
+      puts nodes.create
+      puts clusters.create
       exit 0
     end
 
