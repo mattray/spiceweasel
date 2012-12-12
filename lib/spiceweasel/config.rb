@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,31 @@
 # limitations under the License.
 #
 
-require 'spiceweasel/version'
-require 'spiceweasel/cli'
-require 'spiceweasel/config'
-require 'spiceweasel/log'
+require 'mixlib/config'
+
+module Spiceweasel
+  class Config
+    extend Mixlib::Config
+
+    debug false
+
+    # logging
+    log_level :info
+    log_location STDOUT
+
+    knife_options ''
+
+    # do we really need these?
+    delete false
+    dryrun true
+    extractjson false
+    extractlocal false
+    extractyaml false
+    help false
+    novalidation false
+    parallel false
+    rebuild false
+    siteinstall false
+
+  end
+end

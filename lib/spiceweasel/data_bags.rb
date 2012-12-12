@@ -18,69 +18,71 @@
 
 require 'json'
 
-class Spiceweasel::DataBags
+module Spiceweasel
+  class DataBags
 
-  attr_reader :create, :delete
+    attr_reader :create, :delete
 
-  def initialize(data_bags = [], options = {})
-    @create = @delete = ''
-    if data_bags
-      STDOUT.puts "DEBUG: data bags: #{data_bags}" if Spiceweasel::DEBUG
-      data_bags.each do |data_bag|
-        db = data_bag.keys.first
-        #check directories
-        if !File.directory?("data_bags") && !Spiceweasel::NOVALIDATION
-          STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
-          exit(-1)
-        end
-        if !File.directory?("data_bags/#{db}") && !Spiceweasel::NOVALIDATION
-          STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
-          exit(-1)
-        end
-        @create += "knife data bag#{options['knife_options']} create #{db}\n"
-        @delete += "knife data bag#{options['knife_options']} delete #{db} -y\n"
-        if data_bag[db]
-          items = data_bag[db]['items']
-          secret = data_bag[db]['secret']
-          if secret && !File.exists?(secret) && !Spiceweasel::NOVALIDATION
-            STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
+    def initialize(data_bags = [])
+      @create = @delete = ''
+      if data_bags
+        Spiceweasel::Log.debug("data bags: #{data_bags}")
+        data_bags.each do |data_bag|
+          db = data_bag.keys.first
+          #check directories
+          if !File.directory?("data_bags") && !Spiceweasel::Config[:novalidation]
+            STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
             exit(-1)
           end
-        end
-        items = [] if items.nil?
-        STDOUT.puts "DEBUG: data bag: #{db} #{secret} #{items}" if Spiceweasel::DEBUG
-        while item = items.shift
-          STDOUT.puts "DEBUG: data bag #{db} item: #{item}" if Spiceweasel::DEBUG
-          if item =~ /\*/ #wildcard support, will fail if directory not present
-            files = Dir.glob("data_bags/#{db}/*.json")
-            items += files.collect {|x| x[x.rindex('/')+1..-6]}
-            STDOUT.puts "DEBUG: found items '#{items}' for data bag: #{db}" if Spiceweasel::DEBUG
-            next
+          if !File.directory?("data_bags/#{db}") && !Spiceweasel::Config[:novalidation]
+            STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
+            exit(-1)
           end
-          validateItem(db, item) unless Spiceweasel::NOVALIDATION
-          if secret
-            @create += "knife data bag#{options['knife_options']} from file #{db} #{item}.json --secret-file #{secret}\n"
-          else
-            @create += "knife data bag#{options['knife_options']} from file #{db} #{item}.json\n"
+          @create += "knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}\n"
+          @delete += "knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y\n"
+          if data_bag[db]
+            items = data_bag[db]['items']
+            secret = data_bag[db]['secret']
+            if secret && !File.exists?(secret) && !Spiceweasel::Config[:novalidation]
+              STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
+              exit(-1)
+            end
+          end
+          items = [] if items.nil?
+          Spiceweasel::Log.debug("data bag: #{db} #{secret} #{items}")
+          while item = items.shift
+            Spiceweasel::Log.debug("data bag #{db} item: #{item}")
+            if item =~ /\*/ #wildcard support, will fail if directory not present
+              files = Dir.glob("data_bags/#{db}/*.json")
+              items += files.collect {|x| x[x.rindex('/')+1..-6]}
+              Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db}")
+              next
+            end
+            validateItem(db, item) unless Spiceweasel::Config[:novalidation]
+            if secret
+              @create += "knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json --secret-file #{secret}\n"
+            else
+              @create += "knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json\n"
+            end
           end
         end
       end
     end
-  end
 
-  #validate the item to be loaded
-  def validateItem(db, item)
-    if !File.exists?("data_bags/#{db}/#{item}.json")
-      STDERR.puts "ERROR: data bag '#{db}' item '#{item}' file 'data_bags/#{db}/#{item}.json' does not exist"
-      exit(-1)
+    #validate the item to be loaded
+    def validateItem(db, item)
+      if !File.exists?("data_bags/#{db}/#{item}.json")
+        STDERR.puts "ERROR: data bag '#{db}' item '#{item}' file 'data_bags/#{db}/#{item}.json' does not exist"
+        exit(-1)
+      end
+      f = File.read("data_bags/#{db}/#{item}.json")
+      itemfile = JSON.parse(f) #invalid JSON will throw a trace
+      #validate the id matches the file name
+      if !item.eql?(itemfile['id'])
+        STDERR.puts "ERROR: data bag '#{db}' item '#{item}' listed in the manifest does not match the id '#{itemfile['id']}' within the 'data_bags/#{db}/#{item}.json' file."
+        exit(-1)
+      end
     end
-    f = File.read("data_bags/#{db}/#{item}.json")
-    itemfile = JSON.parse(f) #invalid JSON will throw a trace
-    #validate the id matches the file name
-    if !item.eql?(itemfile['id'])
-      STDERR.puts "ERROR: data bag '#{db}' item '#{item}' listed in the manifest does not match the id '#{itemfile['id']}' within the 'data_bags/#{db}/#{item}.json' file."
-      exit(-1)
-    end
-  end
 
+  end
 end

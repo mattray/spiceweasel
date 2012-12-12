@@ -17,105 +17,107 @@
 # limitations under the License.
 #
 
-class Spiceweasel::DirectoryExtractor
+module Spiceweasel
+  class DirectoryExtractor
 
-  def self.parse_objects
-    objects = {'cookbooks' => nil, 'roles' => nil, 'environments' => nil, 'data bags' => nil, 'nodes' => nil}
-    # COOKBOOKS
-    cookbooks = []
-    Dir.glob('cookbooks/*').each do |cookbook_full_path|
-      cookbook = cookbook_full_path.split('/').last
-      STDOUT.puts "DEBUG: dir_ext: cookbook: '#{cookbook}'" if Spiceweasel::DEBUG
-      cookbook_data = Spiceweasel::CookbookData.new(cookbook)
-      if cookbook_data.is_readable?
-        cookbooks << cookbook_data.read
+    def self.parse_objects
+      objects = {'cookbooks' => nil, 'roles' => nil, 'environments' => nil, 'data bags' => nil, 'nodes' => nil}
+      # COOKBOOKS
+      cookbooks = []
+      Dir.glob('cookbooks/*').each do |cookbook_full_path|
+        cookbook = cookbook_full_path.split('/').last
+        STDOUT.puts "DEBUG: dir_ext: cookbook: '#{cookbook}'" if Spiceweasel::Config[:debug]
+        cookbook_data = Spiceweasel::CookbookData.new(cookbook)
+        if cookbook_data.is_readable?
+          cookbooks << cookbook_data.read
+        end
       end
-    end
-    STDOUT.puts "DEBUG: dir_ext: cookbooks: '#{cookbooks}'" if Spiceweasel::DEBUG
-    cookbooks = self.order_cookbooks_by_dependency(cookbooks)
-    objects['cookbooks'] = cookbooks unless cookbooks.empty?
+      STDOUT.puts "DEBUG: dir_ext: cookbooks: '#{cookbooks}'" if Spiceweasel::Config[:debug]
+      cookbooks = self.order_cookbooks_by_dependency(cookbooks)
+      objects['cookbooks'] = cookbooks unless cookbooks.empty?
 
-    # ROLES
-    roles = []
-    Dir.glob("roles/*.{rb,json}").each do |role_full_path|
-      role = self.grab_name_from_path(role_full_path)
-      STDOUT.puts "DEBUG: dir_ext: role: '#{role}'" if Spiceweasel::DEBUG
-      roles << {role => nil}
-    end
-    objects['roles'] = roles unless roles.nil?
-    # ENVIRONMENTS
-    environments = []
-    Dir.glob("environments/*.{rb,json}").each do |environment_full_path|
-      environment = self.grab_name_from_path(environment_full_path)
-      STDOUT.puts "DEBUG: dir_ext: environment: '#{environment}'" if Spiceweasel::DEBUG
-      environments << {environment => nil}
-    end
-    objects['environments'] = environments unless environments.empty?
-    # DATA BAGS
-    data_bags = []
-    Dir.glob('data_bags/*').each do |data_bag_full_path|
-      data_bag = data_bag_full_path.split('/').last
-      STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}'" if Spiceweasel::DEBUG
-      data_bag_items = []
-      Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
-        STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'" if Spiceweasel::DEBUG
-        data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
-      end if File.directory?(data_bag_full_path)
-      data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
-    end
-    objects['data bags'] = data_bags unless data_bags.empty?
-    # NODES
-    # TODO: Cant use this yet as node_list.rb doesnt support node from file syntax but expects the node info to be part of the objects passed in
-    # nodes = []
-    # Dir.glob("nodes/*.{rb,json}").each do |node_full_path|
-    #   node = self.grab_name_from_path(node_full_path)
-    #   nodes  << {node => nil}
-    # end
-    # objects['nodes'] = nodes unless nodes.empty?
-
-    objects
-  end
-
-  def self.grab_name_from_path(path)
-    name = path.split('/').last.split('.')
-    if name.length > 1
-      name.pop
-    end
-    name.join('.')
-  end
-
-  def self.order_cookbooks_by_dependency(cookbooks)
-    # Weak algorithm, not particularly elegant, ignores version info as unlikely to have two versions of a cookbook anyway
-    # We're going to find the cookbooks with their dependencies matched and keep going until all we have is unmatched deps
-
-    sorted_cookbooks = []
-    unsorted_cookbooks = cookbooks
-    scount = 0
-    #keep looping until no more cookbooks are left or can't remove remainders
-    while unsorted_cookbooks.any? and scount < cookbooks.length
-      cookbook = unsorted_cookbooks.shift
-      #if all the cookbook dependencies are in sorted_cookbooks
-      if sorted_cookbooks.eql?(sorted_cookbooks | cookbook['dependencies'].collect {|x| x['cookbook']})
-        sorted_cookbooks.push(cookbook['name'])
-        scount = 0
-      else #put it back in the list
-        unsorted_cookbooks.push(cookbook)
-        scount = scount + 1
+      # ROLES
+      roles = []
+      Dir.glob("roles/*.{rb,json}").each do |role_full_path|
+        role = self.grab_name_from_path(role_full_path)
+        STDOUT.puts "DEBUG: dir_ext: role: '#{role}'" if Spiceweasel::Config[:debug]
+        roles << {role => nil}
       end
-      STDOUT.puts "DEBUG: dir_ext: sorted_cookbooks: '#{sorted_cookbooks}' #{scount}" if Spiceweasel::DEBUG
-    end
-    if scount > 0
-      remainders = unsorted_cookbooks.collect {|x| x['name']}
-      STDOUT.puts "DEBUG: dir_ext: remainders: '#{remainders}'" if Spiceweasel::DEBUG
-      if Spiceweasel::NOVALIDATION #stuff is missing, oh well
-        sorted_cookbooks.push(remainders).flatten!
-      else
-        deps = unsorted_cookbooks.collect {|x| x['dependencies'].collect {|x| x['cookbook']} - sorted_cookbooks}
-        STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies in cookbook(s): #{remainders} depend(s) on #{deps}"
-        exit(-1)
+      objects['roles'] = roles unless roles.nil?
+      # ENVIRONMENTS
+      environments = []
+      Dir.glob("environments/*.{rb,json}").each do |environment_full_path|
+        environment = self.grab_name_from_path(environment_full_path)
+        STDOUT.puts "DEBUG: dir_ext: environment: '#{environment}'" if Spiceweasel::Config[:debug]
+        environments << {environment => nil}
       end
+      objects['environments'] = environments unless environments.empty?
+      # DATA BAGS
+      data_bags = []
+      Dir.glob('data_bags/*').each do |data_bag_full_path|
+        data_bag = data_bag_full_path.split('/').last
+        STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}'" if Spiceweasel::Config[:debug]
+        data_bag_items = []
+        Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
+          STDOUT.puts "DEBUG: dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'" if Spiceweasel::Config[:debug]
+          data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
+        end if File.directory?(data_bag_full_path)
+        data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
+      end
+      objects['data bags'] = data_bags unless data_bags.empty?
+      # NODES
+      # TODO: Cant use this yet as node_list.rb doesnt support node from file syntax but expects the node info to be part of the objects passed in
+      # nodes = []
+      # Dir.glob("nodes/*.{rb,json}").each do |node_full_path|
+      #   node = self.grab_name_from_path(node_full_path)
+      #   nodes  << {node => nil}
+      # end
+      # objects['nodes'] = nodes unless nodes.empty?
+
+      objects
     end
-    #hack to get the format same as yaml/json parse
-    sorted_cookbooks.collect { |x| { x => nil } }
+
+    def self.grab_name_from_path(path)
+      name = path.split('/').last.split('.')
+      if name.length > 1
+        name.pop
+      end
+      name.join('.')
+    end
+
+    def self.order_cookbooks_by_dependency(cookbooks)
+      # Weak algorithm, not particularly elegant, ignores version info as unlikely to have two versions of a cookbook anyway
+      # We're going to find the cookbooks with their dependencies matched and keep going until all we have is unmatched deps
+
+      sorted_cookbooks = []
+      unsorted_cookbooks = cookbooks
+      scount = 0
+      #keep looping until no more cookbooks are left or can't remove remainders
+      while unsorted_cookbooks.any? and scount < cookbooks.length
+        cookbook = unsorted_cookbooks.shift
+        #if all the cookbook dependencies are in sorted_cookbooks
+        if sorted_cookbooks.eql?(sorted_cookbooks | cookbook['dependencies'].collect {|x| x['cookbook']})
+          sorted_cookbooks.push(cookbook['name'])
+          scount = 0
+        else #put it back in the list
+          unsorted_cookbooks.push(cookbook)
+          scount = scount + 1
+        end
+        STDOUT.puts "DEBUG: dir_ext: sorted_cookbooks: '#{sorted_cookbooks}' #{scount}" if Spiceweasel::Config[:debug]
+      end
+      if scount > 0
+        remainders = unsorted_cookbooks.collect {|x| x['name']}
+        STDOUT.puts "DEBUG: dir_ext: remainders: '#{remainders}'" if Spiceweasel::Config[:debug]
+        if Spiceweasel::Config[:novalidation] #stuff is missing, oh well
+          sorted_cookbooks.push(remainders).flatten!
+        else
+          deps = unsorted_cookbooks.collect {|x| x['dependencies'].collect {|x| x['cookbook']} - sorted_cookbooks}
+          STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies in cookbook(s): #{remainders} depend(s) on #{deps}"
+          exit(-1)
+        end
+      end
+      #hack to get the format same as yaml/json parse
+      sorted_cookbooks.collect { |x| { x => nil } }
+    end
   end
 end

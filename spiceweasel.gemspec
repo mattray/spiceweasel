@@ -7,18 +7,19 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Matt Ray"]
   s.email       = ["matt@opscode.com"]
-  s.homepage    = "http://github.com/mattray/spiceweasel"
+  s.license     = 'Apache'
+  s.homepage    = "https://github.com/mattray/spiceweasel"
   s.summary     = %q{CLI for generating Chef knife commands from a simple JSON or YAML file.}
   s.description = %q{Provides a CLI tool for generating knife commands to build Chef-managed infrastructure from a simple JSON or YAML file.}
 
-  s.rubyforge_project = "spiceweasel"
-
-  s.files         = Dir.glob('{bin,lib}/**/*') + ['README.md']
+  s.files         = Dir['LICENSE', 'README.md', 'bin/*', 'lib/**/*']
   s.test_files    = Dir.glob('spec/**/*')
   s.executables   = Dir.glob('bin/**/*').map{ |f| File.basename(f) }
   s.require_path  = "lib"
 
   s.add_dependency('json')
   s.add_dependency('mixlib-cli')
+  s.add_dependency('mixlib-config')
+  s.add_dependency('mixlib-log')
   s.add_development_dependency('rspec')
 end
