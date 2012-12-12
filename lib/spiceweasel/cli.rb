@@ -37,6 +37,10 @@ module Spiceweasel
     banner('Usage: spiceweasel [option] file
        spiceweasel [option] --extractlocal')
 
+    option :clusterfile,
+    :long => '--cluster-file file',
+    :description => 'Manifest file for the cluster to use, overrides any other node or cluster definitions'
+
     option :debug,
     :long => '--debug',
     :description => 'Verbose debugging messages',
@@ -125,15 +129,18 @@ module Spiceweasel
     :proc => lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
     :exit => 0
 
-    attr_reader :manifest
-
     def run
       if Spiceweasel::Config[:extractlocal] || Spiceweasel::Config[:extractjson] || Spiceweasel::Config[:extractyaml]
-        @manifest = Spiceweasel::DirectoryExtractor.parse_objects
+        manifest = Spiceweasel::DirectoryExtractor.parse_objects
       else
-        parse_and_validate_input
+        manifest = parse_and_validate_input(ARGV.last)
+        if Spiceweasel::Config[:clusterfile]
+          # if we have a cluster file, override any nodes or clusters in the original manifest
+          manifest['nodes'] = manifest['clusters'] = {}
+          manifest.merge!(parse_and_validate_input(Spiceweasel::Config[:clusterfile]))
+        end
       end
-      Spiceweasel::Log.debug("file manifest: #{@manifest}")
+      Spiceweasel::Log.debug("file manifest: #{manifest}")
 
       cookbooks = Cookbooks.new(manifest['cookbooks'])
       environments = Environments.new(manifest['environments'], cookbooks)
@@ -193,18 +200,17 @@ module Spiceweasel
       Spiceweasel::Log.level = :debug if Spiceweasel::Config[:debug]
     end
 
-    def parse_and_validate_input
+    def parse_and_validate_input(file)
       begin
-        file = ARGV.last
         Spiceweasel::Log.debug("file: #{file}")
         if !File.file?(file)
           STDERR.puts "ERROR: #{file} is an invalid manifest file, please check your path."
           exit(-1)
         end
         if (file.end_with?(".yml"))
-          @manifest = YAML.load_file ARGV.last
+          output = YAML.load_file(file)
         elsif (file.end_with?(".json"))
-          @manifest = JSON.parse(File.read(ARGV.last))
+          output = JSON.parse(file)
         else
           STDERR.puts "ERROR: #{file} is an unknown file type, please use a file ending with either '.json' or '.yml'."
           exit(-1)
@@ -222,6 +228,7 @@ module Spiceweasel
         puts opt_parser.to_s
         exit(-1)
       end
+      output
     end
 
   end

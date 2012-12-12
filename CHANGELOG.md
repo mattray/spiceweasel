@@ -4,11 +4,12 @@ This is the current, previous and future development milestones and contains the
 
 * Refresh of the YAML/JSON syntax in order to support a richer set of options and be more explicit.
 * renamed Spiceweasel classes to match the manifest items (cookbooks, environments, roles, data bags and nodes)
-* client deletion is now supported by --delete
+* client deletion is now supported by `--delete`
 * added support for a new top-level 'clusters' grouping for nodes, README.md has more.
 * reorganize Classes into Spiceweasel module to refactor the bin/spiceweasel and act more like a library
-* added 'spiceweasel/config' using mixlib-config to clean up use of constants.
-* added 'spiceweasel/log' using mixlib-log for real logging support.
+* added `spiceweasel/config` using mixlib-config to clean up use of constants.
+* added `spiceweasel/log` using mixlib-log for real logging support.
+* support for new `--cluster-file` option for specifying an external cluster definition and switching endpoints.
 
 # 2.0.0 TODO #
 * EXECUTE THE COMMANDS

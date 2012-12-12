@@ -192,7 +192,7 @@ which generates nodes named "webserver1", "webserver2" and "webserver3".
 
 ## Clusters ##
 
-Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `cluster` section is a special case of `node`, where each member of the named cluster in the manifest will be tagged to ensure that the entire cluster may be created, refreshed and destroyed in sync. The node syntax is the same as that under `nodes`, the only addition is the cluster name.
+Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be tagged to ensure that the entire cluster may be created, refreshed and destroyed in sync. The node syntax is the same as that under `nodes`, the only addition is the cluster name.
 
 ```
 clusters:
@@ -214,7 +214,7 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
 ```
 
-While the addition of the tags is not particularly attractive, it allows us to find the members of the cluster by their run list and add to the cluster if the size has changed.
+Another use of `clusters` is with the `--cluster-file` option, which will allow the use of a different file to define the members of the cluster. If there are any `nodes` or `clusters` defined in the primary manifest file, they will be removed and the content of the `--cluster-file` will be used instead. This allows you to switch the target destination of infrastructure by picking different `--cluster-file` endpoints.
 
 # Extract #
 
@@ -256,6 +256,10 @@ This will generate the knife commands to build the described infrastructure. Inf
 ## -c/--knifeconfig ##
 
 Specify a knife.rb configuration file to use with the knife commands.
+
+## --cluster-file ##
+
+Specify the file to use to override the `nodes` and `clusters` from the primary manifest file. This allows you to switch the target destination of infrastructure by picking different `--cluster-file` endpoints.
 
 ## --debug ##
 
