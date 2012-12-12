@@ -17,7 +17,6 @@
 #
 
 module Spiceweasel
-
   class Nodes
 
     PROVIDERS = %w{bluebox clodo cs ec2 gandi hp lxc openstack rackspace slicehost terremark voxel}
@@ -27,18 +26,18 @@ module Spiceweasel
     def initialize(nodes, cookbooks, environments, roles, options = {})
       @create = @delete = ''
       if nodes
-        STDOUT.puts "DEBUG: nodes: #{nodes}" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: nodes: #{nodes}" if Spiceweasel::Config[:debug]
         nodes.each do |node|
           name = node.keys.first
-          STDOUT.puts "DEBUG: node: '#{name}' '#{node[name]}'" if Spiceweasel::DEBUG
+          STDOUT.puts "DEBUG: node: '#{name}' '#{node[name]}'" if Spiceweasel::Config[:debug]
           if node[name]
             #convert spaces to commas, drop multiple commas
             run_list = node[name]['run_list'].gsub(/ /,',').gsub(/,+/,',')
-            STDOUT.puts "DEBUG: node: '#{name}' run_list: '#{run_list}'" if Spiceweasel::DEBUG
-            validateRunList(name, run_list, cookbooks, roles) unless Spiceweasel::NOVALIDATION
+            STDOUT.puts "DEBUG: node: '#{name}' run_list: '#{run_list}'" if Spiceweasel::Config[:debug]
+            validateRunList(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
             noptions = node[name]['options']
-            STDOUT.puts "DEBUG: node: '#{name}' options: '#{noptions}'" if Spiceweasel::DEBUG
-            validateOptions(name, noptions, environments) unless Spiceweasel::NOVALIDATION
+            STDOUT.puts "DEBUG: node: '#{name}' options: '#{noptions}'" if Spiceweasel::Config[:debug]
+            validateOptions(name, noptions, environments) unless Spiceweasel::Config[:novalidation]
           end
           #provider support
           provider = name.split()
@@ -47,7 +46,7 @@ module Spiceweasel
             if provider.length == 2
               count = provider[1]
             end
-            if Spiceweasel::PARALLEL
+            if Spiceweasel::Config[:parallel]
               @create += "seq #{count} | parallel -j 0 -v \""
               @create += "knife #{provider[0]}#{options['knife_options']} server create #{noptions}".gsub(/\{\{n\}\}/, '{}')
               if run_list

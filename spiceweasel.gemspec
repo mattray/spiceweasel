@@ -19,5 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency('json')
   s.add_dependency('mixlib-cli')
+  s.add_dependency('mixlib-config')
+  s.add_dependency('mixlib-log')
   s.add_development_dependency('rspec')
 end

@@ -19,7 +19,6 @@
 require 'json'
 
 module Spiceweasel
-
   class Environments
 
     attr_reader :environment_list, :create, :delete
@@ -28,14 +27,14 @@ module Spiceweasel
       @create = @delete = ''
       @environment_list = []
       if environments
-        STDOUT.puts "DEBUG: environments: #{environments}" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: environments: #{environments}" if Spiceweasel::Config[:debug]
         environments.each do |env|
           name = env.keys[0]
-          STDOUT.puts "DEBUG: environment: #{name}" if Spiceweasel::DEBUG
+          STDOUT.puts "DEBUG: environment: #{name}" if Spiceweasel::Config[:debug]
           if File.directory?("environments")
-            validate(name, cookbooks) unless Spiceweasel::NOVALIDATION
+            validate(name, cookbooks) unless Spiceweasel::Config[:novalidation]
           else
-            STDERR.puts "'environments' directory not found, unable to validate or load environments" unless Spiceweasel::NOVALIDATION
+            STDERR.puts "'environments' directory not found, unable to validate or load environments" unless Spiceweasel::Config[:novalidation]
           end
           if File.exists?("environments/#{name}.json")
             @create += "knife environment#{options['knife_options']} from file #{name}.json\n"
@@ -62,7 +61,7 @@ module Spiceweasel
         envcookbooks = File.open("environments/#{environment}.rb").grep(/^cookbook /)
         envcookbooks.each do |cb|
           dep = cb.split()[1].gsub(/"/,'').gsub(/,/,'')
-          STDOUT.puts "DEBUG: environment: '#{environment}' cookbook: '#{dep}'" if Spiceweasel::DEBUG
+          STDOUT.puts "DEBUG: environment: '#{environment}' cookbook: '#{dep}'" if Spiceweasel::Config[:debug]
           if !cookbooks.member?(dep)
             STDERR.puts "ERROR: Cookbook dependency '#{dep}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
             exit(-1)
@@ -73,16 +72,16 @@ module Spiceweasel
         f = File.read("environments/#{environment}.json")
         JSON.create_id = nil
         envfile = JSON.parse(f, {:symbolize_names => false})
-        STDOUT.puts "DEBUG: environment: '#{environment}' file: '#{envfile}'" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: environment: '#{environment}' file: '#{envfile}'" if Spiceweasel::Config[:debug]
         #validate that the name inside the file matches
-        STDOUT.puts "DEBUG: environment: '#{environment}' name: '#{envfile['name']}'" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: environment: '#{environment}' name: '#{envfile['name']}'" if Spiceweasel::Config[:debug]
         if !environment.eql?(envfile['name'])
           STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{envfile['name']}' within the 'environments/#{environment}.json' file."
           exit(-1)
         end
         #validate the cookbooks exist if they're mentioned
         envfile['cookbook_versions'].keys.each do |cb|
-          STDOUT.puts "DEBUG: environment: '#{environment}' cookbook: '#{cb}'" if Spiceweasel::DEBUG
+          STDOUT.puts "DEBUG: environment: '#{environment}' cookbook: '#{cb}'" if Spiceweasel::Config[:debug]
           if !cookbooks.member?(cb.to_s)
             STDERR.puts "ERROR: Cookbook dependency '#{cb}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
             exit(-1)

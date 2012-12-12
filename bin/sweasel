@@ -20,4 +20,4 @@
 
 require 'spiceweasel'
 
-Spiceweasel::CLI::Spiceweasel.new.run
+Spiceweasel::CLI.new.run

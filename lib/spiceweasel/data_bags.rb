@@ -19,7 +19,6 @@
 require 'json'
 
 module Spiceweasel
-
   class DataBags
 
     attr_reader :create, :delete
@@ -27,15 +26,15 @@ module Spiceweasel
     def initialize(data_bags = [], options = {})
       @create = @delete = ''
       if data_bags
-        STDOUT.puts "DEBUG: data bags: #{data_bags}" if Spiceweasel::DEBUG
+        STDOUT.puts "DEBUG: data bags: #{data_bags}" if Spiceweasel::Config[:debug]
         data_bags.each do |data_bag|
           db = data_bag.keys.first
           #check directories
-          if !File.directory?("data_bags") && !Spiceweasel::NOVALIDATION
+          if !File.directory?("data_bags") && !Spiceweasel::Config[:novalidation]
             STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
             exit(-1)
           end
-          if !File.directory?("data_bags/#{db}") && !Spiceweasel::NOVALIDATION
+          if !File.directory?("data_bags/#{db}") && !Spiceweasel::Config[:novalidation]
             STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
             exit(-1)
           end
@@ -44,22 +43,22 @@ module Spiceweasel
           if data_bag[db]
             items = data_bag[db]['items']
             secret = data_bag[db]['secret']
-            if secret && !File.exists?(secret) && !Spiceweasel::NOVALIDATION
+            if secret && !File.exists?(secret) && !Spiceweasel::Config[:novalidation]
               STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
               exit(-1)
             end
           end
           items = [] if items.nil?
-          STDOUT.puts "DEBUG: data bag: #{db} #{secret} #{items}" if Spiceweasel::DEBUG
+          STDOUT.puts "DEBUG: data bag: #{db} #{secret} #{items}" if Spiceweasel::Config[:debug]
           while item = items.shift
-            STDOUT.puts "DEBUG: data bag #{db} item: #{item}" if Spiceweasel::DEBUG
+            STDOUT.puts "DEBUG: data bag #{db} item: #{item}" if Spiceweasel::Config[:debug]
             if item =~ /\*/ #wildcard support, will fail if directory not present
               files = Dir.glob("data_bags/#{db}/*.json")
               items += files.collect {|x| x[x.rindex('/')+1..-6]}
-              STDOUT.puts "DEBUG: found items '#{items}' for data bag: #{db}" if Spiceweasel::DEBUG
+              STDOUT.puts "DEBUG: found items '#{items}' for data bag: #{db}" if Spiceweasel::Config[:debug]
               next
             end
-            validateItem(db, item) unless Spiceweasel::NOVALIDATION
+            validateItem(db, item) unless Spiceweasel::Config[:novalidation]
             if secret
               @create += "knife data bag#{options['knife_options']} from file #{db} #{item}.json --secret-file #{secret}\n"
             else

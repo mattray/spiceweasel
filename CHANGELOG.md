@@ -7,6 +7,8 @@ This is the current, previous and future development milestones and contains the
 * client deletion is now supported by --delete
 * added support for a new top-level 'clusters' grouping for nodes, README.md has more.
 * reorganize Classes into Spiceweasel module to refactor the bin/spiceweasel and act more like a library
+* added 'spiceweasel/config' using mixlib-config to clean up use of constants.
+* added 'spiceweasel/log' using mixlib-log for real logging support.
 
 # 2.0.0 TODO #
 * EXECUTE THE COMMANDS
@@ -160,9 +162,10 @@ This is the current, previous and future development milestones and contains the
 * create repo on GitHub
 * publish as a gem on RubyGems
 
-
 # BACKLOG #
 
+* multiple input file support
+* config file support
 * make deletion smarter, use tags for providers
   * see if -P is supported?
 * spaces on knife_options
@@ -172,9 +175,6 @@ This is the current, previous and future development milestones and contains the
   * knife environment from file environments/*.rb
   * knife role from file roles/*.rb
   * knife data bag from file users -a
-* clean up the way options are passed around throughout the system
-* clean up logging
-* clean up use of global variables
 * do we need global use of the *_list attrs for later use?
 * convert test.sh to spec tests
 * useful error messages for missing files like metadata.rb
@@ -204,7 +204,6 @@ This is the current, previous and future development milestones and contains the
  * option to include credentials and knife.rb
  * translate json back to rb?
  * sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
-* sanitize error messages to make sense for both extract & manifest
 * ADDITIONAL VALIDATION
  * environment-specific run_lists
 * make .yml files for every quickstart

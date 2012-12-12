@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,15 @@
 # limitations under the License.
 #
 
-require 'spiceweasel/version'
-require 'spiceweasel/cli'
-require 'spiceweasel/config'
-require 'spiceweasel/log'
+require 'mixlib/log'
+
+module Spiceweasel
+  class Log
+    extend Mixlib::Log
+
+    #not quite ready for timestamps
+    Mixlib::Log::Formatter.show_time = false
+
+  end
+end
+

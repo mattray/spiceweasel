@@ -18,7 +18,6 @@
 #
 
 module Spiceweasel
-
   class CookbookData
 
     attr_accessor :_name, :_dependencies, :_version

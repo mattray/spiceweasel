@@ -16,7 +16,12 @@
 # limitations under the License.
 #
 
-# require 'spiceweasel/cookbooks'
+require 'mixlib/cli'
+require 'json'
+require 'yaml'
+
+require 'spiceweasel'
+require 'spiceweasel/cookbooks'
 # require 'spiceweasel/environments'
 # require 'spiceweasel/roles'
 # require 'spiceweasel/data_bags'
@@ -24,143 +29,171 @@
 # require 'spiceweasel/clusters'
 # require 'spiceweasel/directory_extractor'
 # require 'spiceweasel/cookbook_data'
-require 'mixlib/cli'
 
 module Spiceweasel
-  module CLI
+  class CLI
+    include Mixlib::CLI
 
-    class Spiceweasel
-      include Mixlib::CLI
+    banner('Usage: spiceweasel [option] file\n       spiceweasel [option] --extractlocal')
 
-      banner('Usage: spiceweasel [option] file\n       spiceweasel [option] --extractlocal')
+    option :debug,
+    :long => '--debug',
+    :description => 'Verbose debugging messages',
+    :boolean => true
 
-      option :extractlocal,
-      :long => '--extractlocal',
-      :description => 'Use contents of local chef repository directories to generate knife commands to build infrastructure'
+    option :delete,
+    :short => '-d',
+    :long => '--delete',
+    :description => 'Print the knife commands to delete the infrastructure',
+    :boolean => true
 
-      option :extractjson,
-      :long => '--extractjson',
-      :description => 'Use contents of local chef repository directories to generate JSON spiceweasel manifest'
+    option :dryrun,
+    :long => '--dryrun',
+    :description => 'Print the knife commands to be executed to STDOUT',
+    :boolean => true
 
-      option :extractyaml,
-      :long => '--extractyaml',
-      :description => 'Use contents of local chef repository directories to generate YAML spiceweasel manifest'
+    option :extractlocal,
+    :long => '--extractlocal',
+    :description => 'Use contents of local chef repository directories to generate knife commands to build infrastructure'
 
-      option :debug,
-      :long => '--debug',
-      :description => 'Verbose debugging messages',
-      :boolean => true
+    option :extractjson,
+    :long => '--extractjson',
+    :description => 'Use contents of local chef repository directories to generate JSON spiceweasel manifest'
 
-      option :delete,
-      :short => '-d',
-      :long => '--delete',
-      :description => 'Print the knife commands to delete the infrastructure',
-      :boolean => true
+    option :extractyaml,
+    :long => '--extractyaml',
+    :description => 'Use contents of local chef repository directories to generate YAML spiceweasel manifest'
 
-      option :dryrun,
-      :long => '--dryrun',
-      :description => 'Print the knife commands to be executed to STDOUT',
-      :boolean => true
+    option :help,
+    :short => '-h',
+    :long => '--help',
+    :description => 'Show this message',
+    :on => :tail,
+    :boolean => true,
+    :show_options => true,
+    :exit => 0
 
-      option :help,
-      :short => '-h',
-      :long => '--help',
-      :description => 'Show this message',
-      :on => :tail,
-      :boolean => true,
-      :show_options => true,
-      :exit => 0
+    option :knifeconfig,
+    :short => '-c CONFIG',
+    :long => '--knifeconfig CONFIG',
+    :description => 'Specify the knife.rb configuration file'
 
-      option :serverurl,
-      :short => '-s URL',
-      :long => '--server-url URL',
-      :description => 'Specify the Chef Server URL'
+    option :log_level,
+    :short => "-l LEVEL",
+    :long => "--log_level LEVEL",
+    :description => "Set the log level (debug, info, warn, error, fatal)",
+    :proc => lambda { |l| l.to_sym }
 
-      option :knifeconfig,
-      :short => '-c CONFIG',
-      :long => '--knifeconfig CONFIG',
-      :description => 'Specify the knife.rb configuration file'
+    option :log_location,
+    :short => "-L LOGLOCATION",
+    :long => "--logfile LOGLOCATION",
+    :description => "Set the log file location, defaults to STDOUT",
+    :proc => nil
 
-      option :novalidation,
-      :long => '--novalidation',
-      :description => 'Disable validation',
-      :boolean => true
+    option :novalidation,
+    :long => '--novalidation',
+    :description => 'Disable validation',
+    :boolean => true
 
-      option :parallel,
-      :long => '--parallel',
-      :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands that are not order-dependent",
-      :boolean => true
+    option :parallel,
+    :long => '--parallel',
+    :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands that are not order-dependent",
+    :boolean => true
 
-      option :rebuild,
-      :short => '-r',
-      :long => '--rebuild',
-      :description => 'Print the knife commands to delete and recreate the infrastructure',
-      :boolean => true
+    option :rebuild,
+    :short => '-r',
+    :long => '--rebuild',
+    :description => 'Print the knife commands to delete and recreate the infrastructure',
+    :boolean => true
 
-      option :siteinstall,
-      :long => '--siteinstall',
-      :description => "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
-      :boolean => true
+    option :serverurl,
+    :short => '-s URL',
+    :long => '--server-url URL',
+    :description => 'Specify the Chef Server URL'
 
-      option :version,
-      :short => '-v',
-      :long => '--version',
-      :description => 'Show spiceweasel version',
-      :boolean => true,
-      :proc => lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
-      :exit => 0
+    option :siteinstall,
+    :long => '--siteinstall',
+    :description => "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
+    :boolean => true
 
-      def run
-        puts "RUNNING COMMANDS HERE BOSS!"
-        configure_spiceweasel
-        configure_logging
-        puts "config:#{@config}"
-        #puts "RUN:I'm all up on the #{Spiceweasel::DEBUG}!" if Spiceweasel::Debug
-        require 'pry'
-        binding.pry
-        #puts output
-        exit 0
-      end
+    option :version,
+    :short => '-v',
+    :long => '--version',
+    :description => 'Show spiceweasel version',
+    :boolean => true,
+    :proc => lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
+    :exit => 0
 
-      def initialize(argv=[])
-        puts "INITIALIZING HERE BOSS!"
-        $stdout.sync = true
-        $stderr.sync = true
-        super()
-        parse_and_validate_options
-        #::Spiceweasel::Debug = @config[:debug]
-        #DEBUG0 = @config[:debug]
-        @DEBUG1 = @config[:debug]
-        @@DEBUG2 = @config[:debug]
-        # DEBUG = @config[:debug]
-        # @ui = TestKitchen::UI.new(STDOUT, STDERR, STDIN, {})
-        # @input
-        # @config
-      end
+    attr_reader :manifest
 
-      def parse_and_validate_options
-        ARGV << "-h" if ARGV.empty?
+    def run
+      parse_and_validate_input
+
+      cookbooks = Cookbooks.new(manifest['cookbooks'], options)
+
+      # require 'pry'
+      # binding.pry
+
+      puts cookbooks.create
+      exit 0
+    end
+
+    def initialize(argv=[])
+      super()
+      parse_and_validate_options
+      Config.merge!(@config)
+      configure_logging
+      Spiceweasel::Log.debug("Validation of the manifest has been turned off.") if Spiceweasel::Config[:novalidation]
+    end
+
+    def parse_and_validate_options
+      ARGV << "-h" if ARGV.empty?
+      begin
         parse_options
-        # PARALLEL = @config[:parallel]
-        # Spiceweasel::SITEINSTALL = cli.config[:siteinstall]
-        # Spiceweasel::NOVALIDATION = cli.config[:novalidation]
-        # Spiceweasel::EXTRACTLOCAL = cli.config[:extractlocal]
-        # Spiceweasel::EXTRACTYAML = cli.config[:extractyaml]
-        # Spiceweasel::EXTRACTJSON = cli.config[:extractjson]
       rescue OptionParser::InvalidOption => e
         STDERR.puts e.message
         puts opt_parser.to_s
         exit(-1)
       end
-
-      def configure_spiceweasel
-        # handle any future config files
-      end
-
-      def configure_logging
-        # handle future logging configuration
-      end
-
     end
+
+    def configure_logging
+      Spiceweasel::Log.init(Spiceweasel::Config[:log_location])
+      Spiceweasel::Log.level = Spiceweasel::Config[:log_level]
+      Spiceweasel::Log.level = :debug if Spiceweasel::Config[:debug]
+    end
+
+    def parse_and_validate_input
+      begin
+        file = ARGV.last
+        Spiceweasel::Log.debug("file: #{file}")
+        if !File.file?(file)
+          STDERR.puts "ERROR: Invalid manifest .json or .yml file provided."
+          exit(-1)
+        end
+        if (file.end_with?(".yml"))
+          @manifest = YAML.load_file ARGV.last
+        elsif (file.end_with?(".json"))
+          @manifest = JSON.parse(File.read(ARGV.last))
+        else
+          STDERR.puts "ERROR: #{file} is an unknown file type, please use a file ending with either '.json' or '.yml'."
+          exit(-1)
+        end
+      rescue Psych::SyntaxError => e
+        STDERR.puts e.message
+        STDERR.puts "ERROR: Parsing error in #{file}."
+        exit(-1)
+      rescue JSON::ParserError => e
+        STDERR.puts e.message
+        STDERR.puts "ERROR: Parsing error in #{file}."
+        exit(-1)
+      rescue Exception
+        STDERR.puts "ERROR: No manifest .json or .yml file provided."
+        puts opt_parser.to_s
+        exit(-1)
+      end
+      Spiceweasel::Log.debug("file manifest: #{@manifest}")
+    end
+
   end
 end

@@ -17,7 +17,6 @@
 #
 
 module Spiceweasel
-
   class Cookbooks
 
     attr_reader :cookbook_list, :create, :delete
@@ -28,19 +27,19 @@ module Spiceweasel
       @dependencies = []
       #validate each of the cookbooks specified in the manifest
       if cookbooks
-        STDOUT.puts "DEBUG: cookbooks: #{cookbooks}" if Spiceweasel::DEBUG
+        Spiceweasel::Log.debug("cookbooks: #{cookbooks}")
         cookbooks.each do |cookbook|
           name = cookbook.keys.first
           if cookbook[name]
             version = cookbook[name]['version']
             opts = cookbook[name]['options']
           end
-          STDOUT.puts "DEBUG: cookbook: #{name} #{version} #{opts}" if Spiceweasel::DEBUG
+          Spiceweasel::Log.debug("cookbook: #{name} #{version} #{opts}")
           if File.directory?("cookbooks")
             if File.directory?("cookbooks/#{name}") #TODO use the name from metadata
-              validateMetadata(name,version) unless Spiceweasel::NOVALIDATION
+              validateMetadata(name,version) unless Spiceweasel::Config[:novalidation]
             else
-              if Spiceweasel::SITEINSTALL #use knife cookbook site install
+              if Spiceweasel::Config[:siteinstall] #use knife cookbook site install
                 @create += "knife cookbook#{options['knife_options']} site install #{name} #{version} #{opts}\n"
               else #use knife cookbook site download, untar and then remove the tarball
                 @create += "knife cookbook#{options['knife_options']} site download #{name} #{version} --file cookbooks/#{name}.tgz #{opts}\n"
@@ -49,13 +48,13 @@ module Spiceweasel
               end
             end
           else
-            STDERR.puts "'cookbooks' directory not found, unable to validate, download and load cookbooks" unless Spiceweasel::NOVALIDATION
+            STDERR.puts "'cookbooks' directory not found, unable to validate, download and load cookbooks" unless Spiceweasel::Config[:novalidation]
           end
           @create += "knife cookbook#{options['knife_options']} upload #{name} #{opts}\n"
           @delete += "knife cookbook#{options['knife_options']} delete #{name} #{version} -a -y\n"
           @cookbook_list[name] = version #used for validation
         end
-        validateDependencies() unless Spiceweasel::NOVALIDATION
+        validateDependencies() unless Spiceweasel::Config[:novalidation]
       end
     end
 
@@ -63,19 +62,19 @@ module Spiceweasel
     def validateMetadata(cookbook,version)
       #check metadata.rb for requested version
       metadata = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^version/)[0].split()[1].gsub(/"/,'').to_s
-      STDOUT.puts "DEBUG: cookbook metadata version: #{metadata}" if Spiceweasel::DEBUG
+      Spiceweasel::Log.debug("cookbook metadata version: #{metadata}")
       if version && metadata != version
         STDERR.puts "ERROR: Invalid version '#{version}' of '#{cookbook}' requested, '#{metadata}' is already in the cookbooks directory."
         exit(-1)
       end
       deps = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^depends/)
       deps.each do |dependency|
-        STDOUT.puts "DEBUG: cookbook #{cookbook} metadata dependency: #{dependency}" if Spiceweasel::DEBUG
+        Spiceweasel::Log.debug("cookbook #{cookbook} metadata dependency: #{dependency}")
         line = dependency.split()
         if line[1] =~ /^["']/ #ignore variables and versions
           cbdep = line[1].gsub(/["']/,'')
           cbdep.gsub!(/\,/,'') if cbdep.end_with?(',')
-          STDOUT.puts "DEBUG: cookbook #{cookbook} metadata depends: #{cbdep}" if Spiceweasel::DEBUG
+          Spiceweasel::Log.debug("cookbook #{cookbook} metadata depends: #{cbdep}")
           @dependencies << cbdep
         end
       end
@@ -84,7 +83,7 @@ module Spiceweasel
 
     #compare the list of cookbook deps with those specified
     def validateDependencies()
-      STDOUT.puts "DEBUG: cookbook validateDependencies: '#{@dependencies}'" if Spiceweasel::DEBUG
+      Spiceweasel::Log.debug("cookbook validateDependencies: '#{@dependencies}'")
       @dependencies.each do |dep|
         if !member?(dep)
           STDERR.puts "ERROR: Cookbook dependency '#{dep}' is missing from the list of cookbooks in the manifest."
