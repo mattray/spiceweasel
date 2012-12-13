@@ -12,6 +12,7 @@ This is the current, previous and future development milestones and contains the
 * support for new `--cluster-file` option for specifying an external cluster definition and switching endpoints.
 
 # 2.0.0 TODO #
+* replace big string with array and drop use of "\n"
 * EXECUTE THE COMMANDS
  * -e/--execute execute the commands
  * catching return codes and retrying (with retry count?)

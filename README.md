@@ -267,11 +267,11 @@ This provides verbose debugging messages.
 
 ## -d/--delete ##
 
-The delete command will generate the knife commands to delete the infrastructure described in the manifest. This includes each cookbook, environment, role, data bag and node listed. Node deletion will specify individual nodes and their clients, and attempt to pass the list of nodes to the cloud provider for deletion, and finish with `knife node bulk delete`. If you are mixing individual nodes with cloud provider nodes it is possible that nodes may be missed from cloud provider deletion and you should double-check (ie. `knife ec2 server list`).
+The `delete` option will generate the knife commands to delete the infrastructure described in the manifest. This includes each cookbook, environment, role, data bag and node listed. Node deletion will specify individual nodes and their clients, and attempt to pass the list of nodes to the cloud provider for deletion, and finish with `knife node bulk delete`. If you are mixing individual nodes with cloud provider nodes it is possible that nodes may be missed from cloud provider deletion and you should double-check (ie. `knife ec2 server list`).
 
-## --dryrun ##
+## -e/--execute ##
 
-This is the default action, printing the knife commands to be run without executing them.
+The `execute` option will directly execute the knife commands, creating (or deleting or rebuilding) the infrastructure described in the manifest.
 
 ## --extractlocal ##
 
@@ -299,7 +299,7 @@ Use the GNU 'parallel' command to execute 'knife VENDOR server create' commands 
 
 ## -r/--rebuild ##
 
-The rebuild command will generate the knife commands to delete and recreate the infrastructure described in the manifest. This includes each cookbook, environment, role, data bag and node listed.
+The rebuild option will generate the knife commands to delete and recreate the infrastructure described in the manifest. This includes each cookbook, environment, role, data bag and node listed.
 
 ## --siteinstall ##
 

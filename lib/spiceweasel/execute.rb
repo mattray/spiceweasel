@@ -16,31 +16,25 @@
 # limitations under the License.
 #
 
-require 'mixlib/config'
+require 'mixlib/shellout'
 
 module Spiceweasel
-  class Config
-    extend Mixlib::Config
+  class Execute
 
-    debug false
-
-    # logging
-    log_level :info
-    log_location STDOUT
-
-    knife_options ''
-
-    # do we really need these?
-    delete false
-    execute false
-    extractjson false
-    extractlocal false
-    extractyaml false
-    help false
-    novalidation false
-    parallel false
-    rebuild false
-    siteinstall false
+    # run the commands passed in
+    def initialize(commands)
+      # for now we're shelling out
+      # require 'pry'
+      # binding.pry
+      commands.split("\n").each do | cmd |
+        knife = Mixlib::ShellOut.new("echo", cmd)
+        knife.run_command
+        Spiceweasel::Log.debug(knife.stdout)
+        Spiceweasel::Log.fatal(knife.stderr) if !knife.stderr.empty?
+      end
+      # use parallel if enabled, eventually use threads
+    end
 
   end
 end
+

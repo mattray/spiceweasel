@@ -29,6 +29,7 @@ require 'spiceweasel/nodes'
 require 'spiceweasel/clusters'
 require 'spiceweasel/directory_extractor'
 require 'spiceweasel/cookbook_data'
+require 'spiceweasel/execute'
 
 module Spiceweasel
   class CLI
@@ -39,7 +40,7 @@ module Spiceweasel
 
     option :clusterfile,
     :long => '--cluster-file file',
-    :description => 'Manifest file for the cluster to use, overrides any other node or cluster definitions'
+    :description => 'Specify an additional cluster manifest file, overriding any other node or cluster definitions'
 
     option :debug,
     :long => '--debug',
@@ -52,9 +53,10 @@ module Spiceweasel
     :description => 'Print the knife commands to delete the infrastructure',
     :boolean => true
 
-    option :dryrun,
-    :long => '--dryrun',
-    :description => 'Print the knife commands to be executed to STDOUT',
+    option :execute,
+    :short => '-e',
+    :long => '--execute',
+    :description => 'Execute the knife commands to create the infrastructure directly',
     :boolean => true
 
     option :extractlocal,
@@ -102,7 +104,7 @@ module Spiceweasel
 
     option :parallel,
     :long => '--parallel',
-    :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands that are not order-dependent",
+    :description => "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands where applicable",
     :boolean => true
 
     option :rebuild,
@@ -152,6 +154,8 @@ module Spiceweasel
       create = cookbooks.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
       delete = cookbooks.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
 
+      #need logic for print vs. execute
+
       if Spiceweasel::Config[:delete]
         puts delete unless delete.empty?
       elsif Spiceweasel::Config[:rebuild]
@@ -163,7 +167,12 @@ module Spiceweasel
         elsif Spiceweasel::Config[:extractyaml]
           puts input.to_yaml
         else
-          puts create unless create.empty?
+          #puts create unless create.empty?
+          if Spiceweasel::Config[:execute]
+            Execute.new(create)
+          else
+            puts create unless create.empty?
+          end
         end
       end
       exit 0
