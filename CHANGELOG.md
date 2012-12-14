@@ -10,22 +10,20 @@ This is the current, previous and future development milestones and contains the
 * added `spiceweasel/config` using mixlib-config to clean up use of constants.
 * added `spiceweasel/log` using mixlib-log for real logging support.
 * support for new `--cluster-file` option for specifying an external cluster definition and switching endpoints.
+* dropped --dry-run flag because it is the default action
+* added `-e/--execute` to execute the commands
 
 # 2.0.0 TODO #
 * replace big string with array and drop use of "\n"
-* EXECUTE THE COMMANDS
- * -e/--execute execute the commands
- * catching return codes and retrying (with retry count?)
- * make the JSON calls directly with Chef APIs? spice/ridley?
- * cluster creation via API
-   * create
-     * knife search node 'tags:amazon+*'
-   * refresh
-     * search on tag for completion
-     * knife search node 'tags:amazon+rolewebserverrecipemysqlclient'
-   * delete
-     * delete on tag
-     * knife search node 'tags:amazon+*'
+* cluster creation via API
+ * create
+  * knife search node 'tags:amazon+*'
+ * refresh
+  * search on tag for completion
+  * knife search node 'tags:amazon+rolewebserverrecipemysqlclient'
+ * delete
+  * delete on tag
+  * knife search node 'tags:amazon+*'
 * RE: encrypted data bags.  I want all our encrypted data bags to be checked into git encrypted, and when we run spice weasel it is able to import them into the chef server, using the specified encrypted data bag.  Not sure if this already works this way, I haven't tested.  However, we are building a jenkins job which IPMI resets our bare metal.  Once the system comes up, it is bootstrapped with a chef server, cobbler, etc..  Spicewesel will then be used to import everything into the fresh chef server.  I need a way to handle encrypted data bags populating the server.  If it can handle pre-encrypted files, and import properly that would be awesome.  I assume it does, just need to test it (Not really a spice weasel thing, unless of course it doesn't support this, then spice weasel doing it for us would be great). :)
   * [Validation for encrypted data bag secret should expand path](https://github.com/mattray/spiceweasel/issues/13)
 * fix Extractor

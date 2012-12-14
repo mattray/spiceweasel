@@ -154,25 +154,29 @@ module Spiceweasel
       create = cookbooks.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
       delete = cookbooks.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
 
-      #need logic for print vs. execute
-
-      if Spiceweasel::Config[:delete]
-        puts delete unless delete.empty?
-      elsif Spiceweasel::Config[:rebuild]
-        puts delete unless delete.empty?
-        puts create unless create.empty?
-      else
-        if Spiceweasel::Config[:extractjson]
-          puts JSON.pretty_generate(input)
-        elsif Spiceweasel::Config[:extractyaml]
-          puts input.to_yaml
+      if Spiceweasel::Config[:extractjson]
+        puts JSON.pretty_generate(input)
+      elsif Spiceweasel::Config[:extractyaml]
+        puts input.to_yaml
+      elsif Spiceweasel::Config[:delete]
+        if Spiceweasel::Config[:execute]
+          Execute.new(delete)
         else
-          #puts create unless create.empty?
-          if Spiceweasel::Config[:execute]
-            Execute.new(create)
-          else
-            puts create unless create.empty?
-          end
+          puts delete unless delete.empty?
+        end
+      elsif Spiceweasel::Config[:rebuild]
+        if Spiceweasel::Config[:execute]
+          Execute.new(delete)
+          Execute.new(create)
+        else
+          puts delete unless delete.empty?
+          puts create unless create.empty?
+        end
+      else
+        if Spiceweasel::Config[:execute]
+          Execute.new(create)
+        else
+          puts create unless create.empty?
         end
       end
       exit 0

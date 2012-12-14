@@ -24,11 +24,13 @@ module Spiceweasel
     # run the commands passed in
     def initialize(commands)
       # for now we're shelling out
-      # require 'pry'
-      # binding.pry
       commands.split("\n").each do | cmd |
-        knife = Mixlib::ShellOut.new("echo", cmd)
+        knife = Mixlib::ShellOut.new(cmd)
         knife.run_command
+        puts cmd
+        puts knife.stdout
+        puts knife.stderr
+        Spiceweasel::Log.debug(cmd)
         Spiceweasel::Log.debug(knife.stdout)
         Spiceweasel::Log.fatal(knife.stderr) if !knife.stderr.empty?
       end
