@@ -24,8 +24,9 @@ module Spiceweasel
     attr_reader :environment_list, :create, :delete
 
     def initialize(environments = [], cookbooks = {})
-      @create = @delete = ''
-      @environment_list = []
+      @create = Array.new
+      @delete = Array.new
+      @environment_list = Array.new
       if environments
         Spiceweasel::Log.debug("environments: #{environments}")
         environments.each do |env|
@@ -38,12 +39,12 @@ module Spiceweasel
             exit(-1)
           end
           if File.exists?("environments/#{name}.json")
-            @create += "knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.json\n"
+            @create.push("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.json")
           else #assume no .json means they want .rb and catchall for misssing dir
-            @create += "knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.rb\n"
+            @create.push("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.rb")
           end
-          @delete += "knife environment#{Spiceweasel::Config[:knife_options]} delete #{name} -y\n"
-          @environment_list << name
+          @delete.push("knife environment#{Spiceweasel::Config[:knife_options]} delete #{name} -y")
+          @environment_list.push(name)
         end
       end
     end

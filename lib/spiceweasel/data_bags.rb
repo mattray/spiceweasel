@@ -24,7 +24,8 @@ module Spiceweasel
     attr_reader :create, :delete
 
     def initialize(data_bags = [])
-      @create = @delete = ''
+      @create = Array.new
+      @delete = Array.new
       if data_bags
         Spiceweasel::Log.debug("data bags: #{data_bags}")
         data_bags.each do |data_bag|
@@ -38,8 +39,8 @@ module Spiceweasel
             STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
             exit(-1)
           end
-          @create += "knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}\n"
-          @delete += "knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y\n"
+          @create.push("knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}")
+          @delete.push("knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y")
           if data_bag[db]
             items = data_bag[db]['items']
             secret = data_bag[db]['secret']
@@ -54,15 +55,15 @@ module Spiceweasel
             Spiceweasel::Log.debug("data bag #{db} item: #{item}")
             if item =~ /\*/ #wildcard support, will fail if directory not present
               files = Dir.glob("data_bags/#{db}/*.json")
-              items += files.collect {|x| x[x.rindex('/')+1..-6]}
+              items.push(files.collect {|x| x[x.rindex('/')+1..-6]})
               Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db}")
               next
             end
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]
             if secret
-              @create += "knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json --secret-file #{secret}\n"
+              @create.push("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json --secret-file #{secret}")
             else
-              @create += "knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json\n"
+              @create.push("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json")
             end
           end
         end

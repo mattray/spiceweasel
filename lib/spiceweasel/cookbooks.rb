@@ -22,9 +22,10 @@ module Spiceweasel
     attr_reader :cookbook_list, :create, :delete
 
     def initialize(cookbooks = [])
-      @create = @delete = ''
-      @cookbook_list = {}
-      @dependencies = []
+      @create = Array.new
+      @delete = Array.new
+      @cookbook_list = Hash.new
+      @dependencies = Array.new
       #validate each of the cookbooks specified in the manifest
       if cookbooks
         Spiceweasel::Log.debug("cookbooks: #{cookbooks}")
@@ -40,19 +41,19 @@ module Spiceweasel
               validateMetadata(name,version) unless Spiceweasel::Config[:novalidation]
             else
               if Spiceweasel::Config[:siteinstall] #use knife cookbook site install
-                @create += "knife cookbook#{Spiceweasel::Config[:knife_options]} site install #{name} #{version} #{options}\n"
+                @create.push("knife cookbook#{Spiceweasel::Config[:knife_options]} site install #{name} #{version} #{options}")
               else #use knife cookbook site download, untar and then remove the tarball
-                @create += "knife cookbook#{Spiceweasel::Config[:knife_options]} site download #{name} #{version} --file cookbooks/#{name}.tgz #{options}\n"
-                @create += "tar -C cookbooks/ -xf cookbooks/#{name}.tgz\n"
-                @create += "rm -f cookbooks/#{name}.tgz\n"
+                @create.push("knife cookbook#{Spiceweasel::Config[:knife_options]} site download #{name} #{version} --file cookbooks/#{name}.tgz #{options}")
+                @create.push("tar -C cookbooks/ -xf cookbooks/#{name}.tgz")
+                @create.push("rm -f cookbooks/#{name}.tgz")
               end
             end
           elsif !Spiceweasel::Config[:novalidation]
             STDERR.puts "ERROR: 'cookbooks' directory not found, unable to validate, download and load cookbooks"
             exit(-1)
           end
-          @create += "knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{name} #{options}\n"
-          @delete += "knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y\n"
+          @create.push("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{name} #{options}")
+          @delete.push("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y")
           @cookbook_list[name] = version #used for validation
         end
         validateDependencies() unless Spiceweasel::Config[:novalidation]
@@ -76,7 +77,7 @@ module Spiceweasel
           cbdep = line[1].gsub(/["']/,'')
           cbdep.gsub!(/\,/,'') if cbdep.end_with?(',')
           Spiceweasel::Log.debug("cookbook #{cookbook} metadata depends: #{cbdep}")
-          @dependencies << cbdep
+          @dependencies.push(cbdep)
         end
       end
       @cookbook

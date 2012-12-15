@@ -22,7 +22,8 @@ module Spiceweasel
     attr_reader :create, :delete
 
     def initialize(clusters, cookbooks, environments, roles)
-      @create = @delete = ''
+      @create = Array.new
+      @delete = Array.new
       if clusters
         Spiceweasel::Log.debug("clusters: #{clusters}")
         clusters.each do |cluster|
@@ -42,8 +43,8 @@ module Spiceweasel
           Spiceweasel::Log.debug("cluster2: '#{cluster_name}' '#{cluster[cluster_name]}'")
           # let's reuse the Nodes logic
           nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles)
-          @create += nodes.create
-          @delete += nodes.delete
+          @create.concat(nodes.create)
+          @delete.concat(nodes.delete)
         end
       end
     end
