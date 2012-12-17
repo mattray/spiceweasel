@@ -33,7 +33,7 @@ module Spiceweasel
         puts knife.stderr
         Spiceweasel::Log.debug(cmd)
         Spiceweasel::Log.debug(knife.stdout)
-        Spiceweasel::Log.fatal(knife.stderr)
+        Spiceweasel::Log.fatal(knife.stderr) if !knife.stderr.empty?
       end
     end
 
