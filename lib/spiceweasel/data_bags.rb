@@ -56,8 +56,6 @@ module Spiceweasel
             if item =~ /\*/ #wildcard support, will fail if directory not present
               files = Dir.glob("data_bags/#{db}/*.json")
               items.concat(files.collect {|x| x[x.rindex('/')+1..-6]})
-              # require 'pry'
-              # binding.pry
               Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db}")
               next
             end
