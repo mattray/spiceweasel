@@ -27,7 +27,7 @@ require 'spiceweasel/roles'
 require 'spiceweasel/data_bags'
 require 'spiceweasel/nodes'
 require 'spiceweasel/clusters'
-require 'spiceweasel/directory_extractor'
+require 'spiceweasel/extract_local'
 require 'spiceweasel/cookbook_data'
 require 'spiceweasel/execute'
 
@@ -133,7 +133,7 @@ module Spiceweasel
 
     def run
       if Spiceweasel::Config[:extractlocal] || Spiceweasel::Config[:extractjson] || Spiceweasel::Config[:extractyaml]
-        manifest = Spiceweasel::DirectoryExtractor.parse_objects
+        manifest = Spiceweasel::ExtractLocal.parse_objects
       else
         manifest = parse_and_validate_input(ARGV.last)
         if Spiceweasel::Config[:clusterfile]

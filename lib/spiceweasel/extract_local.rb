@@ -18,7 +18,7 @@
 #
 
 module Spiceweasel
-  class DirectoryExtractor
+  class ExtractLocal
 
     def self.parse_objects
       objects = {'cookbooks' => nil, 'roles' => nil, 'environments' => nil, 'data bags' => nil, 'nodes' => nil}
