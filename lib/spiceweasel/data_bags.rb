@@ -44,7 +44,7 @@ module Spiceweasel
           if data_bag[db]
             items = data_bag[db]['items']
             secret = data_bag[db]['secret']
-            if secret && !File.exists?(secret) && !Spiceweasel::Config[:novalidation]
+            if secret && !File.exists?(File.expand_path(secret)) && !Spiceweasel::Config[:novalidation]
               STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
               exit(-1)
             end
