@@ -38,7 +38,7 @@ Clusters support is completely new, please refer to the Cluster section for docu
 
 ## Cookbooks ##
 
-The `cookbooks` section of the manifest currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. If a version is passed, it is validated against the existing cookbook `metadata.rb` and it must match the `metadata.rb` string exactly. You may pass any additional options if necessary. Assuming the apt cookbook was not present, the example YAML snippet
+The `cookbooks` section of the manifest currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. Validation is done to ensure the cookbook matches the name (and version if given) in the metadata and that any cookbook dependencies are listed in the manifest. You may pass any additional options if necessary. Assuming the apt cookbook was not present, the example YAML snippet
 
 ``` yaml
 cookbooks:
