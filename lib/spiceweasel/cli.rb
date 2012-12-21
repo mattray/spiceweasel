@@ -154,6 +154,10 @@ module Spiceweasel
       create = cookbooks.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
       delete = cookbooks.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
 
+      #trim trailing whitespace
+      create.each {|x| x.rstrip!}
+      delete.each {|x| x.rstrip!}
+
       if Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(input)
       elsif Spiceweasel::Config[:extractyaml]
