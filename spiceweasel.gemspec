@@ -22,5 +22,6 @@ Gem::Specification.new do |s|
   s.add_dependency('mixlib-config')
   s.add_dependency('mixlib-log')
   s.add_dependency('mixlib-shellout')
+  s.add_dependency('chef')
   s.add_development_dependency('rspec')
 end

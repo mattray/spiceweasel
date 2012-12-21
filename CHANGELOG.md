@@ -15,9 +15,9 @@ This is the current, previous and future development milestones and contains the
 * replaced use of strings with an array and dropped use of "\n"
 * fixed "Validation for encrypted data bag secret should expand path" https://github.com/mattray/spiceweasel/issues/13
 * updated rspec test to use "-r" for a full delete and create test
+* cookbook metadata.rb files are now loaded for validation and name checks have been added (versions coming soon)
 
 # 2.0.0 TODO #
-* load metadata.rbs
 * fix Extractor
 
 # 1.2.1 #
@@ -156,7 +156,8 @@ This is the current, previous and future development milestones and contains the
 * publish as a gem on RubyGems
 
 # BACKLOG #
-* cluster creation via API
+* MORE CLUSTER FEATURES
+ * cluster creation via API
  * create
   * knife search node 'tags:amazon+*'
  * refresh
@@ -165,6 +166,11 @@ This is the current, previous and future development milestones and contains the
  * delete
   * delete on tag
   * knife search node 'tags:amazon+*'
+* ADDITIONAL VALIDATION
+ * use versions for cookbook dependency checks
+ * environment-specific run_lists
+ * all validation done by converting .rb files to Chef objects
+  * https://gist.github.com/3752021
 * multiple input file support (besides current --cluster-file)
 * config file support
 * make deletion smarter, use tags for providers
@@ -175,13 +181,10 @@ This is the current, previous and future development milestones and contains the
   * knife environment from file environments/*.rb
   * knife role from file roles/*.rb
   * knife data bag from file users -a
-* do we need global use of the *_list attrs for later use?
-* convert test.sh to spec tests
-* useful error messages for missing files like metadata.rb
-* all validation done by converting .rb files to Chef objects
-  * https://gist.github.com/3752021
 * Support circular dependencies
 * Support paths outside of the base
+ * [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
+* [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
 * Librarian integration
   * replace "cookbooks:" -> "librarian:"
   * cookbooks-librarian:
@@ -192,8 +195,6 @@ This is the current, previous and future development milestones and contains the
 * Berkshelf integration
   * replace "cookbooks:" -> "berkshelf:"
   * same expectations as the Librarian cookbooks
-* [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
-* [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
 * CONVERT TO A KNIFE PLUGIN
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json
@@ -204,6 +205,5 @@ This is the current, previous and future development milestones and contains the
  * option to include credentials and knife.rb
  * translate json back to rb?
  * sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
-* ADDITIONAL VALIDATION
- * environment-specific run_lists
-* make .yml files for every quickstart
+* convert test.sh to spec tests
+* do we need global use of the *_list attrs for later use?

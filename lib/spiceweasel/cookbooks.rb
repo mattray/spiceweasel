@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/cookbook/metadata'
+
 module Spiceweasel
   class Cookbooks
 
@@ -63,22 +65,24 @@ module Spiceweasel
     #check the metadata for versions and gather deps
     def validateMetadata(cookbook,version)
       #check metadata.rb for requested version
-      metadata = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^version/)[0].split()[1].gsub(/"/,'').to_s
-      Spiceweasel::Log.debug("cookbook metadata version: #{metadata}")
-      if version && metadata != version
-        STDERR.puts "ERROR: Invalid version '#{version}' of '#{cookbook}' requested, '#{metadata}' is already in the cookbooks directory."
+      metadata_file = "cookbooks/#{cookbook}/metadata.rb"
+      metadata = Chef::Cookbook::Metadata.new
+      metadata.from_file(metadata_file)
+      Spiceweasel::Log.debug("validateMetadata: #{cookbook} #{metadata.name} #{metadata.version}")
+      # Should the cookbook directory match the name in the metadata?
+      if metadata.name.empty?
+        Spiceweasel::Log.warn("No cookbook name in the #{cookbook} metadata.rb.")
+      elsif cookbook != metadata.name
+        STDERR.puts "ERROR: Cookbook '#{cookbook}' does not match the name '#{metadata.name}' in #{cookbook}/metadata.rb."
         exit(-1)
       end
-      deps = File.open("cookbooks/#{cookbook}/metadata.rb").grep(/^depends/)
-      deps.each do |dependency|
+      if version && metadata.version != version
+        STDERR.puts "ERROR: Invalid version '#{version}' of '#{cookbook}' requested, '#{metadata.version}' is already in the cookbooks directory."
+        exit(-1)
+      end
+      metadata.dependencies.each do |dependency|
         Spiceweasel::Log.debug("cookbook #{cookbook} metadata dependency: #{dependency}")
-        line = dependency.split()
-        if line[1] =~ /^["']/ #ignore variables and versions
-          cbdep = line[1].gsub(/["']/,'')
-          cbdep.gsub!(/\,/,'') if cbdep.end_with?(',')
-          Spiceweasel::Log.debug("cookbook #{cookbook} metadata depends: #{cbdep}")
-          @dependencies.push(cbdep)
-        end
+        @dependencies.push(dependency[0])
       end
       @cookbook
     end
