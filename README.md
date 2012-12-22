@@ -8,7 +8,7 @@ The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.
 
 # Requirements #
 
-Spiceweasel currently depends on `knife` to run commands for it, but does not explicitly depend on the `chef` gem yet. Infrastructure files must either end in `.json` or `.yml` to be processed.
+Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. Infrastructure files must either end in `.json` or `.yml` to be processed.
 
 Written and tested initially with Chef 0.9.12 (may still work) and continuing development with the 10.x series. It is tested with Ruby 1.8.7 and 1.9.2.
 
@@ -192,7 +192,7 @@ which generates nodes named "webserver1", "webserver2" and "webserver3".
 
 ## Clusters ##
 
-Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be tagged to ensure that the entire cluster may be created, refreshed and destroyed in sync. The node syntax is the same as that under `nodes`, the only addition is the cluster name.
+Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be tagged to ensure that the entire cluster may be created in sync (refresh and delete coming soon). The node syntax is the same as that under `nodes`, the only addition is the cluster name.
 
 ```
 clusters:
