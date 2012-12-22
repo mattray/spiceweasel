@@ -28,7 +28,6 @@ require 'spiceweasel/data_bags'
 require 'spiceweasel/nodes'
 require 'spiceweasel/clusters'
 require 'spiceweasel/extract_local'
-require 'spiceweasel/cookbook_data'
 require 'spiceweasel/execute'
 
 module Spiceweasel
