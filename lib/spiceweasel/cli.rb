@@ -158,9 +158,9 @@ module Spiceweasel
       delete.each {|x| x.rstrip!}
 
       if Spiceweasel::Config[:extractjson]
-        puts JSON.pretty_generate(input)
+        puts JSON.pretty_generate(manifest)
       elsif Spiceweasel::Config[:extractyaml]
-        puts input.to_yaml
+        puts manifest.to_yaml
       elsif Spiceweasel::Config[:delete]
         if Spiceweasel::Config[:execute]
           Execute.new(delete)
