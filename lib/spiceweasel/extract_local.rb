@@ -68,7 +68,7 @@ module Spiceweasel
           Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'")
           data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
         end if File.directory?(data_bag_full_path)
-        data_bags << {data_bag => data_bag_items} unless data_bag_items.empty?
+        data_bags << {data_bag => {'items' => data_bag_items}}
       end
       objects['data bags'] = data_bags unless data_bags.empty?
 
