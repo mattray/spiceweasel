@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012 Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,27 @@
 # limitations under the License.
 #
 
+require 'mixlib/shellout'
+
 module Spiceweasel
-  VERSION = '2.0.0'
+  class Execute
+
+    # run the commands passed in
+    def initialize(commands)
+      # for now we're shelling out
+      commands.each do | cmd |
+        knife = Mixlib::ShellOut.new(cmd)
+        # check for parallel? and eventually use threads
+        knife.run_command
+        puts cmd
+        puts knife.stdout
+        puts knife.stderr
+        Spiceweasel::Log.debug(cmd)
+        Spiceweasel::Log.debug(knife.stdout)
+        Spiceweasel::Log.fatal(knife.stderr) if !knife.stderr.empty?
+      end
+    end
+
+  end
 end
+

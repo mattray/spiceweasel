@@ -3,7 +3,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,108 +18,6 @@
 # limitations under the License.
 #
 
-require 'json'
-require 'yaml'
-
 require 'spiceweasel'
 
-options={'knife_options' => ''}
-
-#process command line options
-begin
-  ARGV << "-h" if ARGV.empty?
-  cli = Spiceweasel::CLI.new
-  cli.parse_options
-  Spiceweasel::DEBUG = cli.config[:debug]
-  Spiceweasel::PARALLEL = cli.config[:parallel]
-  Spiceweasel::SITEINSTALL = cli.config[:siteinstall]
-  Spiceweasel::NOVALIDATION = cli.config[:novalidation]
-  Spiceweasel::EXTRACTLOCAL = cli.config[:extractlocal]
-  Spiceweasel::EXTRACTYAML = cli.config[:extractyaml]
-  Spiceweasel::EXTRACTJSON = cli.config[:extractjson]
-rescue OptionParser::InvalidOption => e
-  STDERR.puts e.message
-  puts cli.opt_parser.to_s
-  exit(-1)
-end
-
-if cli.config[:knifeconfig]
-  options['knife_options'] += " -c " + cli.config[:knifeconfig]
-end
-
-if cli.config[:serverurl]
-  options['knife_options'] += " --server-url " + cli.config[:serverurl]
-end
-
-if Spiceweasel::EXTRACTLOCAL || Spiceweasel::EXTRACTJSON || Spiceweasel::EXTRACTYAML
-  input = Spiceweasel::DirectoryExtractor.parse_objects
-  STDOUT.puts "DEBUG: extract input: #{input}" if Spiceweasel::DEBUG
-else
-  begin
-    file = ARGV.last
-    STDOUT.puts "DEBUG: file: #{file}" if Spiceweasel::DEBUG
-    if (file.end_with?(".yml"))
-      input = YAML.load_file ARGV.last
-    elsif (file.end_with?(".json"))
-      input = JSON.parse(File.read(ARGV.last))
-    else
-      STDERR.puts "ERROR: Unknown file type, please use a file ending with either '.json' or '.yml'."
-      exit(-1)
-    end
-  rescue Psych::SyntaxError => e
-    STDERR.puts e.message
-    STDERR.puts "ERROR: Parsing error in #{file}."
-    exit(-1)
-  rescue JSON::ParserError => e
-    STDERR.puts e.message
-    STDERR.puts "ERROR: Parsing error in #{file}."
-    exit(-1)
-  rescue Exception
-    STDERR.puts "ERROR: No infrastructure .json or .yml file provided."
-    puts cli.opt_parser.to_s
-    exit(-1)
-  end
-  STDOUT.puts "DEBUG: file input: #{input}" if Spiceweasel::DEBUG
-end
-
-create = String.new()
-delete = String.new()
-
-cookbook_list = Spiceweasel::CookbookList.new(input['cookbooks'], options)
-environment_list = Spiceweasel::EnvironmentList.new(input['environments'], cookbook_list, options)
-role_list = Spiceweasel::RoleList.new(input['roles'], environment_list, cookbook_list, options)
-data_bag_list = Spiceweasel::DataBagList.new(input['data bags'], options)
-node_list = Spiceweasel::NodeList.new(input['nodes'], cookbook_list, environment_list, role_list, options)
-
-create += cookbook_list.create
-create += environment_list.create
-create += role_list.create
-create += data_bag_list.create
-create += node_list.create
-
-delete += cookbook_list.delete
-delete += environment_list.delete
-delete += role_list.delete
-delete += data_bag_list.delete
-delete += node_list.delete
-
-#just print the knife commands, do not execute
-#if cli.config[:dryrun]
-if cli.config[:delete]
-  puts delete unless delete.empty?
-elsif cli.config[:rebuild]
-  puts delete unless delete.empty?
-  puts create unless create.empty?
-else
-  if Spiceweasel::EXTRACTJSON
-    puts JSON.pretty_generate(input)
-  elsif Spiceweasel::EXTRACTYAML
-    puts input.to_yaml
-  else
-    puts create unless create.empty?
-  end
-end
-#else
-#eventually we will execute instead of printing knife commands
-#puts "BAM!"
-#end
+Spiceweasel::CLI.new.run
