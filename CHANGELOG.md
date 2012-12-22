@@ -16,10 +16,7 @@ This is the current, previous and future development milestones and contains the
 * fixed "Validation for encrypted data bag secret should expand path" https://github.com/mattray/spiceweasel/issues/13
 * updated rspec test to use "-r" for a full delete and create test
 * cookbook metadata.rb files are now loaded for validation and name checks have been added (versions coming soon)
-* DirectoryExtactor renamed to ExtractLocal
-
-# 2.0.0 TODO #
-* fix Extractor
+* DirectoryExtactor renamed to ExtractLocal, use of CookbookData replaced by Chef::Cookbook::Metadata
 
 # 1.2.1 #
 
@@ -168,10 +165,9 @@ This is the current, previous and future development milestones and contains the
   * delete on tag
   * knife search node 'tags:amazon+*'
 * ADDITIONAL VALIDATION
+ * all validation done by converting .rb/.json files to Chef objects
  * use versions for cookbook dependency checks
  * environment-specific run_lists
- * all validation done by converting .rb files to Chef objects
-  * https://gist.github.com/3752021
 * multiple input file support (besides current --cluster-file)
 * config file support
 * make deletion smarter, use tags for providers
