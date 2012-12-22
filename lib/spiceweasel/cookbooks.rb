@@ -84,7 +84,6 @@ module Spiceweasel
         Spiceweasel::Log.debug("cookbook #{cookbook} metadata dependency: #{dependency}")
         @dependencies.push(dependency[0])
       end
-      @cookbook
     end
 
     #compare the list of cookbook deps with those specified
