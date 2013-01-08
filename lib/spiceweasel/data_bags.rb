@@ -51,7 +51,7 @@ module Spiceweasel
           end
           items = [] if items.nil?
           Spiceweasel::Log.debug("data bag: #{db} #{secret} #{items}")
-          while item = items.shift
+          items.each do |item|
             Spiceweasel::Log.debug("data bag #{db} item: #{item}")
             if item =~ /\*/ #wildcard support, will fail if directory not present
               files = Dir.glob("data_bags/#{db}/*.json")
