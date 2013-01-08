@@ -226,7 +226,7 @@ module Spiceweasel
         if (file.end_with?(".yml"))
           output = YAML.load_file(file)
         elsif (file.end_with?(".json"))
-          output = JSON.parse(file)
+          output = JSON.parse(File.read(file))
         else
           STDERR.puts "ERROR: #{file} is an unknown file type, please use a file ending with either '.json' or '.yml'."
           exit(-1)
