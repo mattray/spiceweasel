@@ -18,8 +18,6 @@ This is the current, previous and future development milestones and contains the
 * cookbook metadata.rb files are now loaded for validation and name checks have been added (versions coming soon)
 * DirectoryExtactor renamed to ExtractLocal, use of CookbookData replaced by Chef::Cookbook::Metadata
 
-* REMAINING: extractlocal leaves out data bag items
-
 # 1.2.1 #
 
 * Ruby syntax cleanup per https://github.com/styleguide/ruby
@@ -168,7 +166,7 @@ This is the current, previous and future development milestones and contains the
   * knife search node 'tags:amazon+*'
 * ADDITIONAL VALIDATION
  * all validation done by converting .rb/.json files to Chef objects
- * use versions for cookbook dependency checks
+ * use versions for cookbook dependency checks (http://sysadvent.blogspot.com/2012/12/day-24-twelve-things-you-didnt-know.html#item_4)
  * put versions in --extract*
  * environment-specific run_lists
 * multiple input file support (besides current --cluster-file)
