@@ -1,5 +1,3 @@
-require 'berkshelf'
-
 module Spiceweasel
   class Berksfile
 
@@ -10,6 +8,9 @@ module Spiceweasel
       @create = []
       @delete = []
       unless(berkshelf.nil?)
+        # only load berkshelf if we are going to use it
+        require 'berkshelf'
+
         case berkshelf
         when String
           path = berkshelf
