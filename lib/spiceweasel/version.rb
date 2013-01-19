@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012 Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2013 Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,5 +17,5 @@
 #
 
 module Spiceweasel
-  VERSION = '2.0.0'
+  VERSION = '2.0.1'
 end
