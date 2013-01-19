@@ -1,5 +1,9 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
+# 2.0.1 #
+
+* file permissions, how do they work? Had to re-push gem.
+
 # 2.0.0 #
 
 * Refresh of the YAML/JSON syntax in order to support a richer set of options and be more explicit.
@@ -154,6 +158,13 @@ This is the current, previous and future development milestones and contains the
 * publish as a gem on RubyGems
 
 # BACKLOG #
+* Berkshelf
+  - berkshelf
+  read the Berksfile
+  berks install the file
+      check the list of cookbooks and verify they're all listed including dependencies
+      SHA is 1st 7
+      complain about missing explicit dependencies
 * MORE CLUSTER FEATURES
  * cluster creation via API
  * create
@@ -169,6 +180,7 @@ This is the current, previous and future development milestones and contains the
  * use versions for cookbook dependency checks (http://sysadvent.blogspot.com/2012/12/day-24-twelve-things-you-didnt-know.html#item_4)
  * put versions in --extract*
  * environment-specific run_lists
+ * sort roles by dependencies of other roles?
 * multiple input file support (besides current --cluster-file)
 * config file support
 * make deletion smarter, use tags for providers
