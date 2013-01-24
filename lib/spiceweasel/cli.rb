@@ -146,6 +146,7 @@ module Spiceweasel
 
       cookbooks = Cookbooks.new(manifest['cookbooks'])
       berksfile = Berksfile.new(manifest['berksfile'])
+      cookbooks.cookbook_list.merge!(berksfile.cookbook_list)
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
