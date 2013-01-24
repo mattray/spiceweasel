@@ -25,7 +25,7 @@ module Spiceweasel
     def initialize(commands)
       # for now we're shelling out
       commands.each do | cmd |
-        knife = Mixlib::ShellOut.new(cmd)
+        knife = Mixlib::ShellOut.new(cmd.command)
         # check for parallel? and eventually use threads
         knife.run_command
         puts cmd
@@ -34,6 +34,7 @@ module Spiceweasel
         Spiceweasel::Log.debug(cmd)
         Spiceweasel::Log.debug(knife.stdout)
         Spiceweasel::Log.fatal(knife.stderr) if !knife.stderr.empty?
+        find.error! unless cmd.allow_failure?
       end
     end
 
