@@ -24,9 +24,14 @@ module Spiceweasel
         berks_options << "-b #{path}"
         path ||= './Berksfile'
         berks = Berkshelf::Berksfile.from_file(path)
+        if(berks_options.detect{|x|x.include?('--nested-berksfiles')})
+          resolve_opts = {:nested_berksfiles => true}
+        else
+          resolve_opts = {}
+        end
         @create << "berks upload #{berks_options.join(' ')}"
         Berkshelf.ui.mute do
-          berks.resolve.each do |cb|
+          berks.resolve(resolve_opts).each do |cb|
             @cookbook_list[cb.cookbook_name] = cb.version
             @delete << "knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{cb.cookbook_name} #{cb.version} -a -y"
           end
