@@ -26,6 +26,7 @@ module Spiceweasel
     def initialize(nodes, cookbooks, environments, roles)
       @create = Array.new
       @delete = Array.new
+      bulk_delete = false
       if nodes
         Spiceweasel::Log.debug("nodes: #{nodes}")
         nodes.each do |node|
@@ -48,6 +49,7 @@ module Spiceweasel
             if provider.length == 2
               count = provider[1]
             end
+            provided_names = []
             if Spiceweasel::Config[:parallel]
               parallel = "seq #{count} | parallel -j 0 -v \""
               parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
@@ -58,10 +60,20 @@ module Spiceweasel
               count.to_i.times do |i|
                 server = "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
                 server += " -r '#{run_list}'" unless run_list.empty?
+                provided_names << node[name]['name'].gsub('{{n}}', (i + 1).to_s) if node[name]['name']
                 @create.push(server)
               end
             end
-            @delete.push("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
+            if(provided_names.empty?)
+              bulk_delete = true
+              @delete.push("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
+            else
+              provided_names.each do |p_name|
+                @delete.push("knife #{provider[0]} server delete -y #{p_name}")
+                @delete.push("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+                @delete.push("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+              end
+            end
           elsif name.start_with?("windows") #windows node bootstrap support
             nodeline = name.split()
             provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
@@ -71,8 +83,8 @@ module Spiceweasel
               @create.push(server)
               @delete.push("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
               @delete.push("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              @delete.push("knife #{provider[0]} server delete #{server} -y")
             end
-            @delete.push("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
           else #node bootstrap support
             name.split.each_with_index do |server, i|
               server = "knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
@@ -84,7 +96,9 @@ module Spiceweasel
           end
         end
       end
-      @delete.push("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
+      if bulk_delete
+        @delete.push("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
+      end
     end
 
     #ensure run_list contents are listed previously.
