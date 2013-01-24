@@ -5,7 +5,7 @@ module Spiceweasel
     attr_reader :command
     
     def initialize(command, options={})
-      @command = command
+      @command = command.rstrip
       @options = options
       @allow_failure = options['allow_failure']
     end
