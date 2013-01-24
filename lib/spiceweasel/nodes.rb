@@ -26,6 +26,8 @@ module Spiceweasel
     attr_reader :create, :delete
 
     def initialize(nodes, cookbooks, environments, roles)
+      @create = Array.new
+      @delete = Array.new
       if nodes
         Spiceweasel::Log.debug("nodes: #{nodes}")
         nodes.each do |node|
