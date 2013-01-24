@@ -21,6 +21,7 @@ require 'json'
 require 'yaml'
 
 require 'spiceweasel'
+require 'spiceweasel/command_helper'
 require 'spiceweasel/cookbooks'
 require 'spiceweasel/environments'
 require 'spiceweasel/roles'

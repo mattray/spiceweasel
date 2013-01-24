@@ -1,3 +1,5 @@
+require 'spiceweasel/command'
+
 module Spiceweasel
   module CommandHelper
     def create_command(*args)
