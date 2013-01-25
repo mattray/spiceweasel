@@ -21,6 +21,8 @@ require 'json'
 module Spiceweasel
   class Environments
 
+    include CommandHelper
+
     attr_reader :environment_list, :create, :delete
 
     def initialize(environments = [], cookbooks = {})
@@ -39,11 +41,11 @@ module Spiceweasel
             exit(-1)
           end
           if File.exists?("environments/#{name}.json")
-            @create.push("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.json")
+            create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.json")
           else #assume no .json means they want .rb and catchall for misssing dir
-            @create.push("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.rb")
+            create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.rb")
           end
-          @delete.push("knife environment#{Spiceweasel::Config[:knife_options]} delete #{name} -y")
+          delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{name} -y")
           @environment_list.push(name)
         end
       end

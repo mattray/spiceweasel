@@ -21,6 +21,8 @@ require 'json'
 module Spiceweasel
   class DataBags
 
+    include CommandHelper
+
     attr_reader :create, :delete
 
     def initialize(data_bags = [])
@@ -39,8 +41,8 @@ module Spiceweasel
             STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
             exit(-1)
           end
-          @create.push("knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}")
-          @delete.push("knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y")
+          create_command("knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}")
+          delete_command("knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y")
           if data_bag[db]
             items = data_bag[db]['items']
             secret = data_bag[db]['secret']
@@ -61,9 +63,9 @@ module Spiceweasel
             end
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]
             if secret
-              @create.push("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json --secret-file #{secret}")
+              create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json --secret-file #{secret}")
             else
-              @create.push("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json")
+              create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{item}.json")
             end
           end
         end
