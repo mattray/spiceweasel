@@ -93,7 +93,7 @@ module Spiceweasel
           end
           unless additional_commands.empty?
             additional_commands.each do |cmd|
-              create_command(cmd)
+              create_command(cmd, create_command_options)
             end
           end
         end
