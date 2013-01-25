@@ -42,7 +42,12 @@ module Spiceweasel
             options = node[name]['options'] || ''
             Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
             validateOptions(name, options, environments) unless Spiceweasel::Config[:novalidation]
-            create_command_options = node[name]['allow_create_failure'] ? {'allow_failure' => true} : {}
+            create_command_options = {}
+            %w(allow_create_failure timeout).each do |key|
+              if(node[name].has_key?(key))
+                create_command_options[key] = node[name][key]
+              end
+            end
             additional_commands = node[name]['additional_commands'] || []
           end
           #provider support
