@@ -25,7 +25,7 @@ module Spiceweasel
     def initialize(commands)
       # for now we're shelling out
       commands.each do | cmd |
-        knife = Mixlib::ShellOut.new(cmd.command)
+        knife = Mixlib::ShellOut.new(cmd.command, cmd.shellout_opts)
         # check for parallel? and eventually use threads
         knife.run_command
         puts cmd
