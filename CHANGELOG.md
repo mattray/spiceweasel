@@ -1,6 +1,10 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.0.1 #
+# 2.1.0 (NEXT RELEASE)#
+
+* add vagrant provider to support knife-vagrant (Jesse Nelson)
+
+# 2.0.1 (CURRENT RELEASE)#
 
 * file permissions, how do they work? Had to re-push gem.
 
