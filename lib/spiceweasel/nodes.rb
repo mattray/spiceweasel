@@ -19,7 +19,7 @@
 module Spiceweasel
   class Nodes
 
-    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp lxc openstack rackspace slicehost terremark voxel}
+    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp lxc openstack rackspace slicehost terremark voxel vagrant}
 
     attr_reader :create, :delete
 
