@@ -17,7 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef/cookbook/metadata'
+require 'chef'
+require 'chef/cookbook_version_selector'
 
 module Spiceweasel
   class ExtractLocal
@@ -26,18 +27,7 @@ module Spiceweasel
       objects = {'cookbooks' => nil, 'roles' => nil, 'environments' => nil, 'data bags' => nil, 'nodes' => nil}
 
       # COOKBOOKS
-      cookbooks = Array.new
-      Dir.glob('cookbooks/*').each do |cookbook_full_path|
-        metadata = Chef::Cookbook::Metadata.new
-        metadata.from_file("#{cookbook_full_path}/metadata.rb")
-        if metadata.name.empty?
-          Spiceweasel::Log.fatal("No cookbook name in the #{cookbook_full_path}/metadata.rb.")
-          exit(-1)
-        end
-        Spiceweasel::Log.debug("dir_ext: #{metadata.name} #{metadata.version}")
-        cookbooks.push(metadata)
-      end
-      cookbooks = self.order_cookbooks_by_dependency(cookbooks)
+      cookbooks = self.order_cookbooks_by_dependency
       objects['cookbooks'] = cookbooks unless cookbooks.empty?
 
       # ROLES
@@ -80,7 +70,6 @@ module Spiceweasel
       #   nodes  << {node => nil}
       # end
       # objects['nodes'] = nodes unless nodes.empty?
-
       objects
     end
 
@@ -92,38 +81,22 @@ module Spiceweasel
       name.join('.')
     end
 
-    def self.order_cookbooks_by_dependency(cookbooks)
-      # Weak algorithm, not particularly elegant, ignores version info as unlikely to have two versions of a cookbook anyway
-      # We're going to find the cookbooks with their dependencies matched and keep going until all we have is unmatched deps
-      sorted_cookbooks = Array.new
-      unsorted_cookbooks = cookbooks
-      scount = 0
-      #keep looping until no more cookbooks are left or can't remove remainders
-      while unsorted_cookbooks.any? and scount < cookbooks.length
-        cookbook = unsorted_cookbooks.shift
-        Spiceweasel::Log.debug("dir_ext: cookbook.dependencies: '#{cookbook.name}' #{cookbook.dependencies}")
-        #if all the cookbook dependencies are in sorted_cookbooks
-        if sorted_cookbooks.eql?(sorted_cookbooks | cookbook.dependencies.collect {|x| x[0]})
-          sorted_cookbooks.push(cookbook.name)
-          scount = 0
-        else #put it back in the list
-          unsorted_cookbooks.push(cookbook)
-          scount = scount + 1
-        end
-        Spiceweasel::Log.debug("dir_ext: sorted_cookbooks: '#{sorted_cookbooks}' #{scount}")
+    def self.order_cookbooks_by_dependency
+      loader = Chef::CookbookLoader.new('./cookbooks')
+      books = loader.cookbooks_by_name
+      g_hash = Mash.new
+      books.each do |name, cb|
+        Spiceweasel::Log.debug("dir_ext: #{name} #{cb.version}")
+        g_hash[name] = [cb]
       end
-      if scount > 0
-        remainders = unsorted_cookbooks.collect {|x| x.name}
-        Spiceweasel::Log.debug("dir_ext: remainders: '#{remainders}'")
-        if Spiceweasel::Config[:novalidation] #stuff is missing, oh well
-          sorted_cookbooks.push(remainders).flatten!
-        else
-          deps = unsorted_cookbooks.collect {|x| x.dependencies.collect {|x| x[0]} - sorted_cookbooks}
-          STDERR.puts "ERROR: Dependencies not satisfied or circular dependencies in cookbook(s): #{remainders} depend(s) on #{deps}"
-          exit(-1)
-        end
+      graph = Chef::CookbookVersionSelector.create_dependency_graph_from_cookbooks(g_hash)
+      sorted_cookbooks = []
+      books.each do |name, cb|
+        sorted_cookbooks |= DepSelector::Selector.new(graph).find_solution(
+          [DepSelector::SolutionConstraint.new(graph.package(name), Chef::VersionConstraint.new(cb.version))]
+        ).keys.reverse
       end
-      #hack to get the format same as yaml/json parse
+      Spiceweasel::Log.debug("dir_ext: sorted_cookbooks: '#{sorted_cookbooks.join(',')}'")
       sorted_cookbooks.collect { |x| { x => nil } }
     end
   end
