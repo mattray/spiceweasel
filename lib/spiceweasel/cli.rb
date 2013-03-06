@@ -21,7 +21,9 @@ require 'json'
 require 'yaml'
 
 require 'spiceweasel'
+require 'spiceweasel/command_helper'
 require 'spiceweasel/cookbooks'
+require 'spiceweasel/berksfile'
 require 'spiceweasel/environments'
 require 'spiceweasel/roles'
 require 'spiceweasel/data_bags'
@@ -130,6 +132,10 @@ module Spiceweasel
     :proc => lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
     :exit => 0
 
+    option :unique_id,
+    :long => '--unique-id UID',
+    :description => 'Unique ID generally used for ruby based configs'
+
     def run
       if Spiceweasel::Config[:extractlocal] || Spiceweasel::Config[:extractjson] || Spiceweasel::Config[:extractyaml]
         manifest = Spiceweasel::ExtractLocal.parse_objects
@@ -144,18 +150,16 @@ module Spiceweasel
       Spiceweasel::Log.debug("file manifest: #{manifest}")
 
       cookbooks = Cookbooks.new(manifest['cookbooks'])
+      berksfile = Berksfile.new(manifest['berksfile'])
+      cookbooks.cookbook_list.merge!(berksfile.cookbook_list)
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
       nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
       clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
 
-      create = cookbooks.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
-      delete = cookbooks.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
-
-      #trim trailing whitespace
-      create.each {|x| x.rstrip!}
-      delete.each {|x| x.rstrip!}
+      create = cookbooks.create + berksfile.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
+      delete = cookbooks.delete + berksfile.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
 
       if Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(manifest)
@@ -227,8 +231,11 @@ module Spiceweasel
           output = YAML.load_file(file)
         elsif (file.end_with?(".json"))
           output = JSON.parse(File.read(file))
+        elsif (file.end_with?(".rb"))
+          output = self.instance_eval(IO.read(file), file, 1)
+          output = JSON.parse(JSON.dump(output))
         else
-          STDERR.puts "ERROR: #{file} is an unknown file type, please use a file ending with either '.json' or '.yml'."
+          STDERR.puts "ERROR: #{file} is an unknown file type, please use a file ending with '.rb', '.json' or '.yml'."
           exit(-1)
         end
       rescue Psych::SyntaxError => e
