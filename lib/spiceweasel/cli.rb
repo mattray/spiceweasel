@@ -227,8 +227,11 @@ module Spiceweasel
           output = YAML.load_file(file)
         elsif (file.end_with?(".json"))
           output = JSON.parse(File.read(file))
+        elsif (file.end_with?(".rb"))
+          output = self.instance_eval(IO.read(file), file, 1)
+          output = JSON.parse(JSON.dump(output))
         else
-          STDERR.puts "ERROR: #{file} is an unknown file type, please use a file ending with either '.json' or '.yml'."
+          STDERR.puts "ERROR: #{file} is an unknown file type, please use a file ending with '.rb', '.json' or '.yml'."
           exit(-1)
         end
       rescue Psych::SyntaxError => e
