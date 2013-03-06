@@ -18,7 +18,9 @@
 
 module Spiceweasel
   class Nodes
-
+    
+    include CommandHelper
+   
     PROVIDERS = %w{bluebox clodo cs ec2 gandi hp lxc openstack rackspace slicehost terremark voxel vagrant}
 
     attr_reader :create, :delete
@@ -26,6 +28,7 @@ module Spiceweasel
     def initialize(nodes, cookbooks, environments, roles)
       @create = Array.new
       @delete = Array.new
+      bulk_delete = false
       if nodes
         Spiceweasel::Log.debug("nodes: #{nodes}")
         nodes.each do |node|
@@ -40,6 +43,13 @@ module Spiceweasel
             options = node[name]['options'] || ''
             Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
             validateOptions(name, options, environments) unless Spiceweasel::Config[:novalidation]
+            create_command_options = {}
+            %w(allow_create_failure timeout).each do |key|
+              if(node[name].has_key?(key))
+                create_command_options[key] = node[name][key]
+              end
+            end
+            additional_commands = node[name]['additional_commands'] || []
           end
           #provider support
           provider = name.split()
@@ -48,43 +58,61 @@ module Spiceweasel
             if provider.length == 2
               count = provider[1]
             end
+            provided_names = []
             if Spiceweasel::Config[:parallel]
               parallel = "seq #{count} | parallel -j 0 -v \""
               parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
               parallel += " -r '#{run_list}'" unless run_list.empty?
               parallel += "\""
-              @create.push(parallel)
+              create_command(parallel, create_command_options)
             else
               count.to_i.times do |i|
                 server = "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
                 server += " -r '#{run_list}'" unless run_list.empty?
-                @create.push(server)
+                provided_names << node[name]['name'].gsub('{{n}}', (i + 1).to_s) if node[name]['name']
+                create_command(server, create_command_options)
               end
             end
-            @delete.push("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
+            if(provided_names.empty?)
+              bulk_delete = true
+              delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
+            else
+              provided_names.each do |p_name|
+                delete_command("knife #{provider[0]} server delete -y #{p_name}")
+                delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+                delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+              end
+            end
           elsif name.start_with?("windows") #windows node bootstrap support
             nodeline = name.split()
             provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
             nodeline.each do |server|
               server = "knife bootstrap #{provider[0]} #{provider[1]}#{Spiceweasel::Config[:knife_options]} #{server} #{options}"
               server += " -r '#{run_list}'" unless run_list.empty?
-              @create.push(server)
-              @delete.push("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
-              @delete.push("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              create_command(server, create_command_options)
+              delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              delete_command("knife #{provider[0]} server delete #{server} -y")
             end
-            @delete.push("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
           else #node bootstrap support
             name.split.each_with_index do |server, i|
               server = "knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
               server += " -r '#{run_list}'" unless run_list.empty?
-              @create.push(server)
-              @delete.push("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
-              @delete.push("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              create_command(server, create_command_options)
+              delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+            end
+          end
+          unless additional_commands.empty?
+            additional_commands.each do |cmd|
+              create_command(cmd, create_command_options)
             end
           end
         end
       end
-      @delete.push("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
+      if bulk_delete
+        delete_command("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
+      end
     end
 
     #ensure run_list contents are listed previously.
