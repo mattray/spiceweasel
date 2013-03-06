@@ -22,6 +22,7 @@ require 'yaml'
 
 require 'spiceweasel'
 require 'spiceweasel/cookbooks'
+require 'spiceweasel/berksfile'
 require 'spiceweasel/environments'
 require 'spiceweasel/roles'
 require 'spiceweasel/data_bags'
@@ -144,14 +145,16 @@ module Spiceweasel
       Spiceweasel::Log.debug("file manifest: #{manifest}")
 
       cookbooks = Cookbooks.new(manifest['cookbooks'])
+      berksfile = Berksfile.new(manifest['berksfile'])
+      cookbooks.cookbook_list.merge!(berksfile.cookbook_list)
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
       nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
       clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
 
-      create = cookbooks.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
-      delete = cookbooks.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
+      create = cookbooks.create + berksfile.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
+      delete = cookbooks.delete + berksfile.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
 
       #trim trailing whitespace
       create.each {|x| x.rstrip!}
