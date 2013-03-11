@@ -246,8 +246,9 @@ module Spiceweasel
         STDERR.puts e.message
         STDERR.puts "ERROR: Parsing error in #{file}."
         exit(-1)
-      rescue Exception
-        STDERR.puts "ERROR: No manifest .json or .yml file provided."
+      rescue Exception => e
+        STDERR.puts "ERROR: Invalid or missing  manifest .json, .rb, or .yml file provided."
+        STDERR.puts "ERROR: #{e}"
         puts opt_parser.to_s
         exit(-1)
       end
