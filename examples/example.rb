@@ -3,7 +3,8 @@
   [
     {"apache2" => {}},
     {"apt" => {"version" => "1.2.0","options" => "--freeze"}},
-    {"mysql" => {}}
+    {"mysql" => {}},
+    {"ntp" => {}}
   ],
   "environments" =>
   [

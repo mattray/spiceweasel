@@ -34,9 +34,7 @@ module Spiceweasel
       if cookbooks
         Spiceweasel::Log.debug("cookbooks: #{cookbooks}")
 
-        c_names = cookbooks.map(&:keys).map(&:first)
-        create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
-
+        c_names = []
         cookbooks.each do |cookbook|
           name = cookbook.keys.first
           if cookbook[name]
@@ -60,11 +58,21 @@ module Spiceweasel
             STDERR.puts "ERROR: 'cookbooks' directory not found, unable to validate, download and load cookbooks"
             exit(-1)
           end
+
           if(options)
+            if !c_names.empty?
+              create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
+              c_names = []
+            end
             create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{name} #{options}")
+          else
+            c_names.push(name)
           end
           delete_command("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y")
           @cookbook_list[name] = version #used for validation
+        end
+        if !c_names.empty?
+          create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
         end
         validateDependencies() unless Spiceweasel::Config[:novalidation]
       end

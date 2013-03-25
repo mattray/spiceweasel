@@ -50,6 +50,7 @@ cookbooks:
     version: 1.2.0
     options: --freeze
 - mysql:
+- ntp:
 ```
 
 produces the knife commands
@@ -60,7 +61,7 @@ knife cookbook site download apt 1.2.0 --file cookbooks/apt.tgz
 tar -C cookbooks/ -xf cookbooks/apt.tgz
 rm -f cookbooks/apt.tgz
 knife cookbook upload apt --freeze
-knife cookbook upload mysql
+knife cookbook upload mysql ntp
 ```
 
 ## Environments ##
