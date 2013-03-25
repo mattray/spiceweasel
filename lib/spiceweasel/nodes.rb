@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 
 module Spiceweasel
   class Nodes
-    
+
     include CommandHelper
-   
+
     PROVIDERS = %w{bluebox clodo cs ec2 gandi hp lxc openstack rackspace slicehost terremark voxel vagrant}
 
     attr_reader :create, :delete
@@ -73,7 +73,7 @@ module Spiceweasel
                 create_command(server, create_command_options)
               end
             end
-            if(provided_names.empty?)
+            if provided_names.empty? && provider[0] != 'windows'
               bulk_delete = true
               delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
             else
@@ -87,18 +87,17 @@ module Spiceweasel
             nodeline = name.split()
             provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
             nodeline.each do |server|
-              server = "knife bootstrap #{provider[0]} #{provider[1]}#{Spiceweasel::Config[:knife_options]} #{server} #{options}"
-              server += " -r '#{run_list}'" unless run_list.empty?
-              create_command(server, create_command_options)
+              servercommand = "knife bootstrap #{provider[0]} #{provider[1]}#{Spiceweasel::Config[:knife_options]} #{server} #{options}"
+              servercommand += " -r '#{run_list}'" unless run_list.empty?
+              create_command(servercommand, create_command_options)
               delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
               delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
-              delete_command("knife #{provider[0]} server delete #{server} -y")
             end
           else #node bootstrap support
             name.split.each_with_index do |server, i|
-              server = "knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-              server += " -r '#{run_list}'" unless run_list.empty?
-              create_command(server, create_command_options)
+              servercommand = "knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+              servercommand += " -r '#{run_list}'" unless run_list.empty?
+              create_command(servercommand, create_command_options)
               delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
               delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
             end
