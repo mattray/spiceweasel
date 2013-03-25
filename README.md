@@ -98,10 +98,7 @@ roles:
 produces the knife commands
 
 ```
-knife role from file base.rb
-knife role from file iisserver.rb
-knife role from file monitoring.rb
-knife role from file webserver.rb
+knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 ```
 
 n## Data Bags ##

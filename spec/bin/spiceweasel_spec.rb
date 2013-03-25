@@ -39,10 +39,7 @@ knife cookbook upload mysql ntp
 knife environment from file development.rb
 knife environment from file qa.rb
 knife environment from file production.rb
-knife role from file base.rb
-knife role from file iisserver.rb
-knife role from file monitoring.rb
-knife role from file webserver.rb
+knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 knife data bag create users
 knife data bag from file users alice.json
 knife data bag from file users bob.json

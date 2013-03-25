@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ module Spiceweasel
       if roles
         Spiceweasel::Log.debug("roles: #{roles}")
         flatroles = roles.collect {|x| x.keys}.flatten
+        rolefiles = []
         flatroles.each do |role|
           Spiceweasel::Log.debug("role: #{role}")
           if File.directory?("roles")
@@ -42,13 +43,14 @@ module Spiceweasel
             exit(-1)
           end
           if File.exists?("roles/#{role}.json")
-            create_command("knife role#{Spiceweasel::Config[:knife_options]} from file #{role}.json")
+            rolefiles.push("#{role}.json")
           else #assume no .json means they want .rb and catchall for misssing dir
-            create_command("knife role#{Spiceweasel::Config[:knife_options]} from file #{role}.rb")
+            rolefiles.push("#{role}.rb")
           end
           delete_command("knife role#{Spiceweasel::Config[:knife_options]} delete #{role} -y")
           @role_list.push(role)
         end
+        create_command("knife role#{Spiceweasel::Config[:knife_options]} from file #{rolefiles.join(' ')}")
       end
     end
 
