@@ -5,6 +5,7 @@ describe 'The Spiceweasel binary' do
 knife cookbook delete apache2  -a -y
 knife cookbook delete apt 1.2.0 -a -y
 knife cookbook delete mysql  -a -y
+knife cookbook delete ntp  -a -y
 knife environment delete development -y
 knife environment delete qa -y
 knife environment delete production -y
@@ -15,28 +16,26 @@ knife role delete webserver -y
 knife data bag delete users -y
 knife data bag delete data -y
 knife data bag delete passwords -y
-knife node delete knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]' -y
-knife client delete knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]' -y
-knife node delete knife bootstrap serverB -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]' -y
-knife client delete knife bootstrap serverB -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]' -y
-knife node delete knife bootstrap serverC -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]' -y
-knife client delete knife bootstrap serverC -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]' -y
+knife node delete serverA -y
+knife client delete serverA -y
+knife node delete serverB -y
+knife client delete serverB -y
+knife node delete serverC -y
+knife client delete serverC -y
 knife node list | xargs knife rackspace server delete -y
-knife node delete knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]' -y
-knife client delete knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]' -y
-knife node list | xargs knife windows server delete -y
-knife node delete knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]' -y
-knife client delete knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]' -y
-knife node delete knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]' -y
-knife client delete knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]' -y
-knife node list | xargs knife windows server delete -y
+knife node delete winboxA -y
+knife client delete winboxA -y
+knife node delete winboxB -y
+knife client delete winboxB -y
+knife node delete winboxC -y
+knife client delete winboxC -y
 knife node bulk delete .* -y
 knife node list | xargs knife ec2 server delete -y
 knife node list | xargs knife ec2 server delete -y
 knife node bulk delete .* -y
 knife cookbook upload apache2
 knife cookbook upload apt --freeze
-knife cookbook upload mysql
+knife cookbook upload mysql ntp
 knife environment from file development.rb
 knife environment from file qa.rb
 knife environment from file production.rb
