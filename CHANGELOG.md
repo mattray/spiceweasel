@@ -215,3 +215,5 @@ This is the current, previous and future development milestones and contains the
  * sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
 * convert test.sh to spec tests
 * do we need global use of the *_list attrs for later use?
+* --simple mode to unroll multiple uploads per command? (
+ * ie. "knife cookbook upload apt\n knife cookbook upload ntp" instead of 1 liner
