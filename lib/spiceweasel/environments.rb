@@ -56,8 +56,8 @@ module Spiceweasel
     #validate the content of the environment file
     def validate(environment, cookbooks)
       file = %W(environments/#{environment}.rb environments/#{environment}.json).detect{|f| File.exists?(f)}
-      if(file)
-        if(Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
+      if file
+        if (Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
           env = Chef::Environment.new(false)
         else
           env = Chef::Environment.new
@@ -69,7 +69,7 @@ module Spiceweasel
         end
         env.cookbook_versions.keys.each do |dep|
           Spiceweasel::Log.debug("environment: '#{environment}' cookbook: '#{dep}'")
-          if !cookbooks.member?(dep)
+          unless cookbooks.member?(dep)
             STDERR.puts "ERROR: Cookbook dependency '#{dep}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
             exit(-1)
           end
