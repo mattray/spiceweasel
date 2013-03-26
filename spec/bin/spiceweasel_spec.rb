@@ -36,9 +36,7 @@ knife node bulk delete .* -y
 knife cookbook upload apache2
 knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
-knife environment from file development.rb
-knife environment from file qa.rb
-knife environment from file production.rb
+knife environment from file development.rb qa.rb production.rb
 knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 knife data bag create users
 knife data bag from file users alice.json

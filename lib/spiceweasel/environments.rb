@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ module Spiceweasel
       @environment_list = Array.new
       if environments
         Spiceweasel::Log.debug("environments: #{environments}")
+        envfiles = []
         environments.each do |env|
           name = env.keys[0]
           Spiceweasel::Log.debug("environment: #{name}")
@@ -41,13 +42,14 @@ module Spiceweasel
             exit(-1)
           end
           if File.exists?("environments/#{name}.json")
-            create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.json")
+            envfiles.push("#{name}.json")
           else #assume no .json means they want .rb and catchall for misssing dir
-            create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{name}.rb")
+            envfiles.push("#{name}.rb")
           end
           delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{name} -y")
           @environment_list.push(name)
         end
+        create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{envfiles.join(' ')}")
       end
     end
 

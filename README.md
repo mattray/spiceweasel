@@ -78,9 +78,7 @@ environments:
 produces the knife commands
 
 ```
-knife environment from file development.rb
-knife environment from file qa.rb
-knife environment from file production.rb
+knife environment from file development.rb qa.rb production.rb
 ```
 
 ## Roles ##
