@@ -124,15 +124,11 @@ produces the knife commands
 
 ```
 knife data bag create users
-knife data bag from file users alice.json
-knife data bag from file users bob.json
-knife data bag from file users chuck.json
+knife data bag from file users alice.json bob.json chuck.json
 knife data bag create data
-knife data bag from file data dataA.json
-knife data bag from file data dataB.json
+knife data bag from file data *.json
 knife data bag create passwords
-knife data bag from file passwords mysql.json --secret-file secret_key_filename
-knife data bag from file passwords rabbitmq.json --secret-file secret_key_filename
+knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key_filename
 ```
 
 ## Nodes ##

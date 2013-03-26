@@ -39,13 +39,11 @@ knife cookbook upload mysql ntp
 knife environment from file development.rb qa.rb production.rb
 knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 knife data bag create users
-knife data bag from file users alice.json
-knife data bag from file users bob.json
-knife data bag from file users chuck.json
+knife data bag from file users alice.json bob.json chuck.json
 knife data bag create data
+knife data bag from file data *.json
 knife data bag create passwords
-knife data bag from file passwords mysql.json --secret-file secret_key
-knife data bag from file passwords rabbitmq.json --secret-file secret_key
+knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key
 knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
 knife bootstrap serverB -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]'
 knife bootstrap serverC -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]'

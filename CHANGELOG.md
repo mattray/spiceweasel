@@ -3,6 +3,14 @@ This is the current, previous and future development milestones and contains the
 # 2.1.0 (NEXT RELEASE)#
 
 * add vagrant provider to support knife-vagrant (Jesse Nelson)
+* CommandHelper (Chris Roberts)
+* knife cookbook upload now uploads multiple cookbooks if there are no options
+* corrected windows node handling
+* knife role from file now uploads multiple roles
+* knife environment from file now uploads multiple environments
+* knife data bag from file now uploads multiple items
+
+* Berkshelf support (Chris Roberts) (need to validate it through cookbooks)
 
 # 2.0.1 (CURRENT RELEASE)#
 
