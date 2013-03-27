@@ -2,7 +2,7 @@
 # Author:: Geoff Meakin
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,23 +81,29 @@ module Spiceweasel
     end
 
     def self.resolve_cookbooks
+      require 'solve'
       loader = Chef::CookbookLoader.new('./cookbooks')
+      loader.load_cookbooks
       books = loader.cookbooks_by_name
       graph = Solve::Graph.new
+      cblist = []
       books.each do |name, cb|
         Spiceweasel::Log.debug("dir_ext: #{name} #{cb.version}")
-        artifact = graph.artifact(name, cb.version)
+        artifact = graph.artifacts(name, cb.version)
+        cblist.push([name, cb.version])
         cb.metadata.dependencies.each do |dep_name, dep_version|
           artifact.depends(dep_name, dep_version)
         end
       end
-
-      cookbooks = []
-      books.each do |name, cb|
-        cookbooks |= Solve.it!(graph, [[name, cb.version]])
+      #get the cookbooks and their versions, map to cookbook hash format
+      begin
+        cookbooks = []
+        Solve.it!(graph, cblist).each {|k,v| cookbooks.push({k => {'version' => v}})}
+      rescue Solve::Errors::NoSolutionError => e
+        STDERR.puts "ERROR: There are missing cookbook dependencies, please check your metadata.rb files."
+        exit(-1)
       end
-      Spiceweasel::Log.debug("dir_ext: cookbooks: '#{cookbooks.join(',')}'")
-      cookbooks.collect { |x| { x => nil } }
+      cookbooks
     end
   end
 end
