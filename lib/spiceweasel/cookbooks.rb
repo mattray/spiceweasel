@@ -25,10 +25,10 @@ module Spiceweasel
 
     attr_reader :cookbook_list, :create, :delete
 
-    def initialize(cookbooks = [])
+    def initialize(cookbooks = [], other_cookbook_list = {})
       @create = Array.new
       @delete = Array.new
-      @cookbook_list = Hash.new
+      @cookbook_list = other_cookbook_list
       @dependencies = Array.new
       #validate each of the cookbooks specified in the manifest
       if cookbooks
