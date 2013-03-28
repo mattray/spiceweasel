@@ -149,16 +149,24 @@ module Spiceweasel
       end
       Spiceweasel::Log.debug("file manifest: #{manifest}")
 
-      berksfile = Berksfile.new(manifest['berksfile'])
-      cookbooks = Cookbooks.new(manifest['cookbooks'], berksfile.cookbook_list)
+      berksfile = Berksfile.new(manifest['berksfile']) if manifest.include?('berksfile')
+      if berksfile
+        cookbooks = Cookbooks.new(manifest['cookbooks'], berksfile.cookbook_list)
+        create = berksfile.create + cookbooks.create
+        delete = berksfile.delete + cookbooks.delete
+      else
+        cookbooks = Cookbooks.new(manifest['cookbooks'])
+        create = cookbooks.create
+        delete = cookbooks.delete
+      end
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
       nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
       clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
 
-      create = berksfile.create + cookbooks.create + environments.create + roles.create + data_bags.create + nodes.create + clusters.create
-      delete = berksfile.delete + cookbooks.delete + environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
+      create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create
+      delete += environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
 
       if Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(manifest)

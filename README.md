@@ -64,6 +64,34 @@ knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
 ```
 
+## Berkshelf ##
+
+If you prefer to use Berkshelf for managing your cookbooks, Spiceweasel supports adding `berksfile:` and the ability to specify the path and any Berkshelf options. You may mix use of `berkshelf:` with `cookbooks:` if you wish as well. Berkshelf-managed cookbooks will be included in the validation of roles, environments and run lists as well. You may simply use the YAML snippet
+
+``` yaml
+berkshelf:
+```
+
+which produces the command
+
+```
+berks upload -b ./Berksfile
+```
+
+or you may use additional options like
+
+``` yaml
+berksfile:
+    path: '/Users/mray/ws/lab-repo/Berksfile'
+    options: '--skip_syntax_check --config some_config.json'
+```
+
+which produces the output
+
+```
+berks upload --skip_syntax_check --config some_config.json -b /Users/mray/ws/lab-repo/Berksfile
+```
+
 ## Environments ##
 
 The `environments` section of the manifest currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` or `.json` in the `environments` directory. Validation is done to ensure the filename matches the environment and that any cookbooks referenced are listed in the manifest. The example YAML snippet
