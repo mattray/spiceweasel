@@ -4,6 +4,7 @@ cookbooks:
     version: 1.2.0
     options: --freeze
 - mysql:
+- ntp:
 environments:
 - development:
 - qa:

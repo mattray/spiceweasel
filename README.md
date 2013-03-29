@@ -3,7 +3,7 @@
 
 # Description #
 
-Spiceweasel is a command-line tool for batch loading Chef infrastructure from a file. It provides a simple syntax in either JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present.
+Spiceweasel is a command-line tool for batch loading Chef infrastructure from a file. It provides a simple syntax in Ruby, JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present.
 
 The `examples` directory provides example manifests based on the Quick Starts provided at http://help.opscode.com/kb/otherhelp. The https://github.com/mattray/vbacd-repo provides a working example for bootstrapping a Chef repository with Spiceweasel.
 
@@ -11,13 +11,13 @@ The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.
 
 # Requirements #
 
-Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. Infrastructure files must either end in `.json` or `.yml` to be processed.
+Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. Infrastructure files must end in `.rb`, `.json` or `.yml` to be processed.
 
-Written and tested initially with Chef 0.9.12 (may still work) and continuing development with the 10.x series. It is tested with Ruby 1.8.7 and 1.9.2.
+Written and tested initially with Chef 0.9.12 (may still work) and continuing development with the 10.x series. It is tested with Ruby 1.9.3. Version 2.0 was the last version known to work with Ruby 1.8.7 due to the introduction of the Berkshelf dependency in 2.1.
 
 # File Syntax #
 
-The syntax for the Spiceweasel file may be either JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [examples/example.json](https://github.com/mattray/spiceweasel/blob/master/examples/example.json) or [examples/example.yml](https://github.com/mattray/spiceweasel/blob/master/examples/example.yml) for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
+The syntax for the Spiceweasel file may be Ruby, JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [examples/example.json](https://github.com/mattray/spiceweasel/blob/master/examples/example.json) or [examples/example.yml](https://github.com/mattray/spiceweasel/blob/master/examples/example.yml) for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
 
 ## Manifest syntax changes in Spiceweasel 2.0 ##
 
@@ -50,6 +50,7 @@ cookbooks:
     version: 1.2.0
     options: --freeze
 - mysql:
+- ntp:
 ```
 
 produces the knife commands
@@ -60,7 +61,35 @@ knife cookbook site download apt 1.2.0 --file cookbooks/apt.tgz
 tar -C cookbooks/ -xf cookbooks/apt.tgz
 rm -f cookbooks/apt.tgz
 knife cookbook upload apt --freeze
-knife cookbook upload mysql
+knife cookbook upload mysql ntp
+```
+
+## Berkshelf ##
+
+If you prefer to use Berkshelf for managing your cookbooks, Spiceweasel supports adding `berksfile:` and the ability to specify the path and any Berkshelf options. You may mix use of `berkshelf:` with `cookbooks:` if you wish as well. Berkshelf-managed cookbooks will be included in the validation of roles, environments and run lists as well. You may simply use the YAML snippet
+
+``` yaml
+berkshelf:
+```
+
+which produces the command
+
+```
+berks upload -b ./Berksfile
+```
+
+or you may use additional options like
+
+``` yaml
+berksfile:
+    path: '/Users/mray/ws/lab-repo/Berksfile'
+    options: '--skip_syntax_check --config some_config.json'
+```
+
+which produces the output
+
+```
+berks upload --skip_syntax_check --config some_config.json -b /Users/mray/ws/lab-repo/Berksfile
 ```
 
 ## Environments ##
@@ -77,9 +106,7 @@ environments:
 produces the knife commands
 
 ```
-knife environment from file development.rb
-knife environment from file qa.rb
-knife environment from file production.rb
+knife environment from file development.rb qa.rb production.rb
 ```
 
 ## Roles ##
@@ -97,10 +124,7 @@ roles:
 produces the knife commands
 
 ```
-knife role from file base.rb
-knife role from file iisserver.rb
-knife role from file monitoring.rb
-knife role from file webserver.rb
+knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 ```
 
 n## Data Bags ##
@@ -128,15 +152,11 @@ produces the knife commands
 
 ```
 knife data bag create users
-knife data bag from file users alice.json
-knife data bag from file users bob.json
-knife data bag from file users chuck.json
+knife data bag from file users alice.json bob.json chuck.json
 knife data bag create data
-knife data bag from file data dataA.json
-knife data bag from file data dataB.json
+knife data bag from file data *.json
 knife data bag create passwords
-knife data bag from file passwords mysql.json --secret-file secret_key_filename
-knife data bag from file passwords rabbitmq.json --secret-file secret_key_filename
+knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key_filename
 ```
 
 ## Nodes ##

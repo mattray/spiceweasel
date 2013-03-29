@@ -2,9 +2,20 @@ This is the current, previous and future development milestones and contains the
 
 # 2.1.0 (NEXT RELEASE)#
 
+* Spiceweasel no longer works with Ruby 1.8.7 due to the Berkshelf dependency.
+* Berkshelf support (Chris Roberts)
 * add vagrant provider to support knife-vagrant (Jesse Nelson)
+* use of Command and CommandHelper to clean up working with commands (Chris Roberts)
+* use Chef::Environment to validate Environments (Chris Roberts)
+* use Chef::Role to validate Roles (Chris Roberts)
+* corrected windows node handling
+* knife cookbook upload now uploads multiple cookbooks if there are no options
+* knife role from file now uploads multiple roles
+* knife environment from file now uploads multiple environments
+* knife data bag from file now uploads multiple items
+* cookbook versions provided in --extract** commands
 
-# 2.0.1 (CURRENT RELEASE)#
+# 2.0.1 #
 
 * file permissions, how do they work? Had to re-push gem.
 
@@ -162,13 +173,6 @@ This is the current, previous and future development milestones and contains the
 * publish as a gem on RubyGems
 
 # BACKLOG #
-* Berkshelf
-  - berkshelf
-  read the Berksfile
-  berks install the file
-      check the list of cookbooks and verify they're all listed including dependencies
-      SHA is 1st 7
-      complain about missing explicit dependencies
 * MORE CLUSTER FEATURES
  * cluster creation via API
  * create
@@ -180,9 +184,7 @@ This is the current, previous and future development milestones and contains the
   * delete on tag
   * knife search node 'tags:amazon+*'
 * ADDITIONAL VALIDATION
- * all validation done by converting .rb/.json files to Chef objects
  * use versions for cookbook dependency checks (http://sysadvent.blogspot.com/2012/12/day-24-twelve-things-you-didnt-know.html#item_4)
- * put versions in --extract*
  * environment-specific run_lists
  * sort roles by dependencies of other roles?
 * multiple input file support (besides current --cluster-file)
@@ -195,29 +197,22 @@ This is the current, previous and future development milestones and contains the
   * knife environment from file environments/*.rb
   * knife role from file roles/*.rb
   * knife data bag from file users -a
-* Support circular dependencies
 * Support paths outside of the base
  * [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
 * [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
 * Librarian integration
-  * replace "cookbooks:" -> "librarian:"
-  * cookbooks-librarian:
-  * code has to understand switch
   * load in the librarian file
   * output the knife commands
   * validate the librarian cookbooks vs. roles, environments and run lists
-* Berkshelf integration
-  * replace "cookbooks:" -> "berkshelf:"
-  * same expectations as the Librarian cookbooks
 * CONVERT TO A KNIFE PLUGIN
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json
  * knife batch rebuild from file infrastructure.yml
 * EXTRACT EXISTING INFRASTRUCTURE
- * write out JSON or YAML files from --extract commands
  * knife batch extract to a tarball named for the organization
  * option to include credentials and knife.rb
  * translate json back to rb?
- * sort --extractyaml/--extractjson for Ruby 1.8.7 so it's always same results
 * convert test.sh to spec tests
 * do we need global use of the *_list attrs for later use?
+* --simple mode to unroll multiple uploads per command? (
+ * ie. "knife cookbook upload apt\n knife cookbook upload ntp" instead of 1 liner
