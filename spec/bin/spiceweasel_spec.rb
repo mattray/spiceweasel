@@ -62,7 +62,15 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
-  it "maintains consistent output from the example config" do
+  it "maintains consistent output from the example config with yml" do
     `#{@spiceweasel_binary} -r --novalidation examples/example.yml`.should == @expected_output
+  end
+
+  it "maintains consistent output from the example config with json" do
+    `#{@spiceweasel_binary} -r --novalidation examples/example.json`.should == @expected_output
+  end
+
+  it "maintains consistent output from the example config with rb" do
+    `#{@spiceweasel_binary} -r --novalidation examples/example.rb`.should == @expected_output
   end
 end
