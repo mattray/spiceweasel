@@ -23,7 +23,7 @@ module Spiceweasel
   class ExtractLocal
 
     def self.parse_objects
-      objects = {'cookbooks' => nil, 'roles' => nil, 'environments' => nil, 'data bags' => nil, 'nodes' => nil}
+      objects = {}
 
       # BERKSHELF
       if File.file?('./Berksfile')
