@@ -25,8 +25,14 @@ module Spiceweasel
     def self.parse_objects
       objects = {'cookbooks' => nil, 'roles' => nil, 'environments' => nil, 'data bags' => nil, 'nodes' => nil}
 
+      # BERKSHELF
+      if File.file?('./Berksfile')
+        objects['berksfile'] = nil
+        berksfile = Berksfile.new(objects['berksfile'])
+      end
+
       # COOKBOOKS
-      cookbooks = self.resolve_cookbooks
+      cookbooks = self.resolve_cookbooks(berksfile.cookbook_list)
       objects['cookbooks'] = cookbooks unless cookbooks.empty?
 
       # ROLES
@@ -80,13 +86,18 @@ module Spiceweasel
       name.join('.')
     end
 
-    def self.resolve_cookbooks
+    def self.resolve_cookbooks(berkshelf_cookbooks = {})
       require 'solve'
       loader = Chef::CookbookLoader.new('./cookbooks')
       loader.load_cookbooks
       books = loader.cookbooks_by_name
       graph = Solve::Graph.new
       cblist = []
+      #push in the berkshelf cookbooks to cover any other deps
+      berkshelf_cookbooks.each do |name, version|
+        Spiceweasel::Log.debug("dir_ext:berks: #{name} #{version}")
+        graph.artifacts(name, version)
+      end
       books.each do |name, cb|
         Spiceweasel::Log.debug("dir_ext: #{name} #{cb.version}")
         artifact = graph.artifacts(name, cb.version)
@@ -103,7 +114,8 @@ module Spiceweasel
         STDERR.puts "ERROR: There are missing cookbook dependencies, please check your metadata.rb files."
         exit(-1)
       end
-      cookbooks
+      #remove any cookbooks managed by berkshelf
+      cookbooks.delete_if {|x| berkshelf_cookbooks.keys.member?(x.keys[0])}
     end
   end
 end
