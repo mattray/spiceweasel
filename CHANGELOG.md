@@ -1,6 +1,10 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.1.0 (NEXT RELEASE)#
+# 2.1.1
+
+* fix JSON support for environments and roles
+
+# 2.1.0 (CURRENT RELEASE)#
 
 * Spiceweasel no longer works with Ruby 1.8.7 due to the Berkshelf dependency.
 * Berkshelf support (Chris Roberts)

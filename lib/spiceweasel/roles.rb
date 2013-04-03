@@ -59,15 +59,20 @@ module Spiceweasel
       #validate the role passed in match the name of either the .rb or .json
       file = %W(roles/#{role}.rb roles/#{role}.json).detect{|f| File.exists?(f)}
       if(file)
-        if(Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
-          c_role = Chef::Role.new(true)
-        else
-          c_role = Chef::Role.new
+        case file
+        when /\.json$/
+          c_role = Chef::JSONCompat.from_json(IO.read(file))
+        when /\.rb$/
+          if(Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
+            c_role = Chef::Role.new(true)
+          else
+            c_role = Chef::Role.new
+          end
+          c_role.from_file(file)
         end
-        c_role.from_file(file)
         Spiceweasel::Log.debug("role: '#{role}' name: '#{c_role.name}'")
         if !role.eql?(c_role.name)
-          STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{c_role.name}' within the roles/#{role}.rb file."
+          STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{c_role.name}' within the #{file} file."
           exit(-1)
         end
         c_role.run_list.each do |runlist_item|

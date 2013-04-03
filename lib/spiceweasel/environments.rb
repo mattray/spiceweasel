@@ -57,14 +57,19 @@ module Spiceweasel
     def validate(environment, cookbooks)
       file = %W(environments/#{environment}.rb environments/#{environment}.json).detect{|f| File.exists?(f)}
       if file
-        if (Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
-          env = Chef::Environment.new(false)
-        else
-          env = Chef::Environment.new
+        case file
+        when /\.json$/
+          env = Chef::JSONCompat.from_json(IO.read(file))
+        when /\.rb$/
+          if (Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
+            env = Chef::Environment.new(false)
+          else
+            env = Chef::Environment.new
+          end
+          env.from_file(file)
         end
-        env.from_file(file)
         if(env.name != environment)
-          STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{name}' within the environments/#{environment}.rb file."
+          STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{name}' within the #{file} file."
           exit(-1)
         end
         env.cookbook_versions.keys.each do |dep|
