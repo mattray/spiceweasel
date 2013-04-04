@@ -69,7 +69,7 @@ module Spiceweasel
           env.from_file(file)
         end
         if(env.name != environment)
-          STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{name}' within the #{file} file."
+          STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{env.name}' within the #{file} file."
           exit(-1)
         end
         env.cookbook_versions.keys.each do |dep|
