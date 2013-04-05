@@ -1,8 +1,12 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.1.1
+# 2.1.2 # (NEXT RELEASE)
 
-* fix JSON support for environments and roles
+* Resolve undefined 'name' in Environments#validate. (Colin Rymer)
+
+# 2.1.1 (unreleased) #
+
+* fix JSON support for environments and roles.
 
 # 2.1.0 (CURRENT RELEASE)#
 
