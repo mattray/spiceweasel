@@ -208,11 +208,11 @@ module Spiceweasel
       ARGV << "-h" if ARGV.empty?
       begin
         parse_options
-        if Spiceweasel::Config[:knifeconfig]
-          Spiceweasel::Config[:knife_options] = "-c #{Spiceweasel::Config[:knifeconfig]} "
+        if @config[:knifeconfig]
+          Spiceweasel::Config[:knife_options] = " -c #{@config[:knifeconfig]} "
         end
-        if Spiceweasel::Config[:serverurl]
-          Spiceweasel::Config[:knife_options] += "--server-url #{Spiceweasel::Config[:serverurl]} "
+        if @config[:serverurl]
+          Spiceweasel::Config[:knife_options] += "--server-url #{@config[:serverurl]} "
         end
       rescue OptionParser::InvalidOption => e
         STDERR.puts e.message
