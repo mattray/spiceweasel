@@ -32,7 +32,8 @@ module Spiceweasel
       end
 
       # COOKBOOKS
-      cookbooks = self.resolve_cookbooks(berksfile.cookbook_list)
+      cookbooks = berksfile ? self.resolve_cookbooks(berksfile.cookbook_list) : self.resolve_cookbooks
+
       objects['cookbooks'] = cookbooks unless cookbooks.empty?
 
       # ROLES
