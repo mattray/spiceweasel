@@ -3,6 +3,8 @@ This is the current, previous and future development milestones and contains the
 # 2.1.2 # (NEXT RELEASE)
 
 * Resolve undefined 'name' in Environments#validate. (Colin Rymer)
+* Resolve nil error for berksfile in extract_local (Colin Rymer)
+* Fixing respecting the `--knifeconfig` option. (Ari Lerner)
 
 # 2.1.1 (unreleased) #
 
