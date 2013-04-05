@@ -1,6 +1,6 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.1.2 # (NEXT RELEASE)
+# 2.1.2 # (CURRENT RELEASE)
 
 * Resolve undefined 'name' in Environments#validate. (Colin Rymer)
 * Resolve nil error for berksfile in extract_local (Colin Rymer)
@@ -10,7 +10,7 @@ This is the current, previous and future development milestones and contains the
 
 * fix JSON support for environments and roles.
 
-# 2.1.0 (CURRENT RELEASE)#
+# 2.1.0 #
 
 * Spiceweasel no longer works with Ruby 1.8.7 due to the Berkshelf dependency.
 * Berkshelf support (Chris Roberts)
