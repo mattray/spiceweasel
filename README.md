@@ -66,10 +66,10 @@ knife cookbook upload mysql ntp
 
 ## Berkshelf ##
 
-If you prefer to use Berkshelf for managing your cookbooks, Spiceweasel supports adding `berksfile:` and the ability to specify the path and any Berkshelf options. You may mix use of `berkshelf:` with `cookbooks:` if you wish as well. Berkshelf-managed cookbooks will be included in the validation of roles, environments and run lists as well. You may simply use the YAML snippet
+If you prefer to use Berkshelf for managing your cookbooks, Spiceweasel supports adding `berksfile:` and the ability to specify the path and any Berkshelf options. You may mix use of `berksfile:` with `cookbooks:` if you wish as well. Berkshelf-managed cookbooks will be included in the validation of roles, environments and run lists as well. You may simply use the YAML snippet
 
 ``` yaml
-berkshelf:
+berksfile:
 ```
 
 which produces the command
@@ -336,7 +336,7 @@ Print the version of spiceweasel currently installed.
 
 Author: Matt Ray <matt@opscode.com>
 
-Copyright: 2011-2012 Opscode, Inc
+Copyright: 2011-2013 Opscode, Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
