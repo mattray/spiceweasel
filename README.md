@@ -127,9 +127,9 @@ produces the knife commands
 knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 ```
 
-n## Data Bags ##
+## Data Bags ##
 
-The `data bags` section of the manifest currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the proper `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (ie. `"*"`). Encrypted data bags are supported by using the `secret: secret_key_filename` attribute. Validation is done to ensure the JSON is properly formatted, the id matches and any secret key files are in the correct locations. Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet
+The `data bags` section of the manifest currently creates the data bags listed with `knife data bag create FOO` where `FOO` is the name of the data bag. Individual items may be added to the data bag as part of a JSON or YAML sequence, the assumption is made that they `.json` files and in the proper `data_bags/FOO` directory. You may also pass a wildcard as an entry to load all matching data bags (i.e. `"*"`). Encrypted data bags are supported by using the `secret: secret_key_filename` attribute. Validation is done to ensure the JSON is properly formatted, the id matches and any secret key files are in the correct locations. Assuming the presence of `dataA.json` and `dataB.json` in the `data_bags/data` directory, the YAML snippet
 
 ``` yaml
 data bags:
