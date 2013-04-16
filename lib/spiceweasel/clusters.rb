@@ -36,9 +36,9 @@ module Spiceweasel
             options = node[node_name]['options'] || ''
             # cluster tag is the cluster name + runlist
             # tag = " -j '{\"tags\":[\"#{cluster_name}+#{run_list.gsub(/[ ,\[\]:]/, '')}\"]}'"
-            Spiceweasel::Log.debug("cluster: #{cluster_name}:#{node_name}:tag:#{tag}")
+            # Spiceweasel::Log.debug("cluster: #{cluster_name}:#{node_name}:tag:#{tag}")
             #push the tag back on the options
-            node[node_name]['options'] = options + tag
+            # node[node_name]['options'] = options + tag
           end
           Spiceweasel::Log.debug("cluster2: '#{cluster_name}' '#{cluster[cluster_name]}'")
           # let's reuse the Nodes logic
