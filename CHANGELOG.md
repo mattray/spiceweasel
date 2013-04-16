@@ -1,5 +1,11 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
+# 2.1.3 #
+
+* disable the -j for clusters, since it is unevenly available in the various knife plugins (KNIFE-264)
+* added Cli::process_manifest method so acts more like a library
+* '--log_level' changed to '--loglevel' because camel-case cli options are non-standard
+
 # 2.1.2 # (CURRENT RELEASE)
 
 * Resolve undefined 'name' in Environments#validate. (Colin Rymer)
