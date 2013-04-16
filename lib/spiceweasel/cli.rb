@@ -88,7 +88,7 @@ module Spiceweasel
 
     option :log_level,
     :short => "-l LEVEL",
-    :long => "--log_level LEVEL",
+    :long => "--loglevel LEVEL",
     :description => "Set the log level (debug, info, warn, error, fatal)",
     :proc => lambda { |l| l.to_sym }
 
@@ -149,24 +149,7 @@ module Spiceweasel
       end
       Spiceweasel::Log.debug("file manifest: #{manifest}")
 
-      berksfile = Berksfile.new(manifest['berksfile']) if manifest.include?('berksfile')
-      if berksfile
-        cookbooks = Cookbooks.new(manifest['cookbooks'], berksfile.cookbook_list)
-        create = berksfile.create + cookbooks.create
-        delete = berksfile.delete + cookbooks.delete
-      else
-        cookbooks = Cookbooks.new(manifest['cookbooks'])
-        create = cookbooks.create
-        delete = cookbooks.delete
-      end
-      environments = Environments.new(manifest['environments'], cookbooks)
-      roles = Roles.new(manifest['roles'], environments, cookbooks)
-      data_bags = DataBags.new(manifest['data bags'])
-      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
-      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
-
-      create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create
-      delete += environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
+      create, delete = process_manifest(manifest)
 
       if Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(manifest)
@@ -256,10 +239,31 @@ module Spiceweasel
       rescue Exception => e
         STDERR.puts "ERROR: Invalid or missing  manifest .json, .rb, or .yml file provided."
         STDERR.puts "ERROR: #{e}"
-        puts opt_parser.to_s
         exit(-1)
       end
       output
+    end
+
+    def process_manifest(manifest)
+      berksfile = Berksfile.new(manifest['berksfile']) if manifest.include?('berksfile')
+      if berksfile
+        cookbooks = Cookbooks.new(manifest['cookbooks'], berksfile.cookbook_list)
+        create = berksfile.create + cookbooks.create
+        delete = berksfile.delete + cookbooks.delete
+      else
+        cookbooks = Cookbooks.new(manifest['cookbooks'])
+        create = cookbooks.create
+        delete = cookbooks.delete
+      end
+      environments = Environments.new(manifest['environments'], cookbooks)
+      roles = Roles.new(manifest['roles'], environments, cookbooks)
+      data_bags = DataBags.new(manifest['data bags'])
+      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
+      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
+
+      create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create
+      delete += environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
+      return create, delete
     end
 
   end
