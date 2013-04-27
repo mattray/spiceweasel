@@ -5,10 +5,9 @@ This is the current, previous and future development milestones and contains the
 * added Cli::process_manifest method so acts more like a library
 * '--log_level' changed to '--loglevel' because camel-case cli options are non-standard
 * disable the -j for clusters, since it is unevenly available in the various knife plugins (KNIFE-264)
-
 * fixed "Data bag wildcard syntax errors out" (reported by Mike The Man)
-* wildcards work properly
-* wildcards for roles and environments
+* added full wildcard support for data bags
+
 * wildcards for environments and roles
   * document how we're explicit in the knife commands to show everything (--explicit?)
   * knife environment from file -a
@@ -16,8 +15,7 @@ This is the current, previous and future development milestones and contains the
   * knife role from file roles/*.rb
   * knife data bag from file users -a
 
-
-* clusters use environments
+* clusters use environments instead of tags since tags are not fully supported yet
 
 # 2.1.2 # (CURRENT RELEASE)
 

@@ -56,6 +56,7 @@ module Spiceweasel
           items.each do |item|
             Spiceweasel::Log.debug("data bag #{db} item: #{item}")
             if item =~ /\*/ #wildcard support, will fail if directory not present
+              items.delete(item) #remove wildcard
               files = Dir.glob("data_bags/#{db}/#{item}")
               #remove anything not ending in .json
               files.delete_if {|x| !x.end_with?('.json')}
@@ -65,6 +66,7 @@ module Spiceweasel
             end
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]
           end
+          items.uniq!
           if secret
             create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")
           else
