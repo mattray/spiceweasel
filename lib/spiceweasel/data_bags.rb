@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,7 +56,9 @@ module Spiceweasel
           items.each do |item|
             Spiceweasel::Log.debug("data bag #{db} item: #{item}")
             if item =~ /\*/ #wildcard support, will fail if directory not present
-              files = Dir.glob("data_bags/#{db}/*.json")
+              files = Dir.glob("data_bags/#{db}/#{item}")
+              #remove anything not ending in .json
+              files.delete_if {|x| !x.end_with?('.json')}
               items.concat(files.collect {|x| x[x.rindex('/')+1..-6]})
               Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db}")
               next
