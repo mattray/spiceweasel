@@ -61,12 +61,12 @@ module Spiceweasel
               #remove anything not ending in .json
               files.delete_if {|x| !x.end_with?('.json')}
               items.concat(files.collect {|x| x[x.rindex('/')+1..-6]})
-              Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db}")
+              Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db} with wildcard #{item}")
               next
             end
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]
           end
-          items.uniq!
+          items.sort!.uniq!
           if secret
             create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")
           else
