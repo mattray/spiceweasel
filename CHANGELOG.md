@@ -1,10 +1,23 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.1.3 #
+# 2.2.0 #
 
-* disable the -j for clusters, since it is unevenly available in the various knife plugins (KNIFE-264)
 * added Cli::process_manifest method so acts more like a library
 * '--log_level' changed to '--loglevel' because camel-case cli options are non-standard
+* disable the -j for clusters, since it is unevenly available in the various knife plugins (KNIFE-264)
+
+* fixed "Data bag wildcard syntax errors out" (reported by Mike The Man)
+* wildcards work properly
+* wildcards for roles and environments
+* wildcards for environments and roles
+  * document how we're explicit in the knife commands to show everything (--explicit?)
+  * knife environment from file -a
+  * knife environment from file environments/*.rb
+  * knife role from file roles/*.rb
+  * knife data bag from file users -a
+
+
+* clusters use environments
 
 # 2.1.2 # (CURRENT RELEASE)
 
@@ -207,12 +220,6 @@ This is the current, previous and future development milestones and contains the
 * config file support
 * make deletion smarter, use tags for providers
   * see if -P is supported?
-* wildcards for environments and roles
-  * document how we're explicit in the knife commands to show everything (--explicit?)
-  * knife environment from file -a
-  * knife environment from file environments/*.rb
-  * knife role from file roles/*.rb
-  * knife data bag from file users -a
 * Support paths outside of the base
  * [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
 * [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
@@ -228,7 +235,6 @@ This is the current, previous and future development milestones and contains the
  * knife batch extract to a tarball named for the organization
  * option to include credentials and knife.rb
  * translate json back to rb?
-* convert test.sh to spec tests
 * do we need global use of the *_list attrs for later use?
-* --simple mode to unroll multiple uploads per command? (
+* --simple mode to unroll multiple uploads per command?
  * ie. "knife cookbook upload apt\n knife cookbook upload ntp" instead of 1 liner
