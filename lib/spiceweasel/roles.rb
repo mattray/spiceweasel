@@ -37,6 +37,16 @@ module Spiceweasel
         flatroles.each do |role|
           Spiceweasel::Log.debug("role: #{role}")
           if File.directory?("roles")
+            #expand wildcards and push into flatroles
+            if role =~ /\*/ #wildcard support
+              flatroles.delete(role) #remove wildcard
+              wildroles = Dir.glob("roles/#{role}")
+              #remove anything not ending in .json or .rb
+              wildroles.delete_if {|x| !x.end_with?(".rb", ".json")}
+              Spiceweasel::Log.debug("found roles '#{wildroles}' for wildcard: #{role}")
+              flatroles.concat(wildroles.collect {|x| x[x.rindex('/')+1..x.rindex('.')-1]})
+              next
+            end
             validate(role, environments, cookbooks, flatroles) unless Spiceweasel::Config[:novalidation]
           elsif !Spiceweasel::Config[:novalidation]
             STDERR.puts "ERROR: 'roles' directory not found, unable to validate or load roles"
@@ -50,7 +60,7 @@ module Spiceweasel
           delete_command("knife role#{Spiceweasel::Config[:knife_options]} delete #{role} -y")
           @role_list.push(role)
         end
-        create_command("knife role#{Spiceweasel::Config[:knife_options]} from file #{rolefiles.join(' ')}")
+        create_command("knife role#{Spiceweasel::Config[:knife_options]} from file #{rolefiles.uniq.sort.join(' ')}")
       end
     end
 

@@ -111,20 +111,21 @@ knife environment from file development.rb qa.rb production.rb
 
 ## Roles ##
 
-The `roles` section of the manifest currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` or `.json` in the `roles` directory. Validation is done to ensure the filename matches the role name and that any cookbooks or roles referenced are listed in the manifest. The example YAML snippet
+The `roles` section of the manifest currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` or `.json` in the `roles` directory. You may also pass a wildcard as an entry to load all matching roles (ie. `"*"` or `b*"`) Validation is done to ensure the filename matches the role name and that any cookbooks or roles referenced are listed in the manifest. The example YAML snippet
 
 ``` yaml
 roles:
 - base:
+- "data*":
 - iisserver:
 - monitoring:
 - webserver:
 ```
 
-produces the knife commands
+assuming the `database1.json` and `database2.json` roles exist, this produces the knife commands:
 
 ```
-knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
+knife role from file base.rb database1.json database2.json iisserver.rb monitoring.rb webserver.rb
 ```
 
 ## Data Bags ##

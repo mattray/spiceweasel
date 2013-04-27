@@ -6,16 +6,11 @@ This is the current, previous and future development milestones and contains the
 * '--log_level' changed to '--loglevel' because camel-case cli options are non-standard
 * disable the -j for clusters, since it is unevenly available in the various knife plugins (KNIFE-264)
 * fixed "Data bag wildcard syntax errors out" (reported by Mike Fiedler)
-* added full wildcard support for data bags
+* added full wildcard support for data bags and roles
 
-* wildcards for environments and roles
-  * document how we're explicit in the knife commands to show everything (--explicit?)
-  * knife environment from file -a
-  * knife environment from file environments/*.rb
-  * knife role from file roles/*.rb
-  * knife data bag from file users -a
-
+* wildcards for environments
 * clusters use environments instead of tags since tags are not fully supported yet
+* [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
 
 # 2.1.2 # (CURRENT RELEASE)
 
@@ -219,7 +214,6 @@ This is the current, previous and future development milestones and contains the
   * see if -P is supported?
 * Support paths outside of the base
  * [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
-* [Added support for nesting role files in subdirectories of the role/ directory.](https://github.com/mattray/spiceweasel/pull/11)
 * Librarian integration
   * load in the librarian file
   * output the knife commands
