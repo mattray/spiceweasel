@@ -5,7 +5,7 @@ This is the current, previous and future development milestones and contains the
 * added Cli::process_manifest method so acts more like a library
 * '--log_level' changed to '--loglevel' because camel-case cli options are non-standard
 * disable the -j for clusters, since it is unevenly available in the various knife plugins (KNIFE-264)
-* fixed "Data bag wildcard syntax errors out" (reported by Mike The Man)
+* fixed "Data bag wildcard syntax errors out" (reported by Mike Fiedler)
 * added full wildcard support for data bags
 
 * wildcards for environments and roles
@@ -211,7 +211,6 @@ This is the current, previous and future development milestones and contains the
   * delete on tag
   * knife search node 'tags:amazon+*'
 * ADDITIONAL VALIDATION
- * use versions for cookbook dependency checks (http://sysadvent.blogspot.com/2012/12/day-24-twelve-things-you-didnt-know.html#item_4)
  * environment-specific run_lists
  * sort roles by dependencies of other roles?
 * multiple input file support (besides current --cluster-file)
