@@ -31,25 +31,34 @@ module Spiceweasel
       @environment_list = Array.new
       if environments
         Spiceweasel::Log.debug("environments: #{environments}")
+        flatenvs = environments.collect {|x| x.keys}.flatten
         envfiles = []
-        environments.each do |env|
-          name = env.keys[0]
-          Spiceweasel::Log.debug("environment: #{name}")
+        flatenvs.each do |env|
+          Spiceweasel::Log.debug("environment: #{env}")
           if File.directory?("environments")
-            validate(name, cookbooks) unless Spiceweasel::Config[:novalidation]
+            #expand wildcards and push into environments
+            if env =~ /\*/ #wildcard support
+              wildenvs = Dir.glob("environments/#{env}")
+              #remove anything not ending in .json or .rb
+              wildenvs.delete_if {|x| !x.end_with?(".rb", ".json")}
+              Spiceweasel::Log.debug("found environments '#{wildenvs}' for wildcard: #{env}")
+              flatenvs.concat(wildenvs.collect {|x| x[x.rindex('/')+1..x.rindex('.')-1]})
+              next
+            end
+            validate(env, cookbooks) unless Spiceweasel::Config[:novalidation]
           elsif !Spiceweasel::Config[:novalidation]
             STDERR.puts "'environments' directory not found, unable to validate or load environments"
             exit(-1)
           end
-          if File.exists?("environments/#{name}.json")
-            envfiles.push("#{name}.json")
+          if File.exists?("environments/#{env}.json")
+            envfiles.push("#{env}.json")
           else #assume no .json means they want .rb and catchall for misssing dir
-            envfiles.push("#{name}.rb")
+            envfiles.push("#{env}.rb")
           end
-          delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{name} -y")
-          @environment_list.push(name)
+          delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{env} -y")
+          @environment_list.push(env)
         end
-        create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{envfiles.join(' ')}")
+        create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{envfiles.uniq.sort.join(' ')}")
       end
     end
 
