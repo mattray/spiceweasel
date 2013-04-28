@@ -39,7 +39,6 @@ module Spiceweasel
           if File.directory?("roles")
             #expand wildcards and push into flatroles
             if role =~ /\*/ #wildcard support
-              flatroles.delete(role) #remove wildcard
               wildroles = Dir.glob("roles/#{role}")
               #remove anything not ending in .json or .rb
               wildroles.delete_if {|x| !x.end_with?(".rb", ".json")}
