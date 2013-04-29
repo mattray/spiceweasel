@@ -9,6 +9,7 @@ This is the current, previous and future development milestones and contains the
 * fixed "Data bag wildcard syntax errors out" (reported by Mike Fiedler)
 * added full wildcard support for data bags, roles and environments
 * added support for nesting role files in subdirectories of the role/ directory. (reported by Brian Bianco)
+* allow configuration via knife. Use loader for cookbook discovery (Chris Roberts)
 
 # 2.1.2 # (CURRENT RELEASE)
 
