@@ -67,10 +67,12 @@ module Spiceweasel
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]
           end
           items.sort!.uniq!
-          if secret
-            create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")
-          else
-            create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json")
+          unless items.empty?
+            if secret
+              create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")
+            else
+              create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json")
+            end
           end
         end
       end
