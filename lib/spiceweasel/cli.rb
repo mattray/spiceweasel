@@ -132,6 +132,16 @@ module Spiceweasel
     :proc => lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
     :exit => 0
 
+    option :cookbook_directory,
+    :short => '-C COOKBOOK_DIR',
+    :long => '--cookbook-dir COOKBOOK_DIR',
+    :description => 'Set cookbook directory. Specify multiple times for multiple directories.',
+    :proc => lambda { |v|
+      Spiceweasel::Config[:cookbook_dir] ||= []
+      Spiceweasel::Config[:cookbook_dir] << v
+      Spiceweasel::Config[:cookbook_dir].uniq!
+    }
+
     option :unique_id,
     :long => '--unique-id UID',
     :description => 'Unique ID generally used for ruby based configs'
@@ -191,12 +201,23 @@ module Spiceweasel
       ARGV << "-h" if ARGV.empty?
       begin
         parse_options
+        # Load knife configuration if using knife config
+        require 'chef/knife'
+        knife = Chef::Knife.new
+        # Only log on error during startup
+        Chef::Config[:verbosity] = 0
+        Chef::Config[:log_level] = :error
         if @config[:knifeconfig]
+          knife.read_config_file(@config[:knifeconfig])
           Spiceweasel::Config[:knife_options] = " -c #{@config[:knifeconfig]} "
+        else
+          knife.configure_chef
         end
         if @config[:serverurl]
           Spiceweasel::Config[:knife_options] += "--server-url #{@config[:serverurl]} "
         end
+        # NOTE: Only set cookbook path via config if path unset
+        Spiceweasel::Config[:cookbook_dir] ||= Chef::Config[:cookbook_path]
       rescue OptionParser::InvalidOption => e
         STDERR.puts e.message
         puts opt_parser.to_s
@@ -205,9 +226,11 @@ module Spiceweasel
     end
 
     def configure_logging
-      Spiceweasel::Log.init(Spiceweasel::Config[:log_location])
-      Spiceweasel::Log.level = Spiceweasel::Config[:log_level]
-      Spiceweasel::Log.level = :debug if Spiceweasel::Config[:debug]
+      [Spiceweasel::Log, Chef::Log].each do |log_klass|
+        log_klass.init(Spiceweasel::Config[:log_location])
+        log_klass.level = Spiceweasel::Config[:log_level]
+        log_klass.level = :debug if Spiceweasel::Config[:debug]
+      end
     end
 
     def parse_and_validate_input(file)
@@ -238,7 +261,9 @@ module Spiceweasel
         exit(-1)
       rescue Exception => e
         STDERR.puts "ERROR: Invalid or missing  manifest .json, .rb, or .yml file provided."
-        STDERR.puts "ERROR: #{e}"
+        if(Spiceweasel::Config[:log_level].to_s == 'debug')
+          STDERR.puts "ERROR: #{e}\n#{e.backtrace.join("\n")}"
+        end
         exit(-1)
       end
       output
