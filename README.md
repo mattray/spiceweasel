@@ -216,7 +216,7 @@ which generates nodes named "webserver1", "webserver2" and "webserver3".
 
 ## Clusters ##
 
-Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be tagged to ensure that the entire cluster may be created in sync (refresh and delete coming soon). The node syntax is the same as that under `nodes`, the only addition is the cluster name.
+Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be put in the same Environment to ensure that the entire cluster may be created in sync (refresh and delete coming soon). The node syntax is the same as that under `nodes`, the only addition is the cluster name.
 
 ```
 clusters:
@@ -232,10 +232,10 @@ clusters:
 produces the knife commands
 
 ```
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -j '{"tags":["amazon+rolemysql"]}' -r 'role[mysql]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -E amazon
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
 ```
 
 Another use of `clusters` is with the `--cluster-file` option, which will allow the use of a different file to define the members of the cluster. If there are any `nodes` or `clusters` defined in the primary manifest file, they will be removed and the content of the `--cluster-file` will be used instead. This allows you to switch the target destination of infrastructure by picking different `--cluster-file` endpoints.

@@ -34,13 +34,19 @@ module Spiceweasel
             node_name = node.keys.first
             run_list = node[node_name]['run_list'] || ''
             options = node[node_name]['options'] || ''
-            # cluster tag is the cluster name + runlist
-            # tag = " -j '{\"tags\":[\"#{cluster_name}+#{run_list.gsub(/[ ,\[\]:]/, '')}\"]}'"
-            # Spiceweasel::Log.debug("cluster: #{cluster_name}:#{node_name}:tag:#{tag}")
-            #push the tag back on the options
-            # node[node_name]['options'] = options + tag
+            # cluster tag is the cluster name + runlist once tags are working for every plugin
+            # until then, we're going to override the Environment
+            if options =~ /-E/ #delete any Environment
+              env = options.split('-E')[1].split[0]
+              edel = "-E#{env}"
+              options[edel] = "" if options.include?(edel)
+              edel = "-E #{env}"
+              options[edel] = "" if options.include?(edel)
+              Spiceweasel::Log.warn("deleting specified Environment '#{env}' from cluster: '#{cluster_name}'")
+            end
+            #push the Environment back on the options
+            node[node_name]['options'] = options + " -E #{cluster_name}"
           end
-          Spiceweasel::Log.debug("cluster2: '#{cluster_name}' '#{cluster[cluster_name]}'")
           # let's reuse the Nodes logic
           nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles)
           @create.concat(nodes.create)
