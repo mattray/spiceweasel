@@ -89,7 +89,7 @@ module Spiceweasel
 
     def self.resolve_cookbooks(berkshelf_cookbooks = {})
       require 'solve'
-      loader = Chef::CookbookLoader.new('./cookbooks')
+      loader = Chef::CookbookLoader.new(Spiceweasel::Config[:cookbook_dir])
       loader.load_cookbooks
       books = loader.cookbooks_by_name
       graph = Solve::Graph.new

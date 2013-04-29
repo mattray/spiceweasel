@@ -32,6 +32,8 @@ module Spiceweasel
       @dependencies = Array.new
       #validate each of the cookbooks specified in the manifest
       if cookbooks
+        @loader = Chef::CookbookLoader.new(Spiceweasel::Config[:cookbook_dir])
+        @loader.load_cookbooks
         Spiceweasel::Log.debug("cookbooks: #{cookbooks}")
 
         c_names = []
@@ -43,7 +45,8 @@ module Spiceweasel
           end
           Spiceweasel::Log.debug("cookbook: #{name} #{version} #{options}")
           if File.directory?("cookbooks")
-            if File.directory?("cookbooks/#{name}") #TODO use the name from metadata
+
+            if @loader.cookbooks_by_name[name]
               validateMetadata(name,version) unless Spiceweasel::Config[:novalidation]
             else
               if Spiceweasel::Config[:siteinstall] #use knife cookbook site install
@@ -81,9 +84,7 @@ module Spiceweasel
     #check the metadata for versions and gather deps
     def validateMetadata(cookbook,version)
       #check metadata.rb for requested version
-      metadata_file = "cookbooks/#{cookbook}/metadata.rb"
-      metadata = Chef::Cookbook::Metadata.new
-      metadata.from_file(metadata_file)
+      metadata = @loader.cookbooks_by_name[cookbook].metadata
       Spiceweasel::Log.debug("validateMetadata: #{cookbook} #{metadata.name} #{metadata.version}")
       # Should the cookbook directory match the name in the metadata?
       if metadata.name.empty?
