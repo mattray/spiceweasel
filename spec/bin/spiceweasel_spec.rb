@@ -36,12 +36,11 @@ knife node bulk delete .* -y
 knife cookbook upload apache2
 knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
-knife environment from file development.rb qa.rb production.rb
+knife environment from file development.rb production.rb qa.rb
 knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 knife data bag create users
 knife data bag from file users alice.json bob.json chuck.json
 knife data bag create data
-knife data bag from file data *.json
 knife data bag create passwords
 knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key
 knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
@@ -53,10 +52,10 @@ knife rackspace server create --image 49 --flavor 2 -N db3 -r 'recipe[mysql],rol
 knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -j '{"tags":["amazon+rolemysql"]}' -r 'role[mysql]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -j '{"tags":["amazon+rolewebserverrecipemysqlclient"]}' -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -r 'role[mysql]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -r 'role[webserver],recipe[mysql::client]'
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
