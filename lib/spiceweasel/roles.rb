@@ -67,6 +67,9 @@ module Spiceweasel
     def validate(role, environments, cookbooks, roles)
       #validate the role passed in match the name of either the .rb or .json
       file = %W(roles/#{role}.rb roles/#{role}.json).detect{|f| File.exists?(f)}
+      if role =~ /\// #pull out directories
+        role = role.split('/').last
+      end
       if(file)
         case file
         when /\.json$/
