@@ -70,7 +70,7 @@ module Spiceweasel
       if role =~ /\// #pull out directories
         role = role.split('/').last
       end
-      if(file)
+      if file
         case file
         when /\.json$/
           c_role = Chef::JSONCompat.from_json(IO.read(file))
