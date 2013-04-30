@@ -56,16 +56,16 @@ module Spiceweasel
           items.each do |item|
             Spiceweasel::Log.debug("data bag #{db} item: #{item}")
             if item =~ /\*/ #wildcard support, will fail if directory not present
-              items.delete(item) #remove wildcard
               files = Dir.glob("data_bags/#{db}/#{item}")
               #remove anything not ending in .json
               files.delete_if {|x| !x.end_with?('.json')}
-              items.concat(files.collect {|x| x[x.rindex('/')+1..-6]})
-              Spiceweasel::Log.debug("found items '#{items}' for data bag: #{db} with wildcard #{item}")
+              items.concat(files.collect {|x| x["data_bags/#{db}/".length..-6]})
+              Spiceweasel::Log.debug("found files '#{files}' for data bag: #{db} with wildcard #{item}")
               next
             end
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]
           end
+          items.delete_if {|x| x.include?("*")} #remove wildcards
           items.sort!.uniq!
           unless items.empty?
             if secret
@@ -87,6 +87,9 @@ module Spiceweasel
       f = File.read("data_bags/#{db}/#{item}.json")
       itemfile = JSON.parse(f) #invalid JSON will throw a trace
       #validate the id matches the file name
+      if item =~ /\// #pull out directories
+        item = item.split('/').last
+      end
       if !item.eql?(itemfile['id'])
         STDERR.puts "ERROR: data bag '#{db}' item '#{item}' listed in the manifest does not match the id '#{itemfile['id']}' within the 'data_bags/#{db}/#{item}.json' file."
         exit(-1)
