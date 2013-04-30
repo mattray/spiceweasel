@@ -7,8 +7,8 @@ This is the current, previous and future development milestones and contains the
 * disable the -j for clusters, since it is unevenly available in the various knife plugins (KNIFE-264)
 * clusters use environments instead of tags since tags are not fully supported yet
 * fixed "Data bag wildcard syntax errors out" (reported by Mike Fiedler)
-* added full wildcard support for data bags, roles and environments
 * added support for nesting role files in subdirectories of the role/ directory. (reported by Brian Bianco)
+* added full wildcard and subdirectory support for data bags, roles and environments
 * allow configuration via knife. Use loader for cookbook discovery (Chris Roberts)
 
 # 2.1.2 # (CURRENT RELEASE)
@@ -208,11 +208,9 @@ This is the current, previous and future development milestones and contains the
  * environment-specific run_lists
  * sort roles by dependencies of other roles?
 * multiple input file support (besides current --cluster-file)
-* config file support
+* Spiceweasel config file support
 * make deletion smarter, use tags for providers
   * see if -P is supported?
-* Support paths outside of the base
- * [spiceweasel does not recognize cookbooks outside of ./cookbooks](https://github.com/mattray/spiceweasel/issues/12)
 * Librarian integration
   * load in the librarian file
   * output the knife commands
@@ -221,7 +219,7 @@ This is the current, previous and future development milestones and contains the
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json
  * knife batch rebuild from file infrastructure.yml
-* EXTRACT EXISTING INFRASTRUCTURE
+* EXTRACT EXISTING INFRASTRUCTURE FROM CHEF SERVER
  * knife batch extract to a tarball named for the organization
  * option to include credentials and knife.rb
  * translate json back to rb?

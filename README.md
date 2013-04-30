@@ -3,7 +3,7 @@
 
 # Description #
 
-Spiceweasel is a command-line tool for batch loading Chef infrastructure from a file. It provides a simple syntax in Ruby, JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present.
+Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax in Ruby, JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present. The manifest may also be extracted from an existing repository.
 
 The `examples` directory provides example manifests based on the Quick Starts provided at http://help.opscode.com/kb/otherhelp. The https://github.com/mattray/vbacd-repo provides a working example for bootstrapping a Chef repository with Spiceweasel.
 
@@ -11,9 +11,9 @@ The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.
 
 # Requirements #
 
-Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. Infrastructure files must end in `.rb`, `.json` or `.yml` to be processed.
+Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. [Berkshelf](https://berkshelf.com) is a dependency for the Cookbook `Berksfile` support. Infrastructure files must end in `.rb`, `.json` or `.yml` to be processed.
 
-Written and tested initially with Chef 0.9.12 (may still work) and continuing development with the 10.x series. It is tested with Ruby 1.9.3. Version 2.0 was the last version known to work with Ruby 1.8.7 due to the introduction of the Berkshelf dependency in 2.1.
+Written and tested with the Chef 11.x series (previous versions of Chef may still work). It is tested with Ruby 1.9.3. Version 2.0 was the last version known to work with Ruby 1.8.7 due to the introduction of the Berkshelf dependency in 2.1.
 
 # File Syntax #
 
@@ -94,16 +94,16 @@ berks upload --skip_syntax_check --config some_config.json -b /Users/mray/ws/lab
 
 ## Environments ##
 
-The `environments` section of the manifest currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` or `.json` in the `environments` directory. Validation is done to ensure the filename matches the environment and that any cookbooks referenced are listed in the manifest. The example YAML snippet
+The `environments` section of the manifest currently supports `knife environment from file FOO` where `FOO` is the name of the environment file ending in `.rb` or `.json` in the `environments` directory. You may also pass a wildcard as an entry to load all matching environments (ie. `"*"` or `prod*"`). Validation is done to ensure the filename matches the environment and that any cookbooks referenced are listed in the manifest. The example YAML snippet
 
 ``` yaml
 environments:
 - development:
 - qa:
-- production:
+- "prod*":
 ```
 
-produces the knife commands
+assuming the `production` environment exists, produces the knife commands
 
 ```
 knife environment from file development.rb qa.rb production.rb
@@ -111,7 +111,7 @@ knife environment from file development.rb qa.rb production.rb
 
 ## Roles ##
 
-The `roles` section of the manifest currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` or `.json` in the `roles` directory. You may also pass a wildcard as an entry to load all matching roles (ie. `"*"` or `b*"`) Validation is done to ensure the filename matches the role name and that any cookbooks or roles referenced are listed in the manifest. The example YAML snippet
+The `roles` section of the manifest currently supports `knife role from file FOO` where `FOO` is the name of the role file ending in `.rb` or `.json` in the `roles` directory. You may also pass a wildcard as an entry to load all matching roles (ie. `"*"` or `data*"`). Validation is done to ensure the filename matches the role name and that any cookbooks or roles referenced are listed in the manifest. The example YAML snippet
 
 ``` yaml
 roles:
@@ -122,7 +122,7 @@ roles:
 - webserver:
 ```
 
-assuming the `database1.json` and `database2.json` roles exist, this produces the knife commands:
+assuming the `database1.json` and `database2.json` roles exist, this produces the knife commands
 
 ```
 knife role from file base.rb database1.json database2.json iisserver.rb monitoring.rb webserver.rb
@@ -206,7 +206,7 @@ nodes:
   - -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -N webserver{{n}}
 ```
 
-produces the following:
+produces the following
 
 ```
 seq 3 | parallel -j 0 -v "knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -N webserver{} -r 'role[base],role[tc],role[users]'"
@@ -216,7 +216,7 @@ which generates nodes named "webserver1", "webserver2" and "webserver3".
 
 ## Clusters ##
 
-Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be put in the same Environment to ensure that the entire cluster may be created in sync (refresh and delete coming soon). The node syntax is the same as that under `nodes`, the only addition is the cluster name.
+Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be put in the same environment to ensure that the entire cluster may be created in sync (refresh and delete coming soon). The node syntax is the same as that under `nodes`, the only addition is the cluster name.
 
 ```
 clusters:
@@ -242,7 +242,7 @@ Another use of `clusters` is with the `--cluster-file` option, which will allow 
 
 # Extract #
 
-Spiceweasel may also be used to generate knife commands or Spiceweasel manifests in JSON or YAML.
+Spiceweasel may be used to generate knife commands or Spiceweasel manifests in JSON or YAML from an existing Chef repository.
 
 ```
 spiceweasel --extractlocal
@@ -264,13 +264,13 @@ When run in your Chef repository generates YAML-formatted output that may be cap
 To parse a Spiceweasel manifest, run the following from your Chef repository directory:
 
 ```
-spiceweasel path/to/infrastructure.json
-```
-
-or
-
-```
 spiceweasel path/to/infrastructure.yml
+```
+
+or to extract infrastructure
+
+```
+spiceweasel --extractlocal
 ```
 
 This will generate the knife commands to build the described infrastructure. Infrastructure manifest files must end in either `.json` or `.yml`.
