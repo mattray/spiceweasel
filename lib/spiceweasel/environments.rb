@@ -65,6 +65,9 @@ module Spiceweasel
     #validate the content of the environment file
     def validate(environment, cookbooks)
       file = %W(environments/#{environment}.rb environments/#{environment}.json).detect{|f| File.exists?(f)}
+      if environment =~ /\// #pull out directories
+        environment = environment.split('/').last
+      end
       if file
         case file
         when /\.json$/
