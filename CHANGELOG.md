@@ -1,6 +1,6 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.2.0 #
+# 2.2.0 # (CURRENT RELEASE)
 
 * added Cli::process_manifest method so acts more like a library
 * '--log_level' changed to '--loglevel' because camel-case cli options are non-standard
@@ -11,7 +11,7 @@ This is the current, previous and future development milestones and contains the
 * added full wildcard and subdirectory support for data bags, roles and environments
 * allow configuration via knife. Use loader for cookbook discovery (Chris Roberts)
 
-# 2.1.2 # (CURRENT RELEASE)
+# 2.1.2 #
 
 * Resolve undefined 'name' in Environments#validate. (Colin Rymer)
 * Resolve nil error for berksfile in extract_local (Colin Rymer)
