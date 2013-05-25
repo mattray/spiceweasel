@@ -19,26 +19,6 @@ Written and tested with the Chef 11.x series (previous versions of Chef may stil
 
 The syntax for the Spiceweasel file may be Ruby, JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [examples/example.json](https://github.com/mattray/spiceweasel/blob/master/examples/example.json) or [examples/example.yml](https://github.com/mattray/spiceweasel/blob/master/examples/example.yml) for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
 
-## Manifest syntax changes in Spiceweasel 2.0 ##
-
-In order to be more explicit and enable a richer set of options, the syntax for the manifests was updated. Rather than depend on the order of arrays for the attributes of cookbooks, data bags and nodes; the attributes are now hashes with keys identifying the features.
-
-### New Cookbooks Syntax ###
-
-The currently supported keys are `version` and `options` and their values are strings.
-
-### New Data Bags Syntax ###
-
-The supported keys are `items` (an array of the data bag items) and `secret` for passing a secret key string.
-
-### New Nodes Syntax ###
-
-The supported keys are `run_list` and `options` and their values are strings.
-
-### New Clusters Syntax ###
-
-Clusters support is completely new, please refer to the Cluster section for documentation.
-
 ## Cookbooks ##
 
 The `cookbooks` section of the manifest currently supports `knife cookbook upload FOO` where `FOO` is the name of the cookbook in the `cookbooks` directory. The default behavior is to download the cookbook as a tarball, untar it and remove the tarball. The `--siteinstall` option will allow for use of `knife cookbook site install` with the cookbook and the creation of a vendor branch if git is the underlying version control. Validation is done to ensure the cookbook matches the name (and version if given) in the metadata and that any cookbook dependencies are listed in the manifest. You may pass any additional options if necessary. Assuming the apt cookbook was not present, the example YAML snippet
@@ -333,11 +313,19 @@ Use the 'install' command with 'knife cookbook site' instead of the default 'dow
 
 Print the version of spiceweasel currently installed.
 
+# Testing #
+
+Spiceweasel uses [RSpec](http://rspec.info/) for testing. You should run the following before commiting.
+
+    $ rspec
+
 # License and Author #
 
-Author: Matt Ray <matt@opscode.com>
-
-Copyright: 2011-2013 Opscode, Inc
+|                      |                                                    |
+|:---------------------|:---------------------------------------------------|
+| **Author**           |  Matt Ray (<matt@opscode.com>)                     |
+|                      |                                                    |
+| **Copyright**        |  Copyright (c) 2011-2013, Opscode, Inc.            |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
