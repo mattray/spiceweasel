@@ -1,6 +1,15 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.2.0 # (CURRENT RELEASE)
+# 2.3.0 # (CURRENT RELEASE)
+
+* added Ruby dependency > 1.9 in spiceweasel.gemspec
+* added Joyent to list of supported knife plugins (https://github.com/kevinykchan/knife-joyent)
+* remove 2.0 upgrade notes from README and added section on Testing.
+* added --bulkdelete flag to make node deletion more predictable (reported by Stephan Renatus)
+
+* vmsphere vm clone
+
+# 2.2.0 #
 
 * added Cli::process_manifest method so acts more like a library
 * '--log_level' changed to '--loglevel' because camel-case cli options are non-standard
@@ -208,7 +217,7 @@ This is the current, previous and future development milestones and contains the
  * environment-specific run_lists
  * sort roles by dependencies of other roles?
 * multiple input file support (besides current --cluster-file)
-* Spiceweasel config file support
+* Spiceweasel config file support (or just overload knife.rb?)
 * make deletion smarter, use tags for providers
   * see if -P is supported?
 * Librarian integration
@@ -226,3 +235,4 @@ This is the current, previous and future development milestones and contains the
 * do we need global use of the *_list attrs for later use?
 * --simple mode to unroll multiple uploads per command?
  * ie. "knife cookbook upload apt\n knife cookbook upload ntp" instead of 1 liner
+* do we need to support concept of Groups from Berkshelf, to allow uploading multiple versions of cookbooks?
