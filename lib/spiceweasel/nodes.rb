@@ -28,7 +28,6 @@ module Spiceweasel
     def initialize(nodes, cookbooks, environments, roles)
       @create = Array.new
       @delete = Array.new
-      bulk_delete = false
       if nodes
         Spiceweasel::Log.debug("nodes: #{nodes}")
         nodes.each do |node|
@@ -73,8 +72,7 @@ module Spiceweasel
                 create_command(server, create_command_options)
               end
             end
-            if provided_names.empty? && provider[0] != 'windows'
-              bulk_delete = true
+            if Spiceweasel::Config[:bulkdelete] && provided_names.empty? && provider[0] != 'windows'
               delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
             else
               provided_names.each do |p_name|
@@ -109,7 +107,7 @@ module Spiceweasel
           end
         end
       end
-      if bulk_delete
+      if Spiceweasel::Config[:bulkdelete]
         delete_command("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
       end
     end

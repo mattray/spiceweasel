@@ -22,17 +22,12 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
-knife node list | xargs knife rackspace server delete -y
 knife node delete winboxA -y
 knife client delete winboxA -y
 knife node delete winboxB -y
 knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
-knife node bulk delete .* -y
-knife node list | xargs knife ec2 server delete -y
-knife node list | xargs knife ec2 server delete -y
-knife node bulk delete .* -y
 knife cookbook upload apache2
 knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
@@ -72,4 +67,49 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
   it "maintains consistent output from the example config with rb" do
     `#{@spiceweasel_binary} -r --novalidation examples/example.rb`.should == @expected_output
   end
+end
+
+describe 'The Spiceweasel binary' do
+  before(:each) do
+    @expected_output = <<-OUTPUT
+knife cookbook delete apache2  -a -y
+knife cookbook delete apt 1.2.0 -a -y
+knife cookbook delete mysql  -a -y
+knife cookbook delete ntp  -a -y
+knife environment delete development -y
+knife environment delete qa -y
+knife environment delete production -y
+knife role delete base -y
+knife role delete iisserver -y
+knife role delete monitoring -y
+knife role delete webserver -y
+knife data bag delete users -y
+knife data bag delete data -y
+knife data bag delete passwords -y
+knife node delete serverA -y
+knife client delete serverA -y
+knife node delete serverB -y
+knife client delete serverB -y
+knife node delete serverC -y
+knife client delete serverC -y
+knife node list | xargs knife rackspace server delete -y
+knife node delete winboxA -y
+knife client delete winboxA -y
+knife node delete winboxB -y
+knife client delete winboxB -y
+knife node delete winboxC -y
+knife client delete winboxC -y
+knife node bulk delete .* -y
+knife node list | xargs knife ec2 server delete -y
+knife node list | xargs knife ec2 server delete -y
+knife node bulk delete .* -y
+    OUTPUT
+
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+  end
+
+  it "maintains consistent output deleting from the example config with yml using --bulkdelete" do
+    `#{@spiceweasel_binary}  --bulkdelete -d --novalidation examples/example.yml`.should == @expected_output
+  end
+
 end

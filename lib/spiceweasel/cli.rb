@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,6 +47,11 @@ module Spiceweasel
     :long => '--debug',
     :description => 'Verbose debugging messages',
     :boolean => true
+
+    option :bulkdelete,
+    :long => '--bulkdelete',
+    :description => 'Delete all nodes for the provider(s) in the infrastructure',
+    :boolean => false
 
     option :delete,
     :short => '-d',
