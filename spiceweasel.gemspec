@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/mattray/spiceweasel"
   s.summary     = %q{CLI for generating Chef knife commands from a simple JSON or YAML file.}
   s.description = %q{Provides a CLI tool for generating knife commands to build Chef-managed infrastructure from a simple JSON or YAML file.}
+  s.required_ruby_version = '>= 1.9'
 
   s.files         = Dir['LICENSE', 'README.md', 'bin/*', 'lib/**/*']
   s.test_files    = Dir.glob('spec/**/*')
@@ -22,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency('mixlib-config')
   s.add_dependency('mixlib-log')
   s.add_dependency('mixlib-shellout')
-  s.add_dependency('chef')
+  s.add_dependency('chef', '>= 0.10')
   s.add_dependency('berkshelf')
   s.add_dependency('solve') # some what redundant since provided via berkshelf
   s.add_development_dependency('rspec')

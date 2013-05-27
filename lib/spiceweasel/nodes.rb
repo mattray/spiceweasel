@@ -21,14 +21,13 @@ module Spiceweasel
 
     include CommandHelper
 
-    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp lxc openstack rackspace slicehost terremark voxel vagrant}
+    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
 
     attr_reader :create, :delete
 
     def initialize(nodes, cookbooks, environments, roles)
       @create = Array.new
       @delete = Array.new
-      bulk_delete = false
       if nodes
         Spiceweasel::Log.debug("nodes: #{nodes}")
         nodes.each do |node|
@@ -61,24 +60,39 @@ module Spiceweasel
             provided_names = []
             if Spiceweasel::Config[:parallel]
               parallel = "seq #{count} | parallel -j 0 -v \""
-              parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+              if provider[0].eql?('vsphere')
+                parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+              else
+                parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+              end
               parallel += " -r '#{run_list}'" unless run_list.empty?
               parallel += "\""
               create_command(parallel, create_command_options)
             else
               count.to_i.times do |i|
-                server = "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+                if provider[0].eql?('vsphere')
+                  server = "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+                else
+                  server = "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+                end
                 server += " -r '#{run_list}'" unless run_list.empty?
                 provided_names << node[name]['name'].gsub('{{n}}', (i + 1).to_s) if node[name]['name']
                 create_command(server, create_command_options)
               end
             end
-            if provided_names.empty? && provider[0] != 'windows'
-              bulk_delete = true
-              delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
+            if Spiceweasel::Config[:bulkdelete] && provided_names.empty? && provider[0] != 'windows'
+              if provider[0].eql?('vsphere')
+                delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} vm delete -y")
+              else
+                delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
+              end
             else
               provided_names.each do |p_name|
-                delete_command("knife #{provider[0]} server delete -y #{p_name}")
+                if provider[0].eql?('vsphere')
+                  delete_command("knife #{provider[0]} vm delete -y #{p_name}")
+                else
+                  delete_command("knife #{provider[0]} server delete -y #{p_name}")
+                end
                 delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
                 delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
               end
@@ -109,7 +123,7 @@ module Spiceweasel
           end
         end
       end
-      if bulk_delete
+      if Spiceweasel::Config[:bulkdelete]
         delete_command("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
       end
     end

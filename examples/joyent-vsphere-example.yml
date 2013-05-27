@@ -1,0 +1,15 @@
+cookbooks:
+- apache2:
+environments:
+- qa:
+roles:
+- base:
+data bags:
+nodes:
+- joyent 2:
+    run_list: role[base]
+    options: -i ~/.ssh/joyent.pem -E qa
+- vsphere 2:
+    run_list: role[base]
+    options: -P secret_password -x Administrator --template some_template
+

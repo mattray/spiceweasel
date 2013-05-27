@@ -5,7 +5,7 @@
 
 Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax in Ruby, JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present. The manifest may also be extracted from an existing repository.
 
-The `examples` directory provides example manifests based on the Quick Starts provided at http://help.opscode.com/kb/otherhelp. The https://github.com/mattray/vbacd-repo provides a working example for bootstrapping a Chef repository with Spiceweasel.
+The https://github.com/mattray/lab-repo provides a working example for bootstrapping a Chef repository with Spiceweasel.
 
 The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.md) covers current, previous and future development milestones and contains the features backlog.
 
@@ -18,26 +18,6 @@ Written and tested with the Chef 11.x series (previous versions of Chef may stil
 # File Syntax #
 
 The syntax for the Spiceweasel file may be Ruby, JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [examples/example.json](https://github.com/mattray/spiceweasel/blob/master/examples/example.json) or [examples/example.yml](https://github.com/mattray/spiceweasel/blob/master/examples/example.yml) for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
-
-## Manifest syntax changes in Spiceweasel 2.0 ##
-
-In order to be more explicit and enable a richer set of options, the syntax for the manifests was updated. Rather than depend on the order of arrays for the attributes of cookbooks, data bags and nodes; the attributes are now hashes with keys identifying the features.
-
-### New Cookbooks Syntax ###
-
-The currently supported keys are `version` and `options` and their values are strings.
-
-### New Data Bags Syntax ###
-
-The supported keys are `items` (an array of the data bag items) and `secret` for passing a secret key string.
-
-### New Nodes Syntax ###
-
-The supported keys are `run_list` and `options` and their values are strings.
-
-### New Clusters Syntax ###
-
-Clusters support is completely new, please refer to the Cluster section for documentation.
 
 ## Cookbooks ##
 
@@ -197,6 +177,12 @@ knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' 
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 ```
 
+### Providers ###
+
+The following knife plugins are currently supported as providers: `bluebox, clodo, cs, ec2, gandi, hp, joyent, lxc, openstack, rackspace, slicehost, terremark, vagrant, voxel` and `vsphere`.
+
+### Bulk node creation ###
+
 You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. Using `--parallel` with the following block and the `-N webserver{{n}}`:
 
 ``` yaml
@@ -277,6 +263,10 @@ This will generate the knife commands to build the described infrastructure. Inf
 
 # OPTIONS #
 
+## --bulkdelete ##
+
+When using the delete or rebuild commands, whether or not to attempt to delete all nodes managed by a provider. The assumption is that if Spiceweasel manages all the nodes, it is safe to delete them all.
+
 ## -c/--knifeconfig ##
 
 Specify a knife.rb configuration file to use with the knife commands.
@@ -333,11 +323,19 @@ Use the 'install' command with 'knife cookbook site' instead of the default 'dow
 
 Print the version of spiceweasel currently installed.
 
+# Testing #
+
+Spiceweasel uses [RSpec](http://rspec.info/) for testing. You should run the following before commiting.
+
+    $ rspec
+
 # License and Author #
 
-Author: Matt Ray <matt@opscode.com>
-
-Copyright: 2011-2013 Opscode, Inc
+|                      |                                                    |
+|:---------------------|:---------------------------------------------------|
+| **Author**           |  Matt Ray (<matt@opscode.com>)                     |
+|                      |                                                    |
+| **Copyright**        |  Copyright (c) 2011-2013, Opscode, Inc.            |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
