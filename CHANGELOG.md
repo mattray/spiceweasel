@@ -4,10 +4,9 @@ This is the current, previous and future development milestones and contains the
 
 * added Ruby dependency > 1.9 in spiceweasel.gemspec
 * added Joyent to list of supported knife plugins (https://github.com/kevinykchan/knife-joyent)
+* added vSphere to list of supported knife plugins (https://github.com/ezrapagel/knife-vsphere)
 * remove 2.0 upgrade notes from README and added section on Testing.
 * added --bulkdelete flag to make node deletion more predictable (reported by Stephan Renatus)
-
-* vmsphere vm clone
 
 # 2.2.0 #
 
