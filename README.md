@@ -177,6 +177,12 @@ knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' 
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 ```
 
+### Providers ###
+
+The following knife plugins are currently supported as providers: `bluebox, clodo, cs, ec2, gandi, hp, joyent, lxc, openstack, rackspace, slicehost, terremark, vagrant, voxel` and `vsphere`.
+
+### Bulk node creation ###
+
 You may also use the `--parallel` flag from the command line, allowing provider commands to run simultaneously for faster deployment. Using `--parallel` with the following block and the `-N webserver{{n}}`:
 
 ``` yaml
@@ -256,6 +262,10 @@ spiceweasel --extractlocal
 This will generate the knife commands to build the described infrastructure. Infrastructure manifest files must end in either `.json` or `.yml`.
 
 # OPTIONS #
+
+## --bulkdelete ##
+
+When using the delete or rebuild commands, whether or not to attempt to delete all nodes managed by a provider. The assumption is that if Spiceweasel manages all the nodes, it is safe to delete them all.
 
 ## -c/--knifeconfig ##
 
