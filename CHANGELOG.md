@@ -1,6 +1,10 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.3.0 # (CURRENT RELEASE)
+# 2.3.1 # (CURRENT RELEASE)
+
+* Berkshelf 2.0 breaks compatibility, setting version to pre-2.0 until fixed.
+
+# 2.3.0 #
 
 * added Ruby dependency > 1.9 in spiceweasel.gemspec
 * added Joyent to list of supported knife plugins (https://github.com/kevinykchan/knife-joyent)
