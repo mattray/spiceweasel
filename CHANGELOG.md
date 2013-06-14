@@ -1,6 +1,10 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.3.1 # (CURRENT RELEASE)
+# 2.4.0 # (CURRENT RELEASE)
+
+* add "knife" commands
+
+# 2.3.1 #
 
 * Berkshelf 2.0 breaks compatibility, setting version to pre-2.0 until fixed.
 
@@ -206,6 +210,7 @@ This is the current, previous and future development milestones and contains the
 * publish as a gem on RubyGems
 
 # BACKLOG #
+* fix Berkshelf 2.0 compatibility
 * MORE CLUSTER FEATURES
  * cluster creation via API
  * create
