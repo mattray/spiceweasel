@@ -1,0 +1,7 @@
+knife:
+- node:
+  - list
+- client list:
+- ssh:
+  - '"role:database" "chef-client" -x root'
+  - '"role:webserver" "sudo chef-client" -x ubuntu'

@@ -98,5 +98,29 @@
         }
       ]
     }
+  ],
+  "knife" =>
+  [
+    {"ssh" =>
+      [
+        "'role:monitoring' 'sudo chef-client' -x user"
+      ]
+    },
+    {"rackspace server delete" =>
+      [
+        "-y --node-name db3 --purge"
+      ]
+    },
+    {"vsphere" =>
+      [
+        "vm clone --bootstrap --template 'abc' my-new-webserver1",
+        "vm clone --bootstrap --template 'def' my-new-webserver2"
+      ]
+    },
+    {"vsphere vm clone" =>
+      [
+        "--bootstrap --template 'ghi' my-new-webserver3"
+      ]
+    }
   ]
 }

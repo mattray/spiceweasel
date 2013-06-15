@@ -1,5 +1,5 @@
 # Test new 2.3 functionality
-describe 'The Spiceweasel binary' do
+describe 'testing 2.3 functionality' do
   before(:each) do
     @expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
