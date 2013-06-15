@@ -51,6 +51,11 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
+knife ssh 'role:monitoring' 'sudo chef-client' -x user
+knife rackspace server delete -y --node-name db3 --purge
+knife vsphere vm clone --bootstrap --template 'abc' my-new-webserver1
+knife vsphere vm clone --bootstrap --template 'def' my-new-webserver2
+knife vsphere vm clone --bootstrap --template 'ghi' my-new-webserver3
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])

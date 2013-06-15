@@ -29,6 +29,7 @@ require 'spiceweasel/roles'
 require 'spiceweasel/data_bags'
 require 'spiceweasel/nodes'
 require 'spiceweasel/clusters'
+require 'spiceweasel/knife'
 require 'spiceweasel/extract_local'
 require 'spiceweasel/execute'
 
@@ -290,8 +291,9 @@ module Spiceweasel
       data_bags = DataBags.new(manifest['data bags'])
       nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
       clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
+      knife = Knife.new(manifest['knife'])
 
-      create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create
+      create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create + knife.create
       delete += environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
       return create, delete
     end
