@@ -211,6 +211,8 @@ This is the current, previous and future development milestones and contains the
 
 # BACKLOG #
 * fix Berkshelf 2.0 compatibility
+* add Ruby 2.0 testing in Travis
+* add Tailor testing
 * MORE CLUSTER FEATURES
  * cluster creation via API
  * create
