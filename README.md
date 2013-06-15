@@ -226,6 +226,33 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
 
 Another use of `clusters` is with the `--cluster-file` option, which will allow the use of a different file to define the members of the cluster. If there are any `nodes` or `clusters` defined in the primary manifest file, they will be removed and the content of the `--cluster-file` will be used instead. This allows you to switch the target destination of infrastructure by picking different `--cluster-file` endpoints.
 
+## knife ##
+
+The `knife` section allows you to run arbitrary knife commands after you have deployed the infrastructure specified in the rest of the manifest. Validation is done to ensure that the knife commands called are installed on the system. The example YAML snippet
+
+``` yaml
+knife:
+- ssh:
+  - "'role:monitoring' 'sudo chef-client' -x user"
+- rackspace server delete:
+  - -y --node-name db3 --purge
+- vsphere:
+  - vm clone --bootstrap --template 'abc' my-new-webserver1
+  - vm clone --bootstrap --template 'def' my-new-webserver2
+- vsphere vm clone:
+  - --bootstrap --template 'ghi' my-new-webserver3
+```
+
+assumes the `knife-rackspace` and `knife-vsphere` plugins are installed and produces the knife commands
+
+```
+knife ssh 'role:monitoring' 'sudo chef-client' -x user
+knife rackspace server delete -y --node-name db3 --purge
+knife vsphere vm clone --bootstrap --template 'abc' my-new-webserver1
+knife vsphere vm clone --bootstrap --template 'def' my-new-webserver2
+knife vsphere vm clone --bootstrap --template 'ghi' my-new-webserver3
+```
+
 # Extract #
 
 Spiceweasel may be used to generate knife commands or Spiceweasel manifests in JSON or YAML from an existing Chef repository.
