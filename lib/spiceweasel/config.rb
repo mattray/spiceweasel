@@ -23,6 +23,9 @@ module Spiceweasel
     extend Mixlib::Config
 
     debug false
+    
+    # child process management
+    cmd_timeout 60
 
     # logging
     log_level :info
