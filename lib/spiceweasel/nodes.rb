@@ -59,7 +59,7 @@ module Spiceweasel
             end
             provided_names = []
             if Spiceweasel::Config[:parallel]
-              parallel = "seq #{count} | parallel -j 0 -v \""
+              parallel = "seq #{count} | parallel -u -j 0 -v \""
               if provider[0].eql?('vsphere')
                 parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
               else

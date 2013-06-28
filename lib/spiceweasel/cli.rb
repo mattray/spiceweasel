@@ -130,6 +130,12 @@ module Spiceweasel
     :description => "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
     :boolean => true
 
+    option :timeout,
+    :short => '-T seconds',
+    :long => '--timeout',
+    :description => "Specify the maximum number of seconds a command is allowed to run without producing output.  Default is 60 seconds",
+    :default => 60
+
     option :version,
     :short => '-v',
     :long => '--version',
@@ -218,6 +224,9 @@ module Spiceweasel
           Spiceweasel::Config[:knife_options] = " -c #{@config[:knifeconfig]} "
         else
           knife.configure_chef
+        end
+        if @config[:timeout]
+          Spiceweasel::Config[:cmd_timeout] = @config[:timeout].to_i
         end
         if @config[:serverurl]
           Spiceweasel::Config[:knife_options] += "--server-url #{@config[:serverurl]} "

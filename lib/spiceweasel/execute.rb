@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ module Spiceweasel
     def initialize(commands)
       # for now we're shelling out
       commands.each do | cmd |
-        knife = Mixlib::ShellOut.new(cmd.command, cmd.shellout_opts.merge(:live_stream => STDOUT))
+        Spiceweasel::Log.debug("Command will timeout after #{Spiceweasel::Config[:cmd_timeout]} seconds.")
+        knife = Mixlib::ShellOut.new(cmd.command, cmd.shellout_opts.merge(:live_stream => STDOUT, :timeout => Spiceweasel::Config[:timeout]))
         # check for parallel? and eventually use threads
         knife.run_command
         puts knife.stderr
