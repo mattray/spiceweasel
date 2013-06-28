@@ -4,6 +4,8 @@ This is the current, previous and future development milestones and contains the
 
 * replace the 'json' gem with 'yajl'
 * fixed Berkshelf 2.0 support (Chris Roberts)
+* updated Ruby dependency to > 1.9.2 because of the ActiveSupport dependency of Berkshelf
+* Ruby 2.0 works with Chef 11.6
 
 * cluster commands and environment validation (refresh, delete)
 * -u with --parallel

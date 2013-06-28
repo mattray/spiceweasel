@@ -13,7 +13,7 @@ The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.
 
 Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. [Berkshelf](https://berkshelf.com) is a dependency for the Cookbook `Berksfile` support. Infrastructure files must end in `.rb`, `.json` or `.yml` to be processed.
 
-Written and tested with the Chef 11.x series (previous versions of Chef may still work). It is tested with Ruby 1.9.3. Version 2.0 was the last version known to work with Ruby 1.8.7 due to the introduction of the Berkshelf dependency in 2.1.
+Written and tested with the Chef 11.x series (previous versions of Chef may still work). It is tested with Ruby 1.9.3. Version 2.0 was the last version known to work with Ruby 1.8.7 due to the introduction of the Berkshelf dependency in 2.1. If you want to use Ruby 2.0, you will need to use the Chef 11.6 (or later) gem.
 
 # File Syntax #
 
