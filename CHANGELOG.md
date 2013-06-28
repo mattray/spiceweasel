@@ -3,9 +3,9 @@ This is the current, previous and future development milestones and contains the
 # 2.5.0 #
 
 * replace the 'json' gem with 'yajl'
+* fixed Berkshelf 2.0 support (Chris Roberts)
 
-* cluster commands
-* berkshelf 2.0
+* cluster commands and environment validation (refresh, delete)
 * -u with --parallel
 * validation of the cluster commands that the plugins exist
 
