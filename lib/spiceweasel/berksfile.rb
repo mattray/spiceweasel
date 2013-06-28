@@ -48,8 +48,12 @@ module Spiceweasel
       create_command("berks upload #{berks_options}")
       Berkshelf.ui.mute do
         Spiceweasel::Log.debug("berkshelf resolving dependencies: #{resolve_opts}")
-        # berks.resolve(resolve_opts) blows up with Berkshelf 2.0
-        berks.resolve(resolve_opts).each do |cb|
+        if(Gem::Version.new(Berkshelf::VERSION) >= Gem::Version.new('2.0.0'))
+          ckbks = berks.install(resolve_opts)
+        else
+          ckbks = berks.resolve(resolve_opts)
+        end
+        ckbks.each do |cb|
           @cookbook_list[cb.cookbook_name] = cb.version
           delete_command("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{cb.cookbook_name} #{cb.version} -a -y")
         end
