@@ -6,9 +6,10 @@ This is the current, previous and future development milestones and contains the
 * fixed Berkshelf 2.0 support (Chris Roberts)
 * updated Ruby dependency to > 1.9.2 because of the ActiveSupport dependency of Berkshelf
 * Ruby 2.0 works with Chef 11.6
+* add a --timeout option for invoked commands (Tim Brown)
+* add '-u' with --parallel to show continuous output for larger commands
 
 * cluster commands and environment validation (refresh, delete)
-* -u with --parallel
 * validation of the cluster commands that the plugins exist
 
 # 2.4.0 # (CURRENT RELEASE)
