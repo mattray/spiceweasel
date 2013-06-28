@@ -73,7 +73,7 @@ module Spiceweasel
         when /\.json$/
           env = Chef::JSONCompat.from_json(IO.read(file))
         when /\.rb$/
-          if (Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
+          if (Chef::VERSION.split('.')[0].to_i < 11)
             env = Chef::Environment.new(false)
           else
             env = Chef::Environment.new

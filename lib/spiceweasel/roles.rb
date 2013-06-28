@@ -75,7 +75,7 @@ module Spiceweasel
         when /\.json$/
           c_role = Chef::JSONCompat.from_json(IO.read(file))
         when /\.rb$/
-          if(Chef::Version.new(Chef::VERSION) < Chef::Version.new('11.0.0'))
+          if (Chef::VERSION.split('.')[0].to_i < 11)
             c_role = Chef::Role.new(true)
           else
             c_role = Chef::Role.new

@@ -8,6 +8,7 @@ This is the current, previous and future development milestones and contains the
 * Ruby 2.0 works with Chef 11.6
 * add a --timeout option for invoked commands (Tim Brown)
 * add '-u' with --parallel to show continuous output for larger commands
+* made the Chef version checks safe for pre-release versions of Chef
 
 * cluster commands and environment validation (refresh, delete)
 * validation of the cluster commands that the plugins exist
