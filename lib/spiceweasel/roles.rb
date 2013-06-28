@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'json'
+require 'yajl/json_gem'
 require 'chef'
 
 module Spiceweasel

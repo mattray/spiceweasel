@@ -1,5 +1,14 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
+# 2.5.0 #
+
+* replace the 'json' gem with 'yajl'
+
+* cluster commands
+* berkshelf 2.0
+* -u with --parallel
+* validation of the cluster commands that the plugins exist
+
 # 2.4.0 # (CURRENT RELEASE)
 
 * add "knife" commands
