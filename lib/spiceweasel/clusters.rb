@@ -1,7 +1,7 @@
 #
 # Author:: Matt Ray (<matt@opscode.com>)
 #
-# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012-2013, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,21 +29,11 @@ module Spiceweasel
         clusters.each do |cluster|
           cluster_name = cluster.keys.first
           Spiceweasel::Log.debug("cluster: '#{cluster_name}' '#{cluster[cluster_name]}'")
-          # add a tag to the Nodes
           cluster[cluster_name].each do |node|
             node_name = node.keys.first
             run_list = node[node_name]['run_list'] || ''
             options = node[node_name]['options'] || ''
-            # cluster tag is the cluster name + runlist once tags are working for every plugin
-            # until then, we're going to override the Environment
-            if options =~ /-E/ #delete any Environment
-              env = options.split('-E')[1].split[0]
-              edel = "-E#{env}"
-              options[edel] = "" if options.include?(edel)
-              edel = "-E #{env}"
-              options[edel] = "" if options.include?(edel)
-              Spiceweasel::Log.warn("deleting specified Environment '#{env}' from cluster: '#{cluster_name}'")
-            end
+            validateEnvironment(options, cluster_name, environments) unless Spiceweasel::Config[:novalidation]
             #push the Environment back on the options
             node[node_name]['options'] = options + " -E #{cluster_name}"
           end
@@ -52,6 +42,18 @@ module Spiceweasel
           @create.concat(nodes.create)
           @delete.concat(nodes.delete)
         end
+      end
+    end
+
+    def validateEnvironment(options, cluster, environments)
+      unless environments.member?(cluster)
+        STDERR.puts "ERROR: Environment '#{cluster}' is listed in the cluster, but not specified as an 'environment' in the manifest."
+        exit(-1)
+      end
+      if options =~ /-E/ #Environment must match the cluster
+        env = options.split('-E')[1].split[0]
+        STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
+        exit(-1)
       end
     end
 
