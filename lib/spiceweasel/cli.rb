@@ -54,6 +54,11 @@ module Spiceweasel
     :description => 'Delete all nodes for the provider(s) in the infrastructure',
     :boolean => false
 
+    option :chefclient,
+    :long => '--chef-client',
+    :description => 'Print the knife commands to run chef-client on the nodes of the infrastructure',
+    :boolean => true
+
     option :delete,
     :short => '-d',
     :long => '--delete',
@@ -173,17 +178,18 @@ module Spiceweasel
 
       create, delete = process_manifest(manifest)
 
-      if Spiceweasel::Config[:extractjson]
+      case
+      when Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(manifest)
-      elsif Spiceweasel::Config[:extractyaml]
+      when Spiceweasel::Config[:extractyaml]
         puts manifest.to_yaml
-      elsif Spiceweasel::Config[:delete]
+      when Spiceweasel::Config[:delete]
         if Spiceweasel::Config[:execute]
           Execute.new(delete)
         else
           puts delete unless delete.empty?
         end
-      elsif Spiceweasel::Config[:rebuild]
+      when Spiceweasel::Config[:rebuild]
         if Spiceweasel::Config[:execute]
           Execute.new(delete)
           Execute.new(create)
@@ -198,6 +204,7 @@ module Spiceweasel
           puts create unless create.empty?
         end
       end
+
       exit 0
     end
 
@@ -298,14 +305,28 @@ module Spiceweasel
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
-      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
-      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
-      knife = Knife.new(manifest['knife'])
+      knifecommands = get_knife_commands() unless Spiceweasel::Config[:novalidation]
+      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, knifecommands)
+      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, knifecommands)
+      knife = Knife.new(manifest['knife'], knifecommands)
 
       create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create + knife.create
       delete += environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
+
+      # --chef-client only runs on nodes
+      if Spiceweasel::Config[:chefclient]
+        create = nodes.create + clusters.create
+        delete = []
+      end
       return create, delete
     end
 
+    def get_knife_commands()
+      require 'mixlib/shellout'
+      allknifes = Mixlib::ShellOut.new('knife -h').run_command.stdout.split(/\n/)
+      allknifes.keep_if {|x| x.start_with?('knife')}
+      Spiceweasel::Log.debug(allknifes)
+      return allknifes
+    end
   end
 end

@@ -9,9 +9,10 @@ This is the current, previous and future development milestones and contains the
 * add a --timeout option for invoked commands (Tim Brown)
 * add '-u' with --parallel to show continuous output for larger commands
 * made the Chef version checks safe for pre-release versions of Chef
-
+* validation of the knife commands that the plugins exist for nodes, clusters and knife commands
 * cluster commands and environment validation (refresh, delete)
-* validation of the cluster commands that the plugins exist
+
+* knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu
 
 # 2.4.0 # (CURRENT RELEASE)
 
@@ -223,19 +224,8 @@ This is the current, previous and future development milestones and contains the
 * publish as a gem on RubyGems
 
 # BACKLOG #
-* fix Berkshelf 2.0 compatibility
-* add Ruby 2.0 testing in Travis
+* add Ruby 2.0 testing in Travis (once Chef 11.6 is released)
 * add Tailor testing
-* MORE CLUSTER FEATURES
- * cluster creation via API
- * create
-  * knife search node 'tags:amazon+*'
- * refresh
-  * search on tag for completion
-  * knife search node 'tags:amazon+rolewebserverrecipemysqlclient'
- * delete
-  * delete on tag
-  * knife search node 'tags:amazon+*'
 * ADDITIONAL VALIDATION
  * environment-specific run_lists
  * sort roles by dependencies of other roles?
@@ -251,7 +241,7 @@ This is the current, previous and future development milestones and contains the
  * knife batch create from file infrastructure.yml
  * knife batch delete from file infrastructure.json
  * knife batch rebuild from file infrastructure.yml
-* EXTRACT EXISTING INFRASTRUCTURE FROM CHEF SERVER
+* EXTRACT EXISTING INFRASTRUCTURE FROM CHEF SERVER (or just use knife download?)
  * knife batch extract to a tarball named for the organization
  * option to include credentials and knife.rb
  * translate json back to rb?
