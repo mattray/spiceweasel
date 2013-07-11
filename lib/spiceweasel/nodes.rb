@@ -172,5 +172,19 @@ module Spiceweasel
       end
     end
 
+    #create the knife ssh chef-client search pattern
+    def self.knife_ssh_chef_client_search(name, run_list, environment)
+      search = []
+      search.push("name:#{name}") if name
+      search.push("chef_environment:#{environment}") if environment
+      run_list.split(',').each do |item|
+        item.sub!(/\[/, ':')
+        item.chop!
+        item.sub!(/::/, '\:\:')
+        search.push(item)
+      end
+      return "knife ssh '#{search.join(" and ")}' 'chef-client'"
+    end
+
   end
 end

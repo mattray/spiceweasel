@@ -28,24 +28,51 @@ module Spiceweasel
         Spiceweasel::Log.debug("clusters: #{clusters}")
         clusters.each do |cluster|
           cluster_name = cluster.keys.first
-          Spiceweasel::Log.debug("cluster: '#{cluster_name}' '#{cluster[cluster_name]}'")
-          cluster[cluster_name].each do |node|
-            node_name = node.keys.first
-            run_list = node[node_name]['run_list'] || ''
-            options = node[node_name]['options'] || ''
-            validateEnvironment(options, cluster_name, environments) unless Spiceweasel::Config[:novalidation]
-            #push the Environment back on the options
-            node[node_name]['options'] = options + " -E #{cluster_name}"
+          if Spiceweasel::Config[:chefclient]
+            cluster_chef_client(cluster, cluster_name)
+          else
+            cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands)
           end
-          # let's reuse the Nodes logic
-          nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles, knifecommands)
-          @create.concat(nodes.create)
-          @delete.concat(nodes.delete)
         end
       end
     end
 
-    def validateEnvironment(options, cluster, environments)
+    # chef-client commands for the cluster members
+    def cluster_chef_client(cluster, environment)
+      cluster[environment].each do |node|
+        count = 1
+        node_name = node.keys.first
+        run_list = node[node_name]['run_list'] || ''
+        options = node[node_name]['options'] || ''
+        if options =~ /-N/ #Setting the Name
+          name = options.split('-N')[1].split[0]
+          count = node_name.split[1].to_i
+        end
+        for n in 1..count
+          name.gsub!(/{{n}}/, n.to_s) if name
+          @create.push(Nodes.knife_ssh_chef_client_search(name, run_list, environment))
+        end
+      end
+    end
+
+    # configure the individual nodes within the cluster
+    def cluster_process_nodes(cluster, environment, cookbooks, environments, roles, knifecommands)
+      Spiceweasel::Log.debug("cluster::cluster_process_nodes '#{environment}' '#{cluster[environment]}'")
+      cluster[environment].each do |node|
+        node_name = node.keys.first
+        run_list = node[node_name]['run_list'] || ''
+        options = node[node_name]['options'] || ''
+        validate_environment(options, environment, environments) unless Spiceweasel::Config[:novalidation]
+        #push the Environment back on the options
+        node[node_name]['options'] = options + " -E #{environment}"
+      end
+      # let's reuse the Nodes logic
+      nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands)
+      @create.concat(nodes.create)
+      @delete.concat(nodes.delete)
+    end
+
+    def validate_environment(options, cluster, environments)
       unless environments.member?(cluster)
         STDERR.puts "ERROR: Environment '#{cluster}' is listed in the cluster, but not specified as an 'environment' in the manifest."
         exit(-1)
