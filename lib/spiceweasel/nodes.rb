@@ -34,7 +34,6 @@ module Spiceweasel
           name = node.keys.first
           Spiceweasel::Log.debug("node: '#{name}' '#{node[name]}'")
           if node[name]
-            #convert spaces to commas, drop multiple commas
             run_list = Nodes.process_run_list(node[name]['run_list'])
             Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
             validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
