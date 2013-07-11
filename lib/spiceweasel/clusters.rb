@@ -42,7 +42,7 @@ module Spiceweasel
       cluster[environment].each do |node|
         count = 1
         node_name = node.keys.first
-        run_list = node[node_name]['run_list'] || ''
+        run_list = Nodes.process_run_list(node[node_name]['run_list'])
         options = node[node_name]['options'] || ''
         if options =~ /-N/ #Setting the Name
           name = options.split('-N')[1].split[0]
@@ -60,7 +60,6 @@ module Spiceweasel
       Spiceweasel::Log.debug("cluster::cluster_process_nodes '#{environment}' '#{cluster[environment]}'")
       cluster[environment].each do |node|
         node_name = node.keys.first
-        run_list = node[node_name]['run_list'] || ''
         options = node[node_name]['options'] || ''
         validate_environment(options, environment, environments) unless Spiceweasel::Config[:novalidation]
         #push the Environment back on the options

@@ -35,8 +35,7 @@ module Spiceweasel
           Spiceweasel::Log.debug("node: '#{name}' '#{node[name]}'")
           if node[name]
             #convert spaces to commas, drop multiple commas
-            run_list = node[name]['run_list'] || ''
-            run_list = run_list.gsub(/ /,',').gsub(/,+/,',')
+            run_list = Nodes.process_run_list(node[name]['run_list'])
             Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
             validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
             options = node[name]['options'] || ''
@@ -184,6 +183,14 @@ module Spiceweasel
         search.push(item)
       end
       return "knife ssh '#{search.join(" and ")}' 'chef-client'"
+    end
+
+    #standardize the node run_list formatting
+    def self.process_run_list(run_list)
+      return '' if run_list.nil?
+      run_list.gsub!(/ /,',')
+      run_list.gsub!(/,+/,',')
+      return run_list
     end
 
   end
