@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
-
 module Spiceweasel
   class Knife
 
@@ -25,12 +23,9 @@ module Spiceweasel
 
     attr_reader :knife_list, :create
 
-    def initialize(knives = {})
+    def initialize(knives = {}, allknifes = [])
       @create = Array.new
       if knives
-        allknifes = Mixlib::ShellOut.new('knife -h').run_command.stdout.split(/\n/)
-        allknifes.keep_if {|x| x.start_with?('knife')}
-        Spiceweasel::Log.debug(allknifes)
         knives.each do |knife|
           Spiceweasel::Log.debug("knife: #{knife}")
           knife.keys.each do |knf|

@@ -21,7 +21,7 @@ module Spiceweasel
 
     attr_reader :create, :delete
 
-    def initialize(clusters, cookbooks, environments, roles)
+    def initialize(clusters, cookbooks, environments, roles, knifecommands)
       @create = Array.new
       @delete = Array.new
       if clusters
@@ -38,7 +38,7 @@ module Spiceweasel
             node[node_name]['options'] = options + " -E #{cluster_name}"
           end
           # let's reuse the Nodes logic
-          nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles)
+          nodes = Spiceweasel::Nodes.new(cluster[cluster_name], cookbooks, environments, roles, knifecommands)
           @create.concat(nodes.create)
           @delete.concat(nodes.delete)
         end

@@ -9,9 +9,9 @@ This is the current, previous and future development milestones and contains the
 * add a --timeout option for invoked commands (Tim Brown)
 * add '-u' with --parallel to show continuous output for larger commands
 * made the Chef version checks safe for pre-release versions of Chef
+* validation of the knife commands that the plugins exist for nodes, clusters and knife commands
 
 * cluster commands and environment validation (refresh, delete)
-* validation of the cluster commands that the plugins exist
 
 # 2.4.0 # (CURRENT RELEASE)
 

@@ -305,9 +305,10 @@ module Spiceweasel
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
-      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles)
-      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles)
-      knife = Knife.new(manifest['knife'])
+      knifecommands = get_knife_commands() unless Spiceweasel::Config[:novalidation]
+      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, knifecommands)
+      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, knifecommands)
+      knife = Knife.new(manifest['knife'], knifecommands)
 
       create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create + knife.create
       delete += environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
@@ -320,5 +321,12 @@ module Spiceweasel
       return create, delete
     end
 
+    def get_knife_commands()
+      require 'mixlib/shellout'
+      allknifes = Mixlib::ShellOut.new('knife -h').run_command.stdout.split(/\n/)
+      allknifes.keep_if {|x| x.start_with?('knife')}
+      Spiceweasel::Log.debug(allknifes)
+      return allknifes
+    end
   end
 end

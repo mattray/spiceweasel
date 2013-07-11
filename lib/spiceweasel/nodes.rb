@@ -25,7 +25,7 @@ module Spiceweasel
 
     attr_reader :create, :delete
 
-    def initialize(nodes, cookbooks, environments, roles)
+    def initialize(nodes, cookbooks, environments, roles, knifecommands)
       @create = Array.new
       @delete = Array.new
       if nodes
@@ -38,10 +38,10 @@ module Spiceweasel
             run_list = node[name]['run_list'] || ''
             run_list = run_list.gsub(/ /,',').gsub(/,+/,',')
             Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
-            validateRunList(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
+            validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
             options = node[name]['options'] || ''
             Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
-            validateOptions(name, options, environments) unless Spiceweasel::Config[:novalidation]
+            validate_options(name, options, environments) unless Spiceweasel::Config[:novalidation]
             create_command_options = {}
             %w(allow_create_failure timeout).each do |key|
               if(node[name].has_key?(key))
@@ -53,6 +53,7 @@ module Spiceweasel
           #provider support
           provider = name.split()
           if PROVIDERS.member?(provider[0])
+            validate_provider(provider[0], knifecommands) unless Spiceweasel::Config[:novalidation]
             count = 1
             if provider.length == 2
               count = provider[1]
@@ -129,7 +130,7 @@ module Spiceweasel
     end
 
     #ensure run_list contents are listed previously.
-    def validateRunList(node, run_list, cookbooks, roles)
+    def validate_run_list(node, run_list, cookbooks, roles)
       run_list.split(',').each do |item|
         if item.start_with?("recipe[")
           #recipe[foo] or recipe[foo::bar]
@@ -153,13 +154,21 @@ module Spiceweasel
     end
 
     #for now, just check that -E is legit
-    def validateOptions(node, options, environments)
+    def validate_options(node, options, environments)
       if options =~ /-E/ #check for environments
         env = options.split('-E')[1].split()[0]
         unless environments.member?(env)
           STDERR.puts "ERROR: '#{node}' environment '#{env}' is missing from the list of environments in the manifest."
           exit(-1)
         end
+      end
+    end
+
+    #check that the knife plugin is installed
+    def validate_provider(provider, knifecommands)
+      unless knifecommands.index {|x| x.start_with?("knife #{provider}")}
+        STDERR.puts "ERROR: 'knife #{provider}' is not a currently installed plugin for knife."
+        exit(-1)
       end
     end
 
