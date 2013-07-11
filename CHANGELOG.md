@@ -12,6 +12,8 @@ This is the current, previous and future development milestones and contains the
 * validation of the knife commands that the plugins exist for nodes, clusters and knife commands
 * cluster commands and environment validation (refresh, delete)
 
+* knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu
+
 # 2.4.0 # (CURRENT RELEASE)
 
 * add "knife" commands
