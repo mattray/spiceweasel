@@ -10,9 +10,11 @@ This is the current, previous and future development milestones and contains the
 * add '-u' with --parallel to show continuous output for larger commands
 * made the Chef version checks safe for pre-release versions of Chef
 * validation of the knife commands that the plugins exist for nodes, clusters and knife commands
-* cluster commands and environment validation (refresh, delete)
+* added static Nodes methods for knife ssh chef client searches and processing run lists into standard formats
+* cluster and environment validation
+* knife-kvm support (https://github.com/rubiojr/knife-kvm)
 
-* knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu
+* knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu --ssh-user ubuntu --ssh-password ubuntu
 
 # 2.4.0 # (CURRENT RELEASE)
 

@@ -21,7 +21,7 @@ module Spiceweasel
 
     include CommandHelper
 
-    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
+    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent kvm lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
 
     attr_reader :create, :delete
 
@@ -34,9 +34,7 @@ module Spiceweasel
           name = node.keys.first
           Spiceweasel::Log.debug("node: '#{name}' '#{node[name]}'")
           if node[name]
-            #convert spaces to commas, drop multiple commas
-            run_list = node[name]['run_list'] || ''
-            run_list = run_list.gsub(/ /,',').gsub(/,+/,',')
+            run_list = Nodes.process_run_list(node[name]['run_list'])
             Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
             validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
             options = node[name]['options'] || ''
@@ -52,52 +50,14 @@ module Spiceweasel
           end
           #provider support
           provider = name.split()
+          require 'pry'
+          binding.pry
           if PROVIDERS.member?(provider[0])
-            validate_provider(provider[0], knifecommands) unless Spiceweasel::Config[:novalidation]
             count = 1
             if provider.length == 2
               count = provider[1]
             end
-            provided_names = []
-            if Spiceweasel::Config[:parallel]
-              parallel = "seq #{count} | parallel -u -j 0 -v \""
-              if provider[0].eql?('vsphere')
-                parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
-              else
-                parallel += "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
-              end
-              parallel += " -r '#{run_list}'" unless run_list.empty?
-              parallel += "\""
-              create_command(parallel, create_command_options)
-            else
-              count.to_i.times do |i|
-                if provider[0].eql?('vsphere')
-                  server = "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-                else
-                  server = "knife #{provider[0]}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-                end
-                server += " -r '#{run_list}'" unless run_list.empty?
-                provided_names << node[name]['name'].gsub('{{n}}', (i + 1).to_s) if node[name]['name']
-                create_command(server, create_command_options)
-              end
-            end
-            if Spiceweasel::Config[:bulkdelete] && provided_names.empty? && provider[0] != 'windows'
-              if provider[0].eql?('vsphere')
-                delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} vm delete -y")
-              else
-                delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider[0]} server delete -y")
-              end
-            else
-              provided_names.each do |p_name|
-                if provider[0].eql?('vsphere')
-                  delete_command("knife #{provider[0]} vm delete -y #{p_name}")
-                else
-                  delete_command("knife #{provider[0]} server delete -y #{p_name}")
-                end
-                delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
-                delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
-              end
-            end
+            process_providers(provider[0], count, node[name]['name'], options, run_list, create_command_options, knifecommands)
           elsif name.start_with?("windows") #windows node bootstrap support
             nodeline = name.split()
             provider = nodeline.shift.split('_') #split on 'windows_ssh' etc
@@ -164,6 +124,51 @@ module Spiceweasel
       end
     end
 
+    #manage all the provider logic
+    def process_providers(provider, count, name, options, run_list, create_command_options, knifecommands)
+      validate_provider(provider, knifecommands) unless Spiceweasel::Config[:novalidation]
+      provided_names = []
+      if Spiceweasel::Config[:parallel]
+        parallel = "seq #{count} | parallel -u -j 0 -v \""
+        if ['kvm','vsphere'].member?(provider)
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+        else
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+        end
+        parallel += " -r '#{run_list}'" unless run_list.empty?
+        parallel += "\""
+        create_command(parallel, create_command_options)
+      else
+        count.to_i.times do |i|
+          if ['kvm','vsphere'].member?(provider)
+            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+          else
+            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+          end
+          server += " -r '#{run_list}'" unless run_list.empty?
+          provided_names << name.gsub('{{n}}', (i + 1).to_s) if name
+          create_command(server, create_command_options)
+        end
+      end
+      if Spiceweasel::Config[:bulkdelete] && provided_names.empty? && provider != 'windows'
+        if ['kvm','vsphere'].member?(provider)
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
+        else
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} server delete -y")
+        end
+      else
+        provided_names.each do |p_name|
+          if ['kvm','vsphere'].member?(provider)
+            delete_command("knife #{provider} vm delete -y #{p_name}")
+          else
+            delete_command("knife #{provider} server delete -y #{p_name}")
+          end
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+          delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+        end
+      end
+    end
+
     #check that the knife plugin is installed
     def validate_provider(provider, knifecommands)
       unless knifecommands.index {|x| x.start_with?("knife #{provider}")}
@@ -184,6 +189,14 @@ module Spiceweasel
         search.push(item)
       end
       return "knife ssh '#{search.join(" and ")}' 'chef-client'"
+    end
+
+    #standardize the node run_list formatting
+    def self.process_run_list(run_list)
+      return '' if run_list.nil?
+      run_list.gsub!(/ /,',')
+      run_list.gsub!(/,+/,',')
+      return run_list
     end
 
   end
