@@ -50,8 +50,6 @@ module Spiceweasel
           end
           #provider support
           provider = name.split()
-          require 'pry'
-          binding.pry
           if PROVIDERS.member?(provider[0])
             count = 1
             if provider.length == 2
