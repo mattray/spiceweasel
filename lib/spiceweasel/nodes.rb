@@ -21,7 +21,7 @@ module Spiceweasel
 
     include CommandHelper
 
-    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
+    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent kvm lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
 
     attr_reader :create, :delete
 
@@ -50,6 +50,8 @@ module Spiceweasel
           end
           #provider support
           provider = name.split()
+          require 'pry'
+          binding.pry
           if PROVIDERS.member?(provider[0])
             count = 1
             if provider.length == 2
@@ -128,7 +130,7 @@ module Spiceweasel
       provided_names = []
       if Spiceweasel::Config[:parallel]
         parallel = "seq #{count} | parallel -u -j 0 -v \""
-        if provider.eql?('vsphere')
+        if ['kvm','vsphere'].member?(provider)
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
         else
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
@@ -138,7 +140,7 @@ module Spiceweasel
         create_command(parallel, create_command_options)
       else
         count.to_i.times do |i|
-          if provider.eql?('vsphere')
+          if ['kvm','vsphere'].member?(provider)
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
           else
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
@@ -149,14 +151,14 @@ module Spiceweasel
         end
       end
       if Spiceweasel::Config[:bulkdelete] && provided_names.empty? && provider != 'windows'
-        if provider.eql?('vsphere')
+        if ['kvm','vsphere'].member?(provider)
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
         else
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} server delete -y")
         end
       else
         provided_names.each do |p_name|
-          if provider.eql?('vsphere')
+          if ['kvm','vsphere'].member?(provider)
             delete_command("knife #{provider} vm delete -y #{p_name}")
           else
             delete_command("knife #{provider} server delete -y #{p_name}")

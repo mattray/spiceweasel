@@ -12,9 +12,9 @@ This is the current, previous and future development milestones and contains the
 * validation of the knife commands that the plugins exist for nodes, clusters and knife commands
 * added static Nodes methods for knife ssh chef client searches and processing run lists into standard formats
 * cluster and environment validation
-
-* knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu
 * knife-kvm support (https://github.com/rubiojr/knife-kvm)
+
+* knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu --ssh-user ubuntu --ssh-password ubuntu
 
 # 2.4.0 # (CURRENT RELEASE)
 
