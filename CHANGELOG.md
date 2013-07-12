@@ -14,6 +14,7 @@ This is the current, previous and future development milestones and contains the
 * cluster and environment validation
 
 * knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu
+* knife-kvm support (https://github.com/rubiojr/knife-kvm)
 
 # 2.4.0 # (CURRENT RELEASE)
 
