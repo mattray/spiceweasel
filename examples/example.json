@@ -58,13 +58,13 @@
         {"serverB serverC":
          {
              "run_list": "role[base]",
-             "options": "-i ~/.ssh/mray.pem -x user --sudo -E production"
+             "options": "-E development -i ~/.ssh/mray.pem -x user --sudo"
          }
         },
         {"rackspace 3":
          {
              "run_list": "recipe[mysql],role[monitoring]",
-             "options": "--image 49 --flavor 2 -N db{{n}}"
+             "options": "--image 49 -E qa --flavor 2 -N db{{n}}"
          }
         },
         {"windows_winrm winboxA":

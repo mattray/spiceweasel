@@ -28,29 +28,7 @@ module Spiceweasel
         Spiceweasel::Log.debug("clusters: #{clusters}")
         clusters.each do |cluster|
           cluster_name = cluster.keys.first
-          if Spiceweasel::Config[:chefclient]
-            cluster_chef_client(cluster, cluster_name)
-          else
-            cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands)
-          end
-        end
-      end
-    end
-
-    # chef-client commands for the cluster members
-    def cluster_chef_client(cluster, environment)
-      cluster[environment].each do |node|
-        count = 1
-        node_name = node.keys.first
-        run_list = Nodes.process_run_list(node[node_name]['run_list'])
-        options = node[node_name]['options'] || ''
-        if options =~ /-N/ #Setting the Name
-          name = options.split('-N')[1].split[0]
-          count = node_name.split[1].to_i
-        end
-        for n in 1..count
-          name.gsub!(/{{n}}/, n.to_s) if name
-          @create.push(Nodes.knife_ssh_chef_client_search(name, run_list, environment))
+          cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands)
         end
       end
     end
