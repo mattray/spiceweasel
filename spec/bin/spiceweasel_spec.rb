@@ -39,11 +39,11 @@ knife data bag create data
 knife data bag create passwords
 knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key
 knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
-knife bootstrap serverB -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]'
-knife bootstrap serverC -i ~/.ssh/mray.pem -x user --sudo -E production -r 'role[base]'
-knife rackspace server create --image 49 --flavor 2 -N db1 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 --flavor 2 -N db2 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 --flavor 2 -N db3 -r 'recipe[mysql],role[monitoring]'
+knife bootstrap serverB -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
+knife bootstrap serverC -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db1 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db2 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db3 -r 'recipe[mysql],role[monitoring]'
 knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'

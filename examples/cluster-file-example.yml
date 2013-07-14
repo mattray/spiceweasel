@@ -4,8 +4,14 @@ clusters:
       run_list: role[base]
       options: -i ~/.ssh/mray.pem -x user --sudo
   - serverB serverC:
-      run_list: role[base]
-      options: -i ~/.ssh/mray.pem -x user --sudo -E production
+      run_list: role[base] role[webserver]
+      options: -i ~/.ssh/mray.pem -x user --sudo
+  - windows_winrm winboxA:
+      run_list: role[base],role[iisserver]
+      options: -x Administrator -P 'super_secret_password'
+  - windows_ssh winboxB winboxC:
+      run_list: role[base],role[iisserver]
+      options: -x Administrator -P 'super_secret_password'
   - kvm 10:
       run_list: role[webserver] recipe[mysql::client]
       options: --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret
