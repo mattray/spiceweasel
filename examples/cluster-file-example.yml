@@ -1,8 +1,5 @@
 clusters:
 - qa:
-  - serverA:
-      run_list: role[base]
-      options: -i ~/.ssh/mray.pem -x user --sudo
   - serverB serverC:
       run_list: role[base] role[webserver]
       options: -i ~/.ssh/mray.pem -x user --sudo
