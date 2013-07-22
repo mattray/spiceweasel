@@ -54,3 +54,19 @@ knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 
     `#{@spiceweasel_binary} --novalidation --chef-client --cluster-file examples/cluster-file-example.yml examples/example.rb`.should == @expected_output
   end
 end
+
+describe 'testing 2.5 --chef-client with -a' do
+  before(:each) do
+    @expected_output = <<-OUTPUT
+knife ssh 'chef_environment:mycluster and role:mysql' 'chef-client' -a ec2.public_hostname
+knife ssh 'chef_environment:mycluster and role:webserver and recipe:mysql\\:\\:client' 'chef-client' -a ec2.public_hostname
+    OUTPUT
+
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+  end
+
+  it "test chef-client with -a ec2.public_hostname in 2.5" do
+    `#{@spiceweasel_binary} --novalidation --chef-client -a ec2.public_hostname examples/example-cluster.yml`.should == @expected_output
+  end
+
+end

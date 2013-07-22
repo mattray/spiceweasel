@@ -54,6 +54,11 @@ module Spiceweasel
     :description => 'Delete all nodes for the provider(s) in the infrastructure',
     :boolean => false
 
+    option :attribute,
+    :short => '-a',
+    :long => '--attribute ATTR',
+    :description => "The attribute to use for opening the connection - default depends on the context. Used in conjunction with '--chef-client'"
+
     option :chefclient,
     :long => '--chef-client',
     :description => 'Print the knife commands to run chef-client on the nodes of the infrastructure',
