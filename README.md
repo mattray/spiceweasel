@@ -306,6 +306,8 @@ knife ssh 'name:*' 'sudo chef-client'
 knife ssh 'role:base and recipe:apt\:\:cacher-ng' 'uptime'
 knife ssh "role:web"
 
+You may also use `-a` or `--attribute` to specify an attribute to use with `knife ssh`.
+
 ## --cluster-file ##
 
 Specify the file to use to override the `nodes` and `clusters` from the primary manifest file. This allows you to switch the target destination of infrastructure by picking different `--cluster-file` endpoints.

@@ -189,7 +189,7 @@ module Spiceweasel
       protocol = 'ssh'
       sudo = ''
       protooptions = ''
-      if options =~ /-E/ #Environment must match the cluster
+      if options =~ /-E/
         environment = options.split('-E')[1].split[0]
       end
       if names[0].start_with?("windows_")
@@ -202,6 +202,7 @@ module Spiceweasel
         name = options.split('-N')[1].split[0]
         names = [name.gsub(/{{n}}/, '*')]
       end
+      protooptions  += "-a #{Spiceweasel::Config[:attribute]}" if Spiceweasel::Config[:attribute]
       if names.empty?
         search = chef_client_search(nil, run_list, environment)
         commands.push("knife #{protocol} '#{search}' '#{sudo}chef-client' #{protooptions} #{Spiceweasel::Config[:knife_options]}")

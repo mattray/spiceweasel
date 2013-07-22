@@ -14,6 +14,7 @@ This is the current, previous and future development milestones and contains the
 * knife-kvm support (https://github.com/rubiojr/knife-kvm)
 * --chef-client now a supported options
 * added methods for knife ssh chef client searches and processing run lists into standard formats
+* added '-a/--attribute' for supporting --chef-client
 
 * knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu --ssh-user ubuntu --ssh-password ubuntu
 
