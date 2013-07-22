@@ -52,7 +52,7 @@
     {"serverA" =>
       {
         "run_list" =>  "role[base]",
-        "options" =>  "-i ~/.ssh/mray.pem -x user --sudo"
+        "options" =>  "-i ~/.ssh/mray.pem -x user --sudo --no-host-key-verify"
       }
     },
     {"serverB serverC" =>

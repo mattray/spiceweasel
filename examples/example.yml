@@ -31,7 +31,7 @@ data bags:
 nodes:
 - serverA:
     run_list: role[base]
-    options: -i ~/.ssh/mray.pem -x user --sudo
+    options: -i ~/.ssh/mray.pem -x user --sudo --no-host-key-verify
 - serverB serverC:
     run_list: role[base]
     options: -E development -i ~/.ssh/mray.pem -x user --sudo
