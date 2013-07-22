@@ -27,4 +27,5 @@ Gem::Specification.new do |s|
   s.add_dependency('berkshelf', '< 3')
   s.add_dependency('solve') # some what redundant since provided via berkshelf
   s.add_development_dependency('rspec')
+  s.add_development_dependency('rake')
 end

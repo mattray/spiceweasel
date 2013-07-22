@@ -137,8 +137,11 @@ module Spiceweasel
       provided_names = []
       if Spiceweasel::Config[:parallel]
         parallel = "seq #{count} | parallel -u -j 0 -v \""
-        if ['kvm','vsphere'].member?(provider)
+        if ['vsphere'].member?(provider)
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+        elsif ['kvm'].member?(provider)
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+          
         else
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
         end
@@ -147,8 +150,10 @@ module Spiceweasel
         create_command(parallel, create_command_options)
       else
         count.to_i.times do |i|
-          if ['kvm','vsphere'].member?(provider)
+          if ['vsphere'].member?(provider)
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+        elsif ['kvm'].member?(provider)
+            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
           else
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
           end
