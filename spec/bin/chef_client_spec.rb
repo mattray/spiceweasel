@@ -1,15 +1,15 @@
 describe 'testing 2.5 --chef-client' do
   before(:each) do
     @expected_output = <<-OUTPUT
-knife ssh 'name:serverA and role:base' 'chef-client'
-knife ssh 'name:serverB and chef_environment:development and role:base' 'chef-client'
-knife ssh 'name:serverC and chef_environment:development and role:base' 'chef-client'
+knife ssh 'name:serverA and role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user --no-host-key-verify -p 22
+knife ssh 'name:serverB and chef_environment:development and role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+knife ssh 'name:serverC and chef_environment:development and role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
 knife ssh 'name:db* and chef_environment:qa and recipe:mysql and role:monitoring' 'chef-client'
-knife winrm 'name:winboxA and role:base and role:iisserver' 'chef-client'
-knife ssh 'name:winboxB and role:base and role:iisserver' 'chef-client'
-knife ssh 'name:winboxC and role:base and role:iisserver' 'chef-client'
-knife ssh 'chef_environment:amazon and role:mysql' 'chef-client'
-knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:client' 'chef-client'
+knife winrm 'name:winboxA and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxB and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxC and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'chef_environment:amazon and role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
+knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
@@ -31,12 +31,12 @@ end
 describe 'testing 2.5 --chef-client with --cluster-file' do
   before(:each) do
     @expected_output = <<-OUTPUT
-knife ssh 'name:serverB and chef_environment:qa and role:base and role:webserver' 'chef-client'
-knife ssh 'name:serverC and chef_environment:qa and role:base and role:webserver' 'chef-client'
-knife winrm 'name:winboxA and chef_environment:qa and role:base and role:iisserver' 'chef-client'
-knife ssh 'name:winboxB and chef_environment:qa and role:base and role:iisserver' 'chef-client'
-knife ssh 'name:winboxC and chef_environment:qa and role:base and role:iisserver' 'chef-client'
-knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 'chef-client'
+knife ssh 'name:serverB and chef_environment:qa and role:base and role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+knife ssh 'name:serverC and chef_environment:qa and role:base and role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+knife winrm 'name:winboxA and chef_environment:qa and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxB and chef_environment:qa and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxC and chef_environment:qa and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
@@ -58,8 +58,8 @@ end
 describe 'testing 2.5 --chef-client with -a' do
   before(:each) do
     @expected_output = <<-OUTPUT
-knife ssh 'chef_environment:mycluster and role:mysql' 'chef-client' -a ec2.public_hostname
-knife ssh 'chef_environment:mycluster and role:webserver and recipe:mysql\\:\\:client' 'chef-client' -a ec2.public_hostname
+knife ssh 'chef_environment:mycluster and role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
+knife ssh 'chef_environment:mycluster and role:webserver and recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])

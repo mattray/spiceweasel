@@ -5,7 +5,6 @@ This is the current, previous and future development milestones and contains the
 * replace the 'json' gem with 'yajl'
 * fixed Berkshelf 2.0 support (Chris Roberts)
 * updated Ruby dependency to > 1.9.2 because of the ActiveSupport dependency of Berkshelf
-* Ruby 2.0 works with Chef 11.6
 * add a --timeout option for invoked commands (Tim Brown)
 * add '-u' with --parallel to show continuous output for larger commands
 * made the Chef version checks safe for pre-release versions of Chef
@@ -15,8 +14,9 @@ This is the current, previous and future development milestones and contains the
 * --chef-client now a supported options
 * added methods for knife ssh chef client searches and processing run lists into standard formats
 * added '-a/--attribute' for supporting --chef-client
-
-* knife ssh -a -i ~/.ssh/id_rsa --sudo -x ubuntu --ssh-user ubuntu --ssh-password ubuntu
+* --chef-client supports ssh options of --sudo, --no-host-key-verify, -i, -G, -P, -p, -x,-E and -N (and longforms)
+* knife-kvm fixes (Robert Berger)
+* Ruby 2.0 works with Chef 11.6
 
 # 2.4.0 # (CURRENT RELEASE)
 

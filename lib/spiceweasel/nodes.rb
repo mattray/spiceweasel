@@ -186,22 +186,130 @@ module Spiceweasel
 
     def process_chef_client(names, options, run_list)
       commands = []
+      environment = nil
       protocol = 'ssh'
-      sudo = ''
       protooptions = ''
-      if options =~ /-E/
-        environment = options.split('-E')[1].split[0]
+      #protocol options
+      sudo = nil
+      value = nil #store last option for space-separated values
+      options.split().each do |opt|
+        sudo = 'sudo ' if opt =~ /^--sudo$/
+        protooptions += '--no-host-key-verify ' if opt =~ /^--no-host-key-verify$/
+        # SSH identity file used for authentication
+        if value =~ /^-i$|^--identity-file$/
+          protooptions += "-i #{opt} "
+          value = nil
+        end
+        if opt =~ /^-i|^--identity-file/
+          if opt =~ /^-i$|^--identity-file$/
+            value = '-i'
+          else
+            opt.sub!(/-i/,'') if opt =~ /^-i/
+            opt.sub!(/--identity-file/,'') if opt =~ /^--identity-file/
+            protooptions += "-i #{opt} "
+            value = nil
+          end
+        end
+        # ssh gateway
+        if value =~ /^-G$|^--ssh-gateway$/
+          protooptions += "-G #{opt} "
+          value = nil
+        end
+        if opt =~ /^-G|^--ssh-gateway/
+          if opt =~ /^-G$|^--ssh-gateway$/
+            value = '-G'
+          else
+            opt.sub!(/-G/,'') if opt =~ /^-G/
+            opt.sub!(/--ssh-gateway/,'') if opt =~ /^--ssh-gateway/
+            protooptions += "-G #{opt} "
+            value = nil
+          end
+        end
+        # ssh password
+        if value =~ /^-P$|^--ssh-password$/
+          protooptions += "-P #{opt} "
+          value = nil
+        end
+        if opt =~ /^-P|^--ssh-password/
+          if opt =~ /^-P$|^--ssh-password$/
+            value = '-P'
+          else
+            opt.sub!(/-P/,'') if opt =~ /^-P/
+            opt.sub!(/--ssh-password/,'') if opt =~ /^--ssh-password/
+            protooptions += "-P #{opt} "
+            value = nil
+          end
+        end
+        # ssh port
+        if value =~ /^-p$|^--ssh-port$/
+          protooptions += "-p #{opt} "
+          value = nil
+        end
+        if opt =~ /^-p|^--ssh-port/
+          if opt =~ /^-p$|^--ssh-port$/
+            value = '-p'
+          else
+            opt.sub!(/-p/,'') if opt =~ /^-p/
+            opt.sub!(/--ssh-port/,'') if opt =~ /^--ssh-port/
+            protooptions += "-p #{opt} "
+            value = nil
+          end
+        end
+        # ssh username
+        if value =~ /^-x$|^--ssh-user$/
+          protooptions += "-x #{opt} "
+          sudo = 'sudo ' unless opt.eql?('root')
+          value = nil
+        end
+        if opt =~ /^-x|^--ssh-user/
+          if opt =~ /^-x$|^--ssh-user$/
+            value = '-x'
+          else
+            opt.sub!(/-x/,'') if opt =~ /^-x/
+            opt.sub!(/--ssh-user/,'') if opt =~ /^--ssh-user/
+            protooptions += "-x #{opt} "
+            sudo = 'sudo ' unless opt.eql?('root')
+            value = nil
+          end
+        end
+        # environment
+        if value =~ /^-E$|^--environment$/
+          environment = opt
+          value = nil
+        end
+        if opt =~ /^-E|^--environment/
+          if opt =~ /^-E$|^--environment$/
+            value = '-E'
+          else
+            opt.sub!(/-E/,'') if opt =~ /^-E/
+            opt.sub!(/--environment/,'') if opt =~ /^--environment/
+            environment = opt
+            value = nil
+          end
+        end
+        # nodename
+        if value =~ /^-N$|^--node-name$/
+          names = [opt.gsub(/{{n}}/, '*')]
+          value = nil
+        end
+        if opt =~ /^-N|^--node-name/
+          if opt =~ /^-N$|^--node-name$/
+            value = '-N'
+          else
+            opt.sub!(/-N/,'') if opt =~ /^-N/
+            opt.sub!(/--node-name/,'') if opt =~ /^--node-name/
+            names = [opt.gsub(/{{n}}/, '*')]
+            value = nil
+          end
+        end
       end
       if names[0].start_with?("windows_")
         #windows node bootstrap support
         protocol = names.shift.split('_')[1] #split on 'windows_ssh' etc
+        sudo = nil #no sudo for Windows even if ssh is used
       end
       names = [] if PROVIDERS.member?(names[0])
       # check options for -N, override name
-      if options =~ /-N/ #Setting the Name
-        name = options.split('-N')[1].split[0]
-        names = [name.gsub(/{{n}}/, '*')]
-      end
       protooptions  += "-a #{Spiceweasel::Config[:attribute]}" if Spiceweasel::Config[:attribute]
       if names.empty?
         search = chef_client_search(nil, run_list, environment)
