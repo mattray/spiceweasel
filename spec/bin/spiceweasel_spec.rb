@@ -38,7 +38,7 @@ knife data bag from file users alice.json bob.json chuck.json
 knife data bag create data
 knife data bag create passwords
 knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key
-knife bootstrap serverA -i ~/.ssh/mray.pem -x user --sudo --no-host-key-verify -r 'role[base]'
+knife bootstrap serverA --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[base]'
 knife bootstrap serverB -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
 knife bootstrap serverC -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
 knife rackspace server create --image 49 -E qa --flavor 2 -N db1 -r 'recipe[mysql],role[monitoring]'
