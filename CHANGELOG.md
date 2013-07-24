@@ -1,6 +1,10 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.5.0 #
+# 2.6.0 #
+
+* --node-only mode for uploading node files and applying their run list without bootstrapping
+
+# 2.5.0 # (CURRENT RELEASE)
 
 * replace the 'json' gem with 'yajl'
 * fixed Berkshelf 2.0 support (Chris Roberts)
@@ -18,7 +22,7 @@ This is the current, previous and future development milestones and contains the
 * knife-kvm fixes (Robert Berger)
 * Ruby 2.0 works with Chef 11.6
 
-# 2.4.0 # (CURRENT RELEASE)
+# 2.4.0 #
 
 * add "knife" commands
 
