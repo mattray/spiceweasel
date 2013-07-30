@@ -3,8 +3,13 @@ This is the current, previous and future development milestones and contains the
 # 2.6.0 #
 
 * --node-only mode for uploading node files and applying their run list without bootstrapping
+* check on usage of solve gem, with regards to sorting
 
-# 2.5.0 # (CURRENT RELEASE)
+# 2.5.1 # (CURRENT RELEASE)
+
+* overly-aggressive mixlib-shellout timeout of 60 seconds was causing berks uploads to timeout. New default is 300 seconds.
+
+# 2.5.0 #
 
 * replace the 'json' gem with 'yajl'
 * fixed Berkshelf 2.0 support (Chris Roberts)
@@ -232,7 +237,6 @@ This is the current, previous and future development milestones and contains the
 * publish as a gem on RubyGems
 
 # BACKLOG #
-* add Ruby 2.0 testing in Travis (once Chef 11.6 is released)
 * add Tailor testing
 * ADDITIONAL VALIDATION
  * environment-specific run_lists
@@ -257,3 +261,4 @@ This is the current, previous and future development milestones and contains the
 * --simple mode to unroll multiple uploads per command?
  * ie. "knife cookbook upload apt\n knife cookbook upload ntp" instead of 1 liner
 * do we need to support concept of Groups from Berkshelf, to allow uploading multiple versions of cookbooks?
+* cluster support, check to see how many nodes result that match the query?

@@ -143,8 +143,8 @@ module Spiceweasel
     option :timeout,
     :short => '-T seconds',
     :long => '--timeout',
-    :description => "Specify the maximum number of seconds a command is allowed to run without producing output.  Default is 60 seconds",
-    :default => 60
+    :description => "Specify the maximum number of seconds a command is allowed to run without producing output.  Default is 300 seconds",
+    :default => 300
 
     option :version,
     :short => '-v',
