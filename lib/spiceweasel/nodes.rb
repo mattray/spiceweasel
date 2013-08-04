@@ -21,7 +21,7 @@ module Spiceweasel
 
     include CommandHelper
 
-    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent kvm linode lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
+    PROVIDERS = %w{bluebox clodo cs digital_ocean ec2 gandi hp joyent kvm linode lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
 
     attr_reader :create, :delete
 
@@ -141,6 +141,8 @@ module Spiceweasel
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
         elsif ['kvm'].member?(provider)
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+        elsif ['digital_ocean'].member?(provider)
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
         else
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
         end
@@ -153,6 +155,8 @@ module Spiceweasel
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
           elsif ['kvm'].member?(provider)
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+          elsif ['digital_ocean'].member?(provider)
+            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
           else
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
           end
@@ -164,6 +168,8 @@ module Spiceweasel
       if Spiceweasel::Config[:bulkdelete] && provided_names.empty? && provider != 'windows'
         if ['kvm','vsphere'].member?(provider)
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
+        elsif ['digital_ocean'].member?(provider)
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} droplet destroy -y")
         else
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} server delete -y")
         end
@@ -171,6 +177,8 @@ module Spiceweasel
         provided_names.each do |p_name|
           if ['kvm','vsphere'].member?(provider)
             delete_command("knife #{provider} vm delete -y #{p_name}")
+          elsif ['digital_ocean'].member?(provider)
+            delete_command("knife #{provider} droplet destroy -y #{p_name}")
           else
             delete_command("knife #{provider} server delete -y #{p_name}")
           end
