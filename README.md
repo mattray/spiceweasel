@@ -179,7 +179,7 @@ knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' 
 
 ### Providers ###
 
-The following knife plugins are currently supported as providers: `bluebox, clodo, cs, ec2, gandi, hp, joyent, linode, lxc, openstack, rackspace, slicehost, terremark, vagrant, voxel` and `vsphere`.
+The following knife plugins are currently supported as providers: `bluebox, clodo, cs, digital_ocean, ec2, gandi, hp, joyent, kvm, linode, lxc, openstack, rackspace, slicehost, terremark, vagrant, voxel` and `vsphere`.
 
 ### Bulk node creation ###
 
