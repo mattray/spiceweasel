@@ -2,8 +2,12 @@ This is the current, previous and future development milestones and contains the
 
 # 2.6.0 #
 
+* Linode and Digital Ocean support (Fletcher Nichol)
+* fixed cluster behavior for --delete and --refresh
+
 * --node-only mode for uploading node files and applying their run list without bootstrapping
 * check on usage of solve gem, with regards to sorting
+* does the manifest have to be the last option?
 
 # 2.5.1 # (CURRENT RELEASE)
 
