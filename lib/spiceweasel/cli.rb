@@ -114,6 +114,11 @@ module Spiceweasel
     :description => "Set the log file location, defaults to STDOUT",
     :proc => nil
 
+    option :node_only,
+    :long => '--node-only',
+    :description => 'Create node(s) on the server, do not bootstrap',
+    :boolean => false
+
     option :novalidation,
     :long => '--novalidation',
     :description => 'Disable validation',

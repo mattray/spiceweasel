@@ -53,13 +53,44 @@ module Spiceweasel
           end
           if Spiceweasel::Config[:chefclient]
             chefclient.push(process_chef_client(names, options, run_list))
+          elsif Spiceweasel::Config[:node_only]
+            nodenames = []
+            if PROVIDERS.member?(names[0])
+              count = names.length == 2 ? names[1] : 1
+              options.split().each do |opt|
+                if opt =~ /^-N|^--node-name/
+                  optname = opt.sub(/-N|--node-name/,'').lstrip
+                  count.to_i.times do |i|
+                    nodenames.push(optname.gsub(/\{\{n\}\}/, (i + 1).to_s))
+                  end
+                end
+              end
+            elsif names[0].start_with?("windows_")
+              nodenames.push(names[1..-1])
+            else #standard nodes
+              nodenames.push(names)
+            end
+            nodenames.each do |nodeonly|
+            if File.directory?("nodes/")
+              if File.exists?("nodes/#{nodeonly}.json")
+                # knife node from file
+                # validate individual node files
+              else
+                STDERR.puts "'nodes/#{nodeonly}.json' not found, unable to validate or load node. Using 'knife node create' instead."
+                # knife node create?
+              end
+            else
+              STDERR.puts "'nodes' directory not found, unable to validate or load nodes. Using 'knife node create' instead."
+              # knife node create?
+            end
+              # knife node run list add NAME
+            elsif !Spiceweasel::Config[:novalidation]
+              exit(-1)
+            end
           else #create/delete
             #provider support
             if PROVIDERS.member?(names[0])
-              count = 1
-              if names.length == 2
-                count = names[1]
-              end
+              count = names.length == 2 ? names[1] : 1
               process_providers(names[0], count, node[name]['name'], options, run_list, create_command_options, knifecommands)
             elsif names[0].start_with?("windows_")
               #windows node bootstrap support
@@ -92,7 +123,8 @@ module Spiceweasel
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
         end
         #remove repeats in chefclient and push into create_command
-        chefclient.flatten.each_with_index {|x,i| create_command(x, create_command_options) unless x.eql?(chefclient[i-1])}
+        chefclient.flatten.each_with_index {|x,i| create_command(x, create_command_options) unless x.eql?(chefclient[i-1])} if Spiceweasel::Config[:chefclient]
+        #nodeonly
       end
     end
 
@@ -308,8 +340,7 @@ module Spiceweasel
           if opt =~ /^-N$|^--node-name$/
             value = '-N'
           else
-            opt.sub!(/-N/,'') if opt =~ /^-N/
-            opt.sub!(/--node-name/,'') if opt =~ /^--node-name/
+            opt.sub!(/-N|--node-name/,'') if opt =~ /^-N|^--node-name/
             names = [opt.gsub(/{{n}}/, '*')]
             value = nil
           end
