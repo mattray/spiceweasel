@@ -60,6 +60,7 @@ module Spiceweasel
               options.split().each do |opt|
                 if opt =~ /^-N|^--node-name/
                   optname = opt.sub(/-N|--node-name/,'').lstrip
+                  optname = options.split[options.split.find_index(opt)+1] if optname.empty?
                   count.to_i.times do |i|
                     nodenames.push(optname.gsub(/\{\{n\}\}/, (i + 1).to_s))
                   end
@@ -70,22 +71,24 @@ module Spiceweasel
             else #standard nodes
               nodenames.push(names)
             end
-            nodenames.each do |nodeonly|
-            if File.directory?("nodes/")
-              if File.exists?("nodes/#{nodeonly}.json")
-                # knife node from file
-                # validate individual node files
+            nodenames.flatten.each do |nodeonly|
+              if File.directory?("nodes/")
+                if File.exists?("nodes/#{nodeonly}.json")
+                  # validate individual node files
+                  servercommand = "knife node from file #{nodeonly}.json #{Spiceweasel::Config[:knife_options]}".rstrip
+                else
+                  STDERR.puts "'nodes/#{nodeonly}.json' not found, unable to validate or load node. Using 'knife node create' instead."
+                  servercommand = "knife node create #{nodeonly} #{Spiceweasel::Config[:knife_options]}".rstrip
+                end
               else
-                STDERR.puts "'nodes/#{nodeonly}.json' not found, unable to validate or load node. Using 'knife node create' instead."
-                # knife node create?
+                STDERR.puts "'nodes' directory not found, unable to validate or load nodes. Using 'knife node create' instead."
+                servercommand = "knife node create #{nodeonly} #{Spiceweasel::Config[:knife_options]}".rstrip
               end
-            else
-              STDERR.puts "'nodes' directory not found, unable to validate or load nodes. Using 'knife node create' instead."
-              # knife node create?
-            end
+              servercommand += " -r '#{run_list}'" unless run_list.empty?
+              create_command(servercommand, create_command_options)
+              delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{nodeonly} -y")
+              delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{nodeonly} -y")
               # knife node run list add NAME
-            elsif !Spiceweasel::Config[:novalidation]
-              exit(-1)
             end
           else #create/delete
             #provider support
