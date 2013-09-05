@@ -1,0 +1,23 @@
+cookbooks:
+- apache2:
+environments:
+- qa:
+roles:
+- base:
+- webserver:
+data bags:
+nodes:
+- google 2:
+    run_list: role[base]
+    options: -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gdef{{n}}
+- google aaa bbb ccc:
+    run_list: role[mysql]
+    options: -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe
+clusters:
+- qa:
+  - google foo bar:
+      run_list: role[mysql]
+      options: -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe
+  - google 2:
+      run_list: role[mysql]
+      options: -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa{{n}}
