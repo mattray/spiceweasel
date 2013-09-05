@@ -46,7 +46,7 @@ module Spiceweasel
       # let's reuse the Nodes logic
       nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands)
       @create.concat(nodes.create)
-      @delete.concat(nodes.delete)
+      @delete.concat(["for N in $(knife node list -E #{environment}); do knife client delete -y $N; knife node delete -y $N; done"])
     end
 
     def validate_environment(options, cluster, environments)

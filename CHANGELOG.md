@@ -2,8 +2,12 @@ This is the current, previous and future development milestones and contains the
 
 # 2.6.0 #
 
+* Linode and Digital Ocean support (Fletcher Nichol)
+* fixed cluster behavior for --delete and --refresh
 * --node-only mode for uploading node files and applying their run list without bootstrapping
+
 * check on usage of solve gem, with regards to sorting
+* does the manifest have to be the last option?
 
 # 2.5.1 # (CURRENT RELEASE)
 
@@ -262,3 +266,7 @@ This is the current, previous and future development milestones and contains the
  * ie. "knife cookbook upload apt\n knife cookbook upload ntp" instead of 1 liner
 * do we need to support concept of Groups from Berkshelf, to allow uploading multiple versions of cookbooks?
 * cluster support, check to see how many nodes result that match the query?
+* flags for just 1 part of the manifest (implies no validation)
+ * --nodes
+ * --databags
+ * --environments

@@ -28,6 +28,7 @@ knife node delete winboxB -y
 knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
+for N in $(knife node list -E amazon); do knife client delete -y $N; knife node delete -y $N; done
 knife cookbook upload apache2
 knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
@@ -105,9 +106,7 @@ knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
 knife node bulk delete .* -y
-knife node list | xargs knife ec2 server delete -y
-knife node list | xargs knife ec2 server delete -y
-knife node bulk delete .* -y
+for N in $(knife node list -E amazon); do knife client delete -y $N; knife node delete -y $N; done
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])

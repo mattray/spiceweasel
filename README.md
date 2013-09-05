@@ -202,7 +202,7 @@ which generates nodes named "webserver1", "webserver2" and "webserver3".
 
 ## Clusters ##
 
-Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be put in the same Environment to ensure that the entire cluster may be created in sync (refresh and delete coming soon). The node syntax is the same as that under `nodes`, the only addition is the cluster name.
+Clusters are not a type supported by Chef, this is a logical construct added by Spiceweasel to enable managing sets of infrastructure together. The `clusters` section is a special case of `nodes`, where each member of the named cluster in the manifest will be put in the same Environment to ensure that the entire cluster (every node in the Environment) may be **created** and **destroyed** in sync. The node syntax is the same as that under `nodes`, the only addition is the cluster name.
 
 ```
 clusters:
@@ -339,6 +339,10 @@ When run in a chef repository, this will print a new YAML manifest that may be u
 ## -h/--help ##
 
 Print the currently-supported usage options for spiceweasel.
+
+## --node-only ##
+
+Loads from JSON or creates nodes on the server without bootstrapping, useful for pre-creating nodes. If you specify a run list with the node, it will override any run list specified within the JSON file.
 
 ## --novalidation ##
 
