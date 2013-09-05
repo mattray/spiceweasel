@@ -54,42 +54,7 @@ module Spiceweasel
           if Spiceweasel::Config[:chefclient]
             chefclient.push(process_chef_client(names, options, run_list))
           elsif Spiceweasel::Config[:node_only]
-            nodenames = []
-            if PROVIDERS.member?(names[0])
-              count = names.length == 2 ? names[1] : 1
-              options.split().each do |opt|
-                if opt =~ /^-N|^--node-name/
-                  optname = opt.sub(/-N|--node-name/,'').lstrip
-                  optname = options.split[options.split.find_index(opt)+1] if optname.empty?
-                  count.to_i.times do |i|
-                    nodenames.push(optname.gsub(/\{\{n\}\}/, (i + 1).to_s))
-                  end
-                end
-              end
-            elsif names[0].start_with?("windows_")
-              nodenames.push(names[1..-1])
-            else #standard nodes
-              nodenames.push(names)
-            end
-            nodenames.flatten.each do |nodeonly|
-              if File.directory?("nodes/")
-                if File.exists?("nodes/#{nodeonly}.json")
-                  # validate individual node files
-                  servercommand = "knife node from file #{nodeonly}.json #{Spiceweasel::Config[:knife_options]}".rstrip
-                else
-                  STDERR.puts "'nodes/#{nodeonly}.json' not found, unable to validate or load node. Using 'knife node create' instead."
-                  servercommand = "knife node create #{nodeonly} #{Spiceweasel::Config[:knife_options]}".rstrip
-                end
-              else
-                STDERR.puts "'nodes' directory not found, unable to validate or load nodes. Using 'knife node create' instead."
-                servercommand = "knife node create #{nodeonly} #{Spiceweasel::Config[:knife_options]}".rstrip
-              end
-              servercommand += " -r '#{run_list}'" unless run_list.empty?
-              create_command(servercommand, create_command_options)
-              delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{nodeonly} -y")
-              delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{nodeonly} -y")
-              # knife node run list add NAME
-            end
+            process_nodes_only(names, options, run_list, create_command_options)
           else #create/delete
             #provider support
             if PROVIDERS.member?(names[0])
@@ -163,6 +128,56 @@ module Spiceweasel
           STDERR.puts "ERROR: '#{node}' environment '#{env}' is missing from the list of environments in the manifest."
           exit(-1)
         end
+      end
+    end
+
+    # handle --nodes-only
+    def process_nodes_only(names, options, run_list, create_command_options)
+      nodenames = []
+      if PROVIDERS.member?(names[0])
+        count = names.length == 2 ? names[1] : 1
+        options.split().each do |opt|
+          if opt =~ /^-N|^--node-name/
+            optname = opt.sub(/-N|--node-name/,'').lstrip
+            optname = options.split[options.split.find_index(opt)+1] if optname.empty?
+            count.to_i.times do |i|
+              nodenames.push(optname.gsub(/\{\{n\}\}/, (i + 1).to_s))
+            end
+          end
+        end
+      elsif names[0].start_with?("windows_")
+        nodenames.push(names[1..-1])
+      else #standard nodes
+        nodenames.push(names)
+      end
+      nodenames.flatten.each do |node|
+        if File.directory?("nodes/")
+          if File.exists?("nodes/#{node}.json")
+            validate_node_file(node) unless Spiceweasel::Config[:novalidation]
+            servercommand = "knife node from file #{node}.json #{Spiceweasel::Config[:knife_options]}".rstrip
+          else
+            STDERR.puts "'nodes/#{node}.json' not found, unable to validate or load node. Using 'knife node create' instead."
+            servercommand = "knife node create -d #{node} #{Spiceweasel::Config[:knife_options]}".rstrip
+          end
+        else
+          STDERR.puts "'nodes' directory not found, unable to validate or load nodes. Using 'knife node create' instead."
+          servercommand = "knife node create -d #{node} #{Spiceweasel::Config[:knife_options]}".rstrip
+        end
+        create_command(servercommand, create_command_options)
+        create_command("knife node run_list set #{node} '#{run_list}'", create_command_options) unless run_list.empty?
+        delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{node} -y")
+        delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{node} -y")
+      end
+    end
+
+    # validate individual node files
+    def validate_node_file(name)
+      # read in the file
+      node = Chef::JSONCompat.from_json(IO.read("nodes/#{name}.json"))
+      # check the node name vs. contents of the file
+      if(node['name'] != name)
+        STDERR.puts "ERROR: Node '#{name}' listed in the manifest does not match the name '#{node['name']}' within the nodes/#{name}.json file."
+        exit(-1)
       end
     end
 
