@@ -7,6 +7,15 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
+knife linode server delete -y db1
+knife node delete db1 -y
+knife client delete db1 -y
+knife linode server delete -y db2
+knife node delete db2 -y
+knife client delete db2 -y
+knife linode server delete -y db3
+knife node delete db3 -y
+knife client delete db3 -y
 knife node delete winboxA -y
 knife client delete winboxA -y
 knife node delete winboxB -y
