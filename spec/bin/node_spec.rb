@@ -21,8 +21,8 @@ knife linode server create --image 49 -E qa --flavor 2 -N db1 -r 'recipe[mysql],
 knife linode server create --image 49 -E qa --flavor 2 -N db2 -r 'recipe[mysql],role[monitoring]'
 knife linode server create --image 49 -E qa --flavor 2 -N db3 -r 'recipe[mysql],role[monitoring]'
 knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
-knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
-knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
+knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password'
+knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password'
 knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-8af0f326 -f m1.medium -N DOmysql -E digital -r 'role[mysql]'
 knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-7000f019 -f m1.small -N DOweb1 -E digital -r 'role[webserver],recipe[mysql::client]'
 knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-7000f019 -f m1.small -N DOweb2 -E digital -r 'role[webserver],recipe[mysql::client]'
@@ -46,48 +46,50 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
-knife node list | xargs knife linode server delete -y
+knife node delete db1 -y
+knife client delete db1 -y
+knife node delete db2 -y
+knife client delete db2 -y
+knife node delete db3 -y
+knife client delete db3 -y
 knife node delete winboxA -y
 knife client delete winboxA -y
 knife node delete winboxB -y
 knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
-knife node bulk delete .* -y
 for N in $(knife node list -E digital); do knife client delete -y $N; knife node delete -y $N; done
-knife node from file nodes/serverA.json
-knife node run list serverA 'role[base]'
-knife node from file nodes/serverB.json
-knife node run list serverB 'role[base]'
-knife node from file nodes/serverC.json
-knife node run list serverC 'role[base]'
-knife node from file nodes/db1.json
-knife node run list db1 'recipe[mysql],role[monitoring]'
-knife node from file nodes/db2.json
-knife node run list db2 'recipe[mysql],role[monitoring]'
-knife node from file nodes/db3.json
-knife node run list db3 'recipe[mysql],role[monitoring]'
-knife node from file nodes/winboxA.json
-knife node run list winboxA 'role[base],role[iisserver]'
-knife node from file nodes/winboxB.json
-knife node run list winboxB 'role[base],role[iisserver]'
-knife node from file nodes/winboxC.json
-knife node run list winboxC 'role[base],role[iisserver]'
-knife node from file nodes/DOmysql.json
-knife node run list DOmysql 'role[mysql]'
-knife node from file nodes/DOweb1.json
-knife node run list DOweb1 'role[webserver],recipe[mysql::client]'
-knife node from file nodes/DOweb2.json
-knife node run list DOweb2 'role[webserver],recipe[mysql::client]'
-knife node from file nodes/DOweb3.json
-knife node run list DOweb3 'role[webserver],recipe[mysql::client]'
+knife node create -d serverA
+knife node run_list set serverA 'role[base]'
+knife node create -d serverB
+knife node run_list set serverB 'role[base]'
+knife node create -d serverC
+knife node run_list set serverC 'role[base]'
+knife node create -d db1
+knife node run_list set db1 'recipe[mysql],role[monitoring]'
+knife node create -d db2
+knife node run_list set db2 'recipe[mysql],role[monitoring]'
+knife node create -d db3
+knife node run_list set db3 'recipe[mysql],role[monitoring]'
+knife node create -d winboxA
+knife node run_list set winboxA 'role[base],role[iisserver]'
+knife node create -d winboxB
+knife node create -d winboxC
+knife node create -d DOmysql
+knife node run_list set DOmysql 'role[mysql]'
+knife node create -d DOweb1
+knife node run_list set DOweb1 'role[webserver],recipe[mysql::client]'
+knife node create -d DOweb2
+knife node run_list set DOweb2 'role[webserver],recipe[mysql::client]'
+knife node create -d DOweb3
+knife node run_list set DOweb3 'role[webserver],recipe[mysql::client]'
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
   it "tests node deletion and creation using --node-only" do
-    `#{@spiceweasel_binary}  --bulkdelete --rebuild --novalidation examples/node-example.yml`.should == @expected_output
+    `#{@spiceweasel_binary} --node-only --rebuild --novalidation examples/node-example.yml`.should == @expected_output
   end
 
 end

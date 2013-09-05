@@ -340,6 +340,10 @@ When run in a chef repository, this will print a new YAML manifest that may be u
 
 Print the currently-supported usage options for spiceweasel.
 
+## --node-only ##
+
+Loads from JSON or creates nodes on the server without bootstrapping, useful for pre-creating nodes. If you specify a run list with the node, it will override any run list specified within the JSON file.
+
 ## --novalidation ##
 
 Disable validation ensuring existence of the cookbooks, environments, roles, data bags and nodes in infrastructure file.

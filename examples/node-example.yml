@@ -12,7 +12,6 @@ nodes:
     run_list: role[base],role[iisserver]
     options: -x Administrator -P 'super_secret_password'
 - windows_ssh winboxB winboxC:
-    run_list: role[base],role[iisserver]
     options: -x Administrator -P 'super_secret_password'
 clusters:
 - digital:
