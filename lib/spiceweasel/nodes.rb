@@ -59,7 +59,7 @@ module Spiceweasel
             #provider support
             if PROVIDERS.member?(names[0])
               count = names.length == 2 ? names[1] : 1
-              process_providers(names[0], count, node[name]['name'], options, run_list, create_command_options, knifecommands)
+              process_providers(names, count, node[name]['name'], options, run_list, create_command_options, knifecommands)
             elsif names[0].start_with?("windows_")
               #windows node bootstrap support
               protocol = names.shift.split('_') #split on 'windows_ssh' etc
@@ -182,10 +182,11 @@ module Spiceweasel
     end
 
     #manage all the provider logic
-    def process_providers(provider, count, name, options, run_list, create_command_options, knifecommands)
+    def process_providers(names, count, name, options, run_list, create_command_options, knifecommands)
+      provider = names[0]
       validate_provider(provider, knifecommands) unless Spiceweasel::Config[:novalidation]
       provided_names = []
-      if Spiceweasel::Config[:parallel] && !provider.eql?('google')
+      if Spiceweasel::Config[:parallel]
         parallel = "seq #{count} | parallel -u -j 0 -v \""
         if provider.eql?('vsphere')
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
