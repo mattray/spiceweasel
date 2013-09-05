@@ -5,6 +5,8 @@ knife cookbook delete apache2  -a -y
 knife environment delete qa -y
 knife role delete base -y
 knife role delete webserver -y
+knife client delete -y gmas1
+knife node delete -y gmas1
 knife client delete -y gdef1
 knife node delete -y gdef1
 knife client delete -y gdef2
@@ -26,6 +28,7 @@ knife node delete -y g-qa2
 knife cookbook upload apache2
 knife environment from file qa.rb
 knife role from file base.rb webserver.rb
+knife google server create gmas1 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gmas1 -r 'role[base]'
 knife google server create gdef1 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gdef1 -r 'role[base]'
 knife google server create gdef2 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gdef2 -r 'role[base]'
 knife google server create aaa -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
