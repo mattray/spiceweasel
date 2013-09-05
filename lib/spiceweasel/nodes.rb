@@ -185,13 +185,13 @@ module Spiceweasel
     def process_providers(provider, count, name, options, run_list, create_command_options, knifecommands)
       validate_provider(provider, knifecommands) unless Spiceweasel::Config[:novalidation]
       provided_names = []
-      if Spiceweasel::Config[:parallel]
+      if Spiceweasel::Config[:parallel] && !provider.eql?('google')
         parallel = "seq #{count} | parallel -u -j 0 -v \""
-        if ['vsphere'].member?(provider)
+        if provider.eql?('vsphere')
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
-        elsif ['kvm'].member?(provider)
+        elsif provider.eql?('kvm')
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
-        elsif ['digital_ocean'].member?(provider)
+        elsif provider.eql?('digital_ocean')
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
         else
           parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
@@ -201,11 +201,11 @@ module Spiceweasel
         create_command(parallel, create_command_options)
       else
         count.to_i.times do |i|
-          if ['vsphere'].member?(provider)
+          if provider.eql?('vsphere')
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-          elsif ['kvm'].member?(provider)
+          elsif provider.eql?('kvm')
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-          elsif ['digital_ocean'].member?(provider)
+          elsif provider.eql?('digital_ocean')
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
           else
             server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
