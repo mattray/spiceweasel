@@ -8,7 +8,7 @@ knife node delete winboxA -y
 knife client delete winboxA -y
 knife node delete winboxB -y
 knife client delete winboxB -y
-for N in $(knife node list -E qa); do knife client delete -y $N; knife node delete -y $N; done
+for N in $(knife node list -E qa); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife environment from file qa.rb
 knife role from file base.rb

@@ -22,13 +22,13 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
-knife rackspace server delete -y db1
+knife rackspace server delete db1 -y
 knife node delete db1 -y
 knife client delete db1 -y
-knife rackspace server delete -y db2
+knife rackspace server delete db2 -y
 knife node delete db2 -y
 knife client delete db2 -y
-knife rackspace server delete -y db3
+knife rackspace server delete db3 -y
 knife node delete db3 -y
 knife client delete db3 -y
 knife node delete winboxA -y
@@ -37,7 +37,7 @@ knife node delete winboxB -y
 knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
-for N in $(knife node list -E amazon); do knife client delete -y $N; knife node delete -y $N; done
+for N in $(knife node list -E amazon); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
@@ -107,13 +107,13 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
-knife rackspace server delete -y db1
+knife rackspace server delete db1 -y
 knife node delete db1 -y
 knife client delete db1 -y
-knife rackspace server delete -y db2
+knife rackspace server delete db2 -y
 knife node delete db2 -y
 knife client delete db2 -y
-knife rackspace server delete -y db3
+knife rackspace server delete db3 -y
 knife node delete db3 -y
 knife client delete db3 -y
 knife node delete winboxA -y
@@ -123,7 +123,7 @@ knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
 knife node bulk delete .* -y
-for N in $(knife node list -E amazon); do knife client delete -y $N; knife node delete -y $N; done
+for N in $(knife node list -E amazon); do knife client delete $N -y; knife node delete $N -y; done
     OUTPUT
 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
