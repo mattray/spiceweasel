@@ -22,6 +22,10 @@ knife node delete winboxB -y
 knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
+knife digital_ocean droplet destroy DOmysql -y
+knife digital_ocean droplet destroy DOweb1 -y
+knife digital_ocean droplet destroy DOweb2 -y
+knife digital_ocean droplet destroy DOweb3 -y
 for N in $(knife node list -E digital); do knife client delete $N -y; knife node delete $N -y; done
 knife bootstrap serverA --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[base]'
 knife bootstrap serverB -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'

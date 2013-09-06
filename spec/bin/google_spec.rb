@@ -23,6 +23,10 @@ knife client delete bbb -y
 knife google server delete ccc -y
 knife node delete ccc -y
 knife client delete ccc -y
+knife google server delete foo -y
+knife google server delete bar -y
+knife google server delete g-qa1 -y
+knife google server delete g-qa2 -y
 for N in $(knife node list -E qa); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife environment from file qa.rb
@@ -73,6 +77,10 @@ knife client delete bbb -y
 knife google server delete ccc -y
 knife node delete ccc -y
 knife client delete ccc -y
+knife google server delete foo -y
+knife google server delete bar -y
+knife google server delete g-qa1 -y
+knife google server delete g-qa2 -y
 for N in $(knife node list -E qa); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife environment from file qa.rb
