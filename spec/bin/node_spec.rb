@@ -7,13 +7,26 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
+knife linode server delete db1 -y
+knife node delete db1 -y
+knife client delete db1 -y
+knife linode server delete db2 -y
+knife node delete db2 -y
+knife client delete db2 -y
+knife linode server delete db3 -y
+knife node delete db3 -y
+knife client delete db3 -y
 knife node delete winboxA -y
 knife client delete winboxA -y
 knife node delete winboxB -y
 knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
-for N in $(knife node list -E digital); do knife client delete -y $N; knife node delete -y $N; done
+knife digital_ocean droplet destroy DOmysql -y
+knife digital_ocean droplet destroy DOweb1 -y
+knife digital_ocean droplet destroy DOweb2 -y
+knife digital_ocean droplet destroy DOweb3 -y
+for N in $(knife node list -E digital); do knife client delete $N -y; knife node delete $N -y; done
 knife bootstrap serverA --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[base]'
 knife bootstrap serverB -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
 knife bootstrap serverC -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
@@ -58,7 +71,7 @@ knife node delete winboxB -y
 knife client delete winboxB -y
 knife node delete winboxC -y
 knife client delete winboxC -y
-for N in $(knife node list -E digital); do knife client delete -y $N; knife node delete -y $N; done
+for N in $(knife node list -E digital); do knife client delete $N -y; knife node delete $N -y; done
 knife node create -d serverA
 knife node run_list set serverA 'role[base]'
 knife node create -d serverB

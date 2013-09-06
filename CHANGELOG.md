@@ -5,6 +5,8 @@ This is the current, previous and future development milestones and contains the
 * Linode and Digital Ocean support (Fletcher Nichol)
 * fixed cluster behavior for --delete and --refresh
 * --node-only mode for uploading node files and applying their run list without bootstrapping
+* google support
+* delete removes from the providers when the name is known (as opposed to the bulkdelete)
 
 * check on usage of solve gem, with regards to sorting
 * does the manifest have to be the last option?

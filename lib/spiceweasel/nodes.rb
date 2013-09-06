@@ -21,7 +21,7 @@ module Spiceweasel
 
     include CommandHelper
 
-    PROVIDERS = %w{bluebox clodo cs digital_ocean ec2 gandi hp joyent kvm linode lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
+    PROVIDERS = %w{bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
 
     attr_reader :create, :delete
 
@@ -59,7 +59,7 @@ module Spiceweasel
             #provider support
             if PROVIDERS.member?(names[0])
               count = names.length == 2 ? names[1] : 1
-              process_providers(names[0], count, node[name]['name'], options, run_list, create_command_options, knifecommands)
+              process_providers(names, count, node[name]['name'], options, run_list, create_command_options, knifecommands)
             elsif names[0].start_with?("windows_")
               #windows node bootstrap support
               protocol = names.shift.split('_') #split on 'windows_ssh' etc
@@ -182,40 +182,58 @@ module Spiceweasel
     end
 
     #manage all the provider logic
-    def process_providers(provider, count, name, options, run_list, create_command_options, knifecommands)
-      validate_provider(provider, knifecommands) unless Spiceweasel::Config[:novalidation]
+    def process_providers(names, count, name, options, run_list, create_command_options, knifecommands)
+      provider = names[0]
+      validate_provider(provider, names, count, options, knifecommands) unless Spiceweasel::Config[:novalidation]
       provided_names = []
-      if Spiceweasel::Config[:parallel]
-        parallel = "seq #{count} | parallel -u -j 0 -v \""
-        if ['vsphere'].member?(provider)
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
-        elsif ['kvm'].member?(provider)
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
-        elsif ['digital_ocean'].member?(provider)
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
-        else
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
-        end
-        parallel += " -r '#{run_list}'" unless run_list.empty?
-        parallel += "\""
-        create_command(parallel, create_command_options)
-      else
-        count.to_i.times do |i|
-          if ['vsphere'].member?(provider)
-            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-          elsif ['kvm'].member?(provider)
-            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-          elsif ['digital_ocean'].member?(provider)
-            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-          else
-            server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
-          end
+      if name.nil? && options.split.index('-N') #pull this out for deletes
+        name = options.split[options.split.index('-N')+1]
+        count.to_i.times {|i| provided_names << name.gsub('{{n}}', (i + 1).to_s)} if name
+      end
+      # google can have names or numbers
+      if provider.eql?('google') && names[1].to_i == 0
+        names[1..-1].each do |gname|
+          server = "knife google#{Spiceweasel::Config[:knife_options]} server create #{gname} #{options}"
           server += " -r '#{run_list}'" unless run_list.empty?
-          provided_names << name.gsub('{{n}}', (i + 1).to_s) if name
           create_command(server, create_command_options)
+          provided_names << gname
+        end
+      else
+        if Spiceweasel::Config[:parallel]
+          parallel = "seq #{count} | parallel -u -j 0 -v \""
+          if provider.eql?('vsphere')
+            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+          elsif provider.eql?('kvm')
+            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+          elsif provider.eql?('digital_ocean')
+            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
+          elsif provider.eql?('google')
+            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
+          else
+            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+          end
+          parallel += " -r '#{run_list}'" unless run_list.empty?
+          parallel += "\""
+          create_command(parallel, create_command_options)
+        else
+          count.to_i.times do |i|
+            if provider.eql?('vsphere')
+              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+            elsif provider.eql?('kvm')
+              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+            elsif provider.eql?('digital_ocean')
+              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+            elsif provider.eql?('google')
+              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+            else
+              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+            end
+            server += " -r '#{run_list}'" unless run_list.empty?
+            create_command(server, create_command_options)
+          end
         end
       end
-      if Spiceweasel::Config[:bulkdelete] && provided_names.empty? && provider != 'windows'
+      if Spiceweasel::Config[:bulkdelete] && provided_names.empty?
         if ['kvm','vsphere'].member?(provider)
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
         elsif ['digital_ocean'].member?(provider)
@@ -226,11 +244,11 @@ module Spiceweasel
       else
         provided_names.each do |p_name|
           if ['kvm','vsphere'].member?(provider)
-            delete_command("knife #{provider} vm delete -y #{p_name}")
+            delete_command("knife #{provider} vm delete #{p_name} -y")
           elsif ['digital_ocean'].member?(provider)
-            delete_command("knife #{provider} droplet destroy -y #{p_name}")
+            delete_command("knife #{provider} droplet destroy #{p_name} -y")
           else
-            delete_command("knife #{provider} server delete -y #{p_name}")
+            delete_command("knife #{provider} server delete #{p_name} -y")
           end
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
           delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
@@ -239,10 +257,16 @@ module Spiceweasel
     end
 
     #check that the knife plugin is installed
-    def validate_provider(provider, knifecommands)
+    def validate_provider(provider, names, count, options, knifecommands)
       unless knifecommands.index {|x| x.start_with?("knife #{provider}")}
         STDERR.puts "ERROR: 'knife #{provider}' is not a currently installed plugin for knife."
         exit(-1)
+      end
+      if provider.eql?('google')
+        if names[1].to_i != 0 && !options.split.member?('-N')
+          STDERR.puts "ERROR: 'knife google' currently requires providing a name. Please use -N within the options."
+          exit(-1)
+        end
       end
     end
 
