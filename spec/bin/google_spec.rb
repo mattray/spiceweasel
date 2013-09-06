@@ -5,26 +5,25 @@ knife cookbook delete apache2  -a -y
 knife environment delete qa -y
 knife role delete base -y
 knife role delete webserver -y
-knife client delete -y gmas1
-knife node delete -y gmas1
-knife client delete -y gdef1
-knife node delete -y gdef1
-knife client delete -y gdef2
-knife node delete -y gdef2
-knife client delete -y aaa
-knife node delete -y aaa
-knife client delete -y bbb
-knife node delete -y bbb
-knife client delete -y ccc
-knife node delete -y ccc
-knife client delete -y foo
-knife node delete -y foo
-knife client delete -y bar
-knife node delete -y bar
-knife client delete -y g-qa1
-knife node delete -y g-qa1
-knife client delete -y g-qa2
-knife node delete -y g-qa2
+knife google server delete gmas1 -y
+knife node delete gmas1 -y
+knife client delete gmas1 -y
+knife google server delete gdef1 -y
+knife node delete gdef1 -y
+knife client delete gdef1 -y
+knife google server delete gdef2 -y
+knife node delete gdef2 -y
+knife client delete gdef2 -y
+knife google server delete aaa -y
+knife node delete aaa -y
+knife client delete aaa -y
+knife google server delete bbb -y
+knife node delete bbb -y
+knife client delete bbb -y
+knife google server delete ccc -y
+knife node delete ccc -y
+knife client delete ccc -y
+for N in $(knife node list -E qa); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife environment from file qa.rb
 knife role from file base.rb webserver.rb
@@ -56,27 +55,29 @@ knife cookbook delete apache2  -a -y
 knife environment delete qa -y
 knife role delete base -y
 knife role delete webserver -y
-knife client delete -y gmas1
-knife node delete -y gmas1
-knife client delete -y gdef1
-knife node delete -y gdef1
-knife client delete -y gdef2
-knife node delete -y gdef2
-knife client delete -y aaa
-knife node delete -y aaa
-knife client delete -y bbb
-knife node delete -y bbb
-knife client delete -y ccc
-knife node delete -y ccc
-knife client delete -y foo
-knife node delete -y foo
-knife client delete -y bar
-knife node delete -y bar
-for N in $(knife node list -E qa); do knife client delete -y $N; knife node delete -y $N; done
+knife google server delete gmas1 -y
+knife node delete gmas1 -y
+knife client delete gmas1 -y
+knife google server delete gdef1 -y
+knife node delete gdef1 -y
+knife client delete gdef1 -y
+knife google server delete gdef2 -y
+knife node delete gdef2 -y
+knife client delete gdef2 -y
+knife google server delete aaa -y
+knife node delete aaa -y
+knife client delete aaa -y
+knife google server delete bbb -y
+knife node delete bbb -y
+knife client delete bbb -y
+knife google server delete ccc -y
+knife node delete ccc -y
+knife client delete ccc -y
+for N in $(knife node list -E qa); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife environment from file qa.rb
 knife role from file base.rb webserver.rb
-seq 1 | parallel -u -j 0 -v "echo server create gmas{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gmas{} -r 'role[base]'"
+seq 1 | parallel -u -j 0 -v "knife google server create gmas{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gmas{} -r 'role[base]'"
 seq 2 | parallel -u -j 0 -v "knife google server create gdef{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gdef{} -r 'role[base]'"
 knife google server create aaa -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create bbb -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
