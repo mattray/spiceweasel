@@ -177,7 +177,7 @@ module Spiceweasel
       if Spiceweasel::Config[:extractlocal] || Spiceweasel::Config[:extractjson] || Spiceweasel::Config[:extractyaml]
         manifest = Spiceweasel::ExtractLocal.parse_objects
       else
-        manifest = parse_and_validate_input(ARGV.last)
+        manifest = parse_and_validate_input(get_manifest())
         if Spiceweasel::Config[:clusterfile]
           # if we have a cluster file, override any nodes or clusters in the original manifest
           manifest['nodes'] = manifest['clusters'] = {}
@@ -299,6 +299,17 @@ module Spiceweasel
         exit(-1)
       end
       output
+    end
+
+    # find the .rb/.json/.yml file from the ARGV that isn't the clusterfile
+    def get_manifest()
+      ARGV.each do |arg|
+        if arg =~ /\.json$|\.rb$|\.yml$/
+          unless ARGV[ARGV.find_index(arg)-1].eql?('--cluster-file')
+            return arg
+          end
+        end
+      end
     end
 
     def process_manifest(manifest)

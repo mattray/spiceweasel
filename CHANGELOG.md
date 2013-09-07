@@ -7,9 +7,7 @@ This is the current, previous and future development milestones and contains the
 * --node-only mode for uploading node files and applying their run list without bootstrapping
 * google support
 * delete removes from the providers when the name is known (as opposed to the bulkdelete)
-
-* check on usage of solve gem, with regards to sorting
-* does the manifest have to be the last option?
+* the manifest no longer has to be the last option
 
 # 2.5.1 # (CURRENT RELEASE)
 

@@ -20,11 +20,11 @@ knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:clie
   end
 
   it "test chef-client in 2.5, json" do
-    `#{@spiceweasel_binary} --novalidation --chef-client examples/example.json`.should == @expected_output
+    `#{@spiceweasel_binary} --chef-client examples/example.json --novalidation`.should == @expected_output
   end
 
   it "test chef-client in 2.5, rb" do
-    `#{@spiceweasel_binary} --novalidation --chef-client examples/example.rb`.should == @expected_output
+    `#{@spiceweasel_binary} examples/example.rb --novalidation --chef-client`.should == @expected_output
   end
 end
 
@@ -47,11 +47,11 @@ knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 
   end
 
   it "test chef-client with --cluster-file in 2.5, json" do
-    `#{@spiceweasel_binary} --novalidation --chef-client --cluster-file examples/cluster-file-example.yml examples/example.json`.should == @expected_output
+    `#{@spiceweasel_binary} --cluster-file examples/cluster-file-example.yml --novalidation examples/example.json --chef-client`.should == @expected_output
   end
 
   it "test chef-client with --cluster-file in 2.5, rb" do
-    `#{@spiceweasel_binary} --novalidation --chef-client --cluster-file examples/cluster-file-example.yml examples/example.rb`.should == @expected_output
+    `#{@spiceweasel_binary} --novalidation --chef-client examples/example.rb --cluster-file examples/cluster-file-example.yml`.should == @expected_output
   end
 end
 
