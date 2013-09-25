@@ -19,6 +19,8 @@
 module Spiceweasel
   class Clusters
 
+    include CommandHelper
+
     attr_reader :create, :delete
 
     def initialize(clusters, cookbooks, environments, roles, knifecommands)
@@ -50,7 +52,7 @@ module Spiceweasel
       nodes.delete.each do |del|
         @delete << del unless del.to_s =~ /^knife client|^knife node/
       end
-      @delete << "for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done"
+      @delete +=  create_command("for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done")
     end
 
     def validate_environment(options, cluster, environments)
