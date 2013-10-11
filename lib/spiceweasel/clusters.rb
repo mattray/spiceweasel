@@ -21,20 +21,20 @@ module Spiceweasel
 
     attr_reader :create, :delete
 
-    def initialize(clusters, cookbooks, environments, roles, knifecommands)
+    def initialize(clusters, cookbooks, environments, roles, knifecommands, rootoptions)
       @create = Array.new
       @delete = Array.new
       if clusters
         Spiceweasel::Log.debug("clusters: #{clusters}")
         clusters.each do |cluster|
           cluster_name = cluster.keys.first
-          cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands)
+          cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands, rootoptions)
         end
       end
     end
 
     # configure the individual nodes within the cluster
-    def cluster_process_nodes(cluster, environment, cookbooks, environments, roles, knifecommands)
+    def cluster_process_nodes(cluster, environment, cookbooks, environments, roles, knifecommands, rootoptions)
       Spiceweasel::Log.debug("cluster::cluster_process_nodes '#{environment}' '#{cluster[environment]}'")
       cluster[environment].each do |node|
         node_name = node.keys.first
@@ -44,7 +44,7 @@ module Spiceweasel
         node[node_name]['options'] = options + " -E #{environment}"
       end
       # let's reuse the Nodes logic
-      nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands)
+      nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands, rootoptions)
       @create.concat(nodes.create)
       #what about providers??
       nodes.delete.each do |del|

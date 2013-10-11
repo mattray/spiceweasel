@@ -25,7 +25,7 @@ module Spiceweasel
 
     attr_reader :create, :delete
 
-    def initialize(nodes, cookbooks, environments, roles, knifecommands)
+    def initialize(nodes, cookbooks, environments, roles, knifecommands, rootoptions)
       @create = Array.new
       @delete = Array.new
       chefclient = Array.new
@@ -41,7 +41,7 @@ module Spiceweasel
             run_list = process_run_list(node[name]['run_list'])
             Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
             validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
-            options = node[name]['options'] || ''
+            options = (node[name]['options'] || '') + ' ' + (rootoptions || '')
             Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
             validate_options(name, options, environments) unless Spiceweasel::Config[:novalidation]
             %w(allow_create_failure timeout).each do |key|
