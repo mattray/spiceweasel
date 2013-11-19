@@ -38,7 +38,7 @@ module Spiceweasel
       Spiceweasel::Log.debug("cluster::cluster_process_nodes '#{environment}' '#{cluster[environment]}'")
       cluster[environment].each do |node|
         node_name = node.keys.first
-        options = node[node_name]['options'] || ''
+        options = node[node_name]['options'].strip || ''
         validate_environment(options, environment, environments) unless Spiceweasel::Config[:novalidation]
         #push the Environment back on the options
         node[node_name]['options'] = options + " -E #{environment}"
