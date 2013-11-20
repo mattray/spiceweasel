@@ -3,12 +3,17 @@
 
 # Description #
 
+*NOTE:* This Version is Modified for Rivermeadow
+
 Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax in Ruby, JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present. The manifest may also be extracted from an existing repository.
 
 The https://github.com/mattray/lab-repo provides a working example for bootstrapping a Chef repository with Spiceweasel.
 
 The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.md) covers current, previous and future development milestones and contains the features backlog.
 
+# Rivermeadow Changes from the official 2.5.1 version: #
+
+* The Delete of ec2 instances can use the node name and not just the instance-id
 # Requirements #
 
 Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. [Berkshelf](https://berkshelf.com) is a dependency for the Cookbook `Berksfile` support. Infrastructure files must end in `.rb`, `.json` or `.yml` to be processed.
@@ -319,6 +324,8 @@ This provides verbose debugging messages.
 ## -d/--delete ##
 
 The `delete` option will generate the knife commands to delete the infrastructure described in the manifest. This includes each cookbook, environment, role, data bag and node listed. Node deletion will specify individual nodes and their clients, and attempt to pass the list of nodes to the cloud provider for deletion, and finish with `knife node bulk delete`. If you are mixing individual nodes with cloud provider nodes it is possible that nodes may be missed from cloud provider deletion and you should double-check (ie. `knife ec2 server list`).
+
+*NOTE:* Rivermeadow modified the ec2 delete to pass `knife ec2 server delete -N node_name` instead of expecting the instance-id to be passed to the server delete name.
 
 ## -e/--execute ##
 
