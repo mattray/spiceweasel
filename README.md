@@ -11,7 +11,9 @@ The https://github.com/mattray/lab-repo provides a working example for bootstrap
 
 The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.md) covers current, previous and future development milestones and contains the features backlog.
 
-# Rivermeadow Changes from the official 2.5.1 version: #
+# Rivermeadow Changes #
+
+## Differences from the official 2.5.1 version: ##
 
 * The Delete of ec2 instances can use the node name and not just the instance-id. Assumes that chef node names will not start with `i-` unless the chef node name is an instance-id. This change does not impact `--bulkdelete` option
 
