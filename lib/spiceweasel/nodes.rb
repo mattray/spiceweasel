@@ -171,6 +171,8 @@ module Spiceweasel
         provided_names.each do |p_name|
           if ['kvm','vsphere'].member?(provider)
             delete_command("knife #{provider} vm delete -y #{p_name}")
+          elsif ['ec2'].member?(provider) && p_name !~ /^i-\w+/
+            delete_command("knife #{provider} server delete -y -N #{p_name}")
           else
             delete_command("knife #{provider} server delete -y #{p_name}")
           end

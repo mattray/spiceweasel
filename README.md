@@ -13,7 +13,9 @@ The [CHANGELOG.md](https://github.com/mattray/spiceweasel/blob/master/CHANGELOG.
 
 # Rivermeadow Changes from the official 2.5.1 version: #
 
-* The Delete of ec2 instances can use the node name and not just the instance-id
+* The Delete of ec2 instances can use the node name and not just the instance-id. Assumes that chef node names will not start with `i-` unless the chef node name is an instance-id. This change does not impact `--bulkdelete` option
+
+
 # Requirements #
 
 Spiceweasel currently depends on `knife` to run commands for it, and requires the `chef` gem for validating cookbook metadata. [Berkshelf](https://berkshelf.com) is a dependency for the Cookbook `Berksfile` support. Infrastructure files must end in `.rb`, `.json` or `.yml` to be processed.
