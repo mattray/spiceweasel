@@ -236,8 +236,9 @@ module Spiceweasel
         # Only log on error during startup
         Chef::Config[:verbosity] = 0
         Chef::Config[:log_level] = :error
-        if @config[:knifeconfig]
-          knife.read_config_file(@config[:knifeconfig])
+       if @config[:knifeconfig]
+          fetcher = Chef::ConfigFetcher.new(@config[:knifeconfig], Chef::Config.config_file_jail)
+          knife.read_config(fetcher.read_config, @config[:knifeconfig])
           Spiceweasel::Config[:knife_options] = " -c #{@config[:knifeconfig]} "
         else
           knife.configure_chef
