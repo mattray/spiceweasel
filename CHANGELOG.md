@@ -242,6 +242,8 @@ This is the current, previous and future development milestones and contains the
 
 # BACKLOG #
 * add Tailor testing
+* extract and validate nodes
+* extract subdirectories
 * ADDITIONAL VALIDATION
  * environment-specific run_lists
  * sort roles by dependencies of other roles?

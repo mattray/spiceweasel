@@ -1,0 +1,8 @@
+{
+    "id": "mray",
+    "ssh_keys": "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAwg/55j0pKI8FmzQ8g0hOQ+x5YXN8QPpDx7+Y7SZaZEvarC/ot5lBdPgypPd4ucGn/s+hpd8LfgyYNr10NGQhjis0Ll0XJMjQMqq9ucPSv1fVDVp3Kzc2e8Vjyych2Q25UMrDq4lkhFQREQX528Voj8W3PnRcsExZiXV8RQbyy3+VS1R3MUSO/fs7Kk2z1Xxnkyzy+3KEkpPVQWJdNVGcvpB7oSOchgYqPRBX5s93WMiG2ALQtji3W0MKGifOsp7c+Hxc1ZhZupyT2/uo5Ui3i0tYfnmewUwD1M6aOL5kQsFRvAYRV2jI6TOTL5eZQ/ntQOhD35bNvaKwfMWc2qTSkw== matthewhray@gmail.com",
+    "groups": "sysadmin",
+    "uid": 2001,
+    "shell": "\/bin\/bash",
+    "comment": "Matt Ray"
+}

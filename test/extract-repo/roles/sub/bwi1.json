@@ -1,0 +1,20 @@
+{
+  "name": "bwi1",
+  "default_attributes": {
+    "dns": {
+      "public_forward_zone": "bwi1.attcompute.com"
+    }
+  },
+    "json_class": "Chef::Role",
+    "env_run_lists": {
+    },
+    "run_list": [
+    ],
+    "description": "A role for BWI1 nodes.",
+    "chef_type": "role",
+  "override_attributes": {
+    "interfaces": {
+      "dns-nameservers": [ "135.207.177.11", "135.207.164.11"]
+    }
+  }
+}
