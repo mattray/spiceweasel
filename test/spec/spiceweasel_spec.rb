@@ -72,15 +72,15 @@ knife vsphere vm clone --bootstrap --template 'ghi' my-new-webserver3
   end
 
   it "maintains consistent output from the example config with yml" do
-    `#{@spiceweasel_binary} -r --novalidation examples/example.yml`.should == @expected_output
+    `#{@spiceweasel_binary} -r --novalidation test/examples/example.yml`.should == @expected_output
   end
 
   it "maintains consistent output from the example config with json" do
-    `#{@spiceweasel_binary} -r --novalidation examples/example.json`.should == @expected_output
+    `#{@spiceweasel_binary} -r --novalidation test/examples/example.json`.should == @expected_output
   end
 
   it "maintains consistent output from the example config with rb" do
-    `#{@spiceweasel_binary} -r --novalidation examples/example.rb`.should == @expected_output
+    `#{@spiceweasel_binary} -r --novalidation test/examples/example.rb`.should == @expected_output
   end
 end
 
@@ -130,7 +130,7 @@ for N in $(knife node list -E amazon); do knife client delete $N -y; knife node 
   end
 
   it "maintains consistent output deleting from the example config with yml using --bulkdelete" do
-    `#{@spiceweasel_binary}  --bulkdelete -d --novalidation examples/example.yml`.should == @expected_output
+    `#{@spiceweasel_binary}  --bulkdelete -d --novalidation test/examples/example.yml`.should == @expected_output
   end
 
 end

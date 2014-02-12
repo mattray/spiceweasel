@@ -12,7 +12,7 @@ knife ssh "role:webserver" "sudo chef-client" -x ubuntu
   end
 
   it "test knife commands from 2.4" do
-    `#{@spiceweasel_binary} examples/knife.yml`.should == @expected_output
+    `#{@spiceweasel_binary} test/examples/knife.yml`.should == @expected_output
   end
 
 end

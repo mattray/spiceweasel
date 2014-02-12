@@ -19,7 +19,7 @@ seq 2 | parallel -u -j 0 -v "knife vsphere vm clone -P secret_password -x Admini
   end
 
   it "test joyent, vsphere and --bulkdelete functionality from 2.3" do
-    `#{@spiceweasel_binary} --parallel --bulkdelete -r --novalidation examples/joyent-vsphere-example.yml`.should == @expected_output
+    `#{@spiceweasel_binary} --parallel --bulkdelete -r --novalidation test/examples/joyent-vsphere-example.yml`.should == @expected_output
   end
 
 end

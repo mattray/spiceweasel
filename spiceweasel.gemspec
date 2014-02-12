@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9'
 
   s.files         = Dir['LICENSE', 'README.md', 'bin/*', 'lib/**/*']
-  s.test_files    = Dir.glob('spec/**/*')
+  s.test_files    = Dir.glob('test/**/*')
   s.executables   = Dir.glob('bin/**/*').map{ |f| File.basename(f) }
   s.require_path  = "lib"
 

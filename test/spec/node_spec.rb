@@ -45,7 +45,7 @@ knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-7
   end
 
   it "test for cluster deletion and digital_ocean and linode in 2.6" do
-    `#{@spiceweasel_binary} --rebuild --novalidation examples/node-example.yml`.should == @expected_output
+    `#{@spiceweasel_binary} --rebuild --novalidation test/examples/node-example.yml`.should == @expected_output
   end
 
 end
@@ -102,7 +102,7 @@ knife node run_list set DOweb3 'role[webserver],recipe[mysql::client]'
   end
 
   it "tests node deletion and creation using --node-only" do
-    `#{@spiceweasel_binary} --node-only --rebuild --novalidation examples/node-example.yml`.should == @expected_output
+    `#{@spiceweasel_binary} --node-only --rebuild --novalidation test/examples/node-example.yml`.should == @expected_output
   end
 
 end

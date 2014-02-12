@@ -23,7 +23,7 @@ seq 3 | parallel -u -j 0 -v "knife kvm vm create --template-file ~/.chef/bootstr
   end
 
   it "test kvm, cluster functionality from 2.5" do
-    `#{@spiceweasel_binary} --parallel -r --novalidation examples/kvm-example.yml`.should == @expected_output
+    `#{@spiceweasel_binary} --parallel -r --novalidation test/examples/kvm-example.yml`.should == @expected_output
   end
 
 end
