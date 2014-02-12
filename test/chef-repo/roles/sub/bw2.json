@@ -1,0 +1,22 @@
+{
+  "name": "bw2",
+  "default_attributes": {
+    "dns": {
+      "public_forward_zone": "bw2.attcompute.com"
+    }
+  },
+    "json_class": "Chef::Role",
+    "env_run_lists": {
+    },
+    "run_list": [
+      "recipe[abc]",
+      "role[base2]"
+    ],
+    "description": "A role for BW2 nodes.",
+    "chef_type": "role",
+  "override_attributes": {
+    "interfaces": {
+      "dns-nameservers": [ "135.207.177.11", "135.207.164.11"]
+    }
+  }
+}

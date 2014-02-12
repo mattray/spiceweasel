@@ -1,0 +1,8 @@
+{
+    "id": "ubuntu",
+    "ssh_keys": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMZp/K82zUKpxJWrvObJT9AZSVK7wbZX//COKJc3n9Qub4FZbLtiiUWpTL8Bh2HwrlDH7MTkeGyEwpoHyTTp9Y6zNJ+mOmidUYS45jtDDlKkmdtF3AhmgARu6xqXWLBBnKEMP3+ulASWuInW8iBF1loEss+DkRaxyOqi4Sqx8UQMa9UjMqA+i7zfz/YX3ZWkDnG5otkB7AmYv9cZFtiTPD4RT4WmaMuT48WonFVnDI47nMrZi4AS3yIPt0UU5dC0FTwLyH6/IcWsj6yVzV78Nki8RPMlWfkhFrf4y0lU6kX+BkoLjMQzt+Wb3X0v7npCagzuUxBUU9PkQAzUaC1FId mray@morbo.local",
+    "groups": "sysadmin",
+    "uid": 2002,
+    "shell": "\/bin\/bash",
+    "comment": "Rackspace Training"
+}
