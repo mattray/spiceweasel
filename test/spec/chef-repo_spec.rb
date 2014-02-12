@@ -102,17 +102,11 @@ ERROR: Role dependency 'base2' from role 'bw2' is missing from the list of roles
   end
 
  it "role file fails Ruby parse" do
-    expected_output = <<-OUTPUT
-WARNING: No knife configuration file found
-ERROR: Role 'roles/fail1.rb' has syntax errors.
-roles/fail1.rb:7: syntax error, unexpected tSTRING_BEG, expecting ')'
-  "recipe[mno]"
-   ^
-roles/fail1.rb:8: syntax error, unexpected ')', expecting $end
-    OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-roles3.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    expect(spcwsl.stderr).to eq expected_output
+    expect(spcwsl.stderr).to match /ERROR: Role 'roles\/fail1.rb' has syntax errors./
+    expect(spcwsl.stderr).to match /roles\/fail1.rb:7: syntax error, unexpected tSTRING_BEG, expecting '\)'/
+    expect(spcwsl.stderr).to match /roles\/fail1.rb:8: syntax error, unexpected '\)', expecting/
   end
 
  it "role missing cookbook dependency" do
