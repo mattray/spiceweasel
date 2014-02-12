@@ -1,9 +1,17 @@
+berksfile:
+    options: '--no-freeze --halt-on-frozen'
+
 cookbooks:
 - abc:
 - ghi:
 - jkl:
 - mno:
     version: 0.10.0
+environments:
+- development:
+- fail:
+- sub/efg1:
+- sub/efg2:
 roles:
 - "b*":
 - sub/bw2:

@@ -9,7 +9,6 @@
     "env_run_lists": {
     },
     "run_list": [
-      "recipe[abc]",
       "role[base2]"
     ],
     "description": "A role for BW2 nodes.",

@@ -1,3 +1,6 @@
+berksfile:
+    options: '--no-freeze --halt-on-frozen'
+
 cookbooks:
 - abc:
 - ghi:
@@ -10,7 +13,7 @@ roles:
 - tc:
 nodes:
 - boxy.lab.atx:
-    run_list: role[tc], recipe[abc]
+    run_list: role[fail], role[tc], recipe[abc]
     options: --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22
 - guenter.home.atx:
     run_list: role[base], recipe[def]

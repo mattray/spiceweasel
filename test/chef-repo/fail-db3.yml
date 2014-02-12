@@ -1,0 +1,10 @@
+data bags:
+- users:
+    items:
+    - mray
+    - badjson
+- junk:
+    items:
+    - "a*"
+    - "sub1/*"
+    - sub2/def1

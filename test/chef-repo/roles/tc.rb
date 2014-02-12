@@ -1,6 +1,7 @@
 name "tc"
 description "test app"
 run_list(
+  "role[base]",
   "recipe[def]",
   "recipe[jkl]"
   )

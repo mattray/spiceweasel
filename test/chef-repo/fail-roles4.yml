@@ -1,3 +1,6 @@
+berksfile:
+    options: '--no-freeze --halt-on-frozen'
+
 cookbooks:
 - abc:
 - ghi:
@@ -5,6 +8,7 @@ cookbooks:
 - mno:
     version: 0.10.0
 roles:
+- fail2:
 - "b*":
 - sub/bw2:
 - tc:

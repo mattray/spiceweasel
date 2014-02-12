@@ -20,7 +20,6 @@ data bags:
 - users:
     items:
     - mray
-    - "*"
 - junk:
     items:
     - "a*"
