@@ -85,7 +85,13 @@ module Spiceweasel
         exit(-1)
       end
       f = File.read("data_bags/#{db}/#{item}.json")
-      itemfile = JSON.parse(f) #invalid JSON will throw a trace
+      begin
+      itemfile = JSON.parse(f)
+      rescue JSON::ParserError => e # invalid JSON
+        STDERR.puts "ERROR: data bag '#{db} item '#{item}' has JSON errors."
+        STDERR.puts e.message
+        exit(-1)
+      end
       #validate the id matches the file name
       if item =~ /\// #pull out directories
         item = item.split('/').last
