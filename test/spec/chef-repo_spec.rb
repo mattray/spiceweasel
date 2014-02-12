@@ -40,6 +40,17 @@ describe 'failed validation with a chef-repo' do
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
+  it "--extractjson fails Ruby parse" do
+    expected_output = <<-OUTPUT
+WARNING: No knife configuration file found
+ERROR: Environment 'environments/fail2.rb' has syntax errors.
+environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
+    OUTPUT
+    spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--extractjson', :cwd => 'test/chef-repo' )
+    spcwsl.run_command
+    spcwsl.stderr.should eq expected_output
+  end
+
   it "--extractlocal fails Ruby parse" do
     expected_output = <<-OUTPUT
 WARNING: No knife configuration file found
@@ -47,6 +58,17 @@ ERROR: Environment 'environments/fail2.rb' has syntax errors.
 environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--extractlocal', :cwd => 'test/chef-repo' )
+    spcwsl.run_command
+    spcwsl.stderr.should eq expected_output
+  end
+
+  it "--extractyaml fails Ruby parse" do
+    expected_output = <<-OUTPUT
+WARNING: No knife configuration file found
+ERROR: Environment 'environments/fail2.rb' has syntax errors.
+environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
+    OUTPUT
+    spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--extractyaml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
     spcwsl.stderr.should eq expected_output
   end
