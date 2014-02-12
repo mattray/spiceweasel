@@ -31,7 +31,7 @@ knife bootstrap wilhelm.home.atx -E development -i ~/.ssh/mray.pem -x user --sud
     # can't seem to get this to use the knife.rb in the repo
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary, 'infrastructure.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stdout.should eq expected_output
+    expect(spcwsl.stdout).to eq expected_output
   end
 end
 
@@ -41,36 +41,24 @@ describe 'failed validation with a chef-repo' do
   end
 
   it "--extractjson fails Ruby parse" do
-    expected_output = <<-OUTPUT
-WARNING: No knife configuration file found
-ERROR: Environment 'environments/fail2.rb' has syntax errors.
-environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
-    OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--extractjson', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to match /.rb' has syntax errors/
+    expect(spcwsl.stderr).to match /environments\/fail2.rb:8: syntax error, unexpected '\)', expecting '}'/
   end
 
   it "--extractlocal fails Ruby parse" do
-    expected_output = <<-OUTPUT
-WARNING: No knife configuration file found
-ERROR: Environment 'environments/fail2.rb' has syntax errors.
-environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
-    OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--extractlocal', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to match /.rb' has syntax errors/
+    expect(spcwsl.stderr).to match /environments\/fail2.rb:8: syntax error, unexpected '\)', expecting '}'/
   end
 
   it "--extractyaml fails Ruby parse" do
-    expected_output = <<-OUTPUT
-WARNING: No knife configuration file found
-ERROR: Environment 'environments/fail2.rb' has syntax errors.
-environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
-    OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--extractyaml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to match /.rb' has syntax errors/
+    expect(spcwsl.stderr).to match /environments\/fail2.rb:8: syntax error, unexpected '\)', expecting '}'/
   end
 
   it "cookbook missing via Berksfile" do
@@ -80,7 +68,7 @@ ERROR: Cookbook dependency 'recipe[def]' from role 'tc' is missing from the list
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-cookbook1.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "cookbook missing via manifest" do
@@ -90,7 +78,7 @@ ERROR: Cookbook dependency 'recipe[abc]' from role 'base' is missing from the li
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-cookbook2.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "role for node missing" do
@@ -100,7 +88,7 @@ ERROR: 'boxy.lab.atx' run list role 'fail' is missing from the list of roles in 
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-roles1.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "role missing role dependency" do
@@ -110,7 +98,7 @@ ERROR: Role dependency 'base2' from role 'bw2' is missing from the list of roles
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-roles2.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
  it "role file fails Ruby parse" do
@@ -124,7 +112,7 @@ roles/fail1.rb:8: syntax error, unexpected ')', expecting $end
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-roles3.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
  it "role missing cookbook dependency" do
@@ -134,7 +122,7 @@ ERROR: Cookbook dependency 'recipe[XXX]' from role 'fail2' is missing from the l
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-roles4.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
 
@@ -145,7 +133,7 @@ ERROR: Role 'fail3' listed in the manifest does not match the name 'fail2' withi
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-roles5.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "environment listed in manifest missing" do
@@ -155,7 +143,7 @@ ERROR: Invalid Environment 'fail' listed in the manifest but not found in the en
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-env1.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "environment for node missing" do
@@ -165,7 +153,7 @@ ERROR: 'guenter.home.atx' environment 'fail' is missing from the list of environ
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-env2.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "environment file fails Ruby parse" do
@@ -176,7 +164,7 @@ environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-env3.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "environment file/name mismatch" do
@@ -186,7 +174,7 @@ ERROR: Environment 'fail3' listed in the manifest does not match the name 'devel
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-env4.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "data bag missing via manifest" do
@@ -196,7 +184,7 @@ ERROR: 'data_bags/fail' directory not found, unable to validate or load data bag
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-db1.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "data bag item missing via manifest" do
@@ -206,7 +194,7 @@ ERROR: data bag 'users' item 'nope' file 'data_bags/users/nope.json' does not ex
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-db2.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "data bag fails JSON parse" do
@@ -225,7 +213,7 @@ ERROR: data bag 'users item 'badjson' has JSON errors.
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-db3.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
   it "data bag file/name mismatch" do
@@ -235,7 +223,7 @@ ERROR: data bag 'users' item 'failname' listed in the manifest does not match th
     OUTPUT
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-db4.yml', :cwd => 'test/chef-repo' )
     spcwsl.run_command
-    spcwsl.stderr.should eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
   end
 
 # need to test for secret handling
@@ -245,7 +233,7 @@ ERROR: data bag 'users' item 'failname' listed in the manifest does not match th
 #     OUTPUT
 #     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, 'fail-db.yml', :cwd => 'test/chef-repo' )
 #     spcwsl.run_command
-#     spcwsl.stderr.should eq expected_output
+#     expect(spcwsl.stderr).to eq expected_output
 #   end
 
 end
