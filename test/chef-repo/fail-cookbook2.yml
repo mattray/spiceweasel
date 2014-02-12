@@ -7,7 +7,7 @@ cookbooks:
 - mno:
     version: 0.10.0
 roles:
-- "b*":
+- base:
 - sub/bw2:
 - tc:
 nodes:
