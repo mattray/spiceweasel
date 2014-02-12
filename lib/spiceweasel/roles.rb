@@ -1,7 +1,7 @@
 #
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -80,7 +80,13 @@ module Spiceweasel
           else
             c_role = Chef::Role.new
           end
-          c_role.from_file(file)
+          begin
+            c_role.from_file(file)
+          rescue SyntaxError => e
+            STDERR.puts "ERROR: Role '#{file}' has syntax errors."
+            STDERR.puts e.message
+            exit(-1)
+          end
         end
         Spiceweasel::Log.debug("role: '#{role}' name: '#{c_role.name}'")
         if !role.eql?(c_role.name)
