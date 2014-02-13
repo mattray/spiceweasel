@@ -1,0 +1,9 @@
+berksfile:
+    options: '--no-freeze --halt-on-frozen'
+
+cookbooks:
+- abc:
+- ghi:
+- jkl:
+- mno:
+- fail4:

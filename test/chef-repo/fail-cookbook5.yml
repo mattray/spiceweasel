@@ -1,0 +1,10 @@
+berksfile:
+    options: '--no-freeze --halt-on-frozen'
+
+cookbooks:
+- abc:
+- ghi:
+- jkl:
+- mno:
+- fail3:
+    version: 0.15.0
