@@ -1,6 +1,6 @@
 require 'mixlib/shellout'
 
-describe 'testing 2.6' do
+describe 'clusters, digital_ocean and linode from 2.6' do
   before(:each) do
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end

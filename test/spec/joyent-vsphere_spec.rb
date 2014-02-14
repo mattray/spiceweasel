@@ -1,7 +1,7 @@
 require 'mixlib/shellout'
 
-describe '2.3 functionality' do
-  it "knife-joyent, knife-vsphere and --bulkdelete functionality from 2.3" do
+describe 'joyent, vsphere, --bulkdelete functionality 2.3' do
+  it "knife-joyent, knife-vsphere and --bulkdelete" do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y

@@ -1,7 +1,7 @@
 require 'mixlib/shellout'
 
-describe 'testing 2.5 kvm' do
-  it "kvm, cluster functionality from 2.5" do
+describe 'kvm, cluster functionality from 2.5' do
+  it "kvm, cluster functionality" do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y

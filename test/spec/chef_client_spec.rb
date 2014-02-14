@@ -1,6 +1,6 @@
 require 'mixlib/shellout'
 
-describe 'testing 2.5 --chef-client' do
+describe '--chef-client from 2.5' do
   before(:each) do
     @expected_output = <<-OUTPUT
 knife ssh 'name:serverA and role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user --no-host-key-verify -p 22
@@ -16,7 +16,7 @@ knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:clie
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
-  it "--chef-client in 2.5, yml" do
+  it "--chef-client, yml" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
       '--novalidation',
       '--chef-client',
@@ -26,7 +26,7 @@ knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:clie
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it "--chef-client in 2.5, json" do
+  it "--chef-client, json" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
       '--chef-client',
       'test/examples/example.json',
@@ -36,7 +36,7 @@ knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:clie
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it "--chef-client in 2.5, rb" do
+  it "--chef-client, rb" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
       'test/examples/example.rb',
       '--novalidation',
@@ -47,7 +47,7 @@ knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:clie
   end
 end
 
-describe 'testing 2.5 --chef-client with --cluster-file' do
+describe '--chef-client --cluster-file from 2.5' do
   before(:each) do
     @expected_output = <<-OUTPUT
 knife ssh 'name:serverB and chef_environment:qa and role:base and role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
@@ -60,7 +60,7 @@ knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
-  it "--chef-client --cluster-file in 2.5, yml" do
+  it "--chef-client --cluster-file, yml" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
       '--novalidation',
       '--chef-client',
@@ -72,7 +72,7 @@ knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it "--chef-client --cluster-file in 2.5, json" do
+  it "--chef-client --cluster-file, json" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
       '--cluster-file',
       'test/examples/cluster-file-example.yml',
@@ -84,7 +84,7 @@ knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it "--chef-client --cluster-file in 2.5, rb" do
+  it "--chef-client --cluster-file, rb" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
       '--novalidation',
       '--chef-client',
@@ -97,8 +97,8 @@ knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 
   end
 end
 
-describe 'testing 2.5 --chef-client with -a' do
-  it "--chef-client -a ec2.public_hostname in 2.5" do
+describe '--chef-client -a from 2.5' do
+  it "--chef-client -a ec2.public_hostname" do
     expected_output = <<-OUTPUT
 knife ssh 'chef_environment:mycluster and role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
 knife ssh 'chef_environment:mycluster and role:webserver and recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname

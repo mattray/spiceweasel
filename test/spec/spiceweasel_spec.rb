@@ -1,5 +1,7 @@
+require 'mixlib/shellout'
+
 # Cover-all spec to prevent regressions during refactor
-describe 'The Spiceweasel binary' do
+describe 'bin/spiceweasel' do
   before(:each) do
     @expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
@@ -67,26 +69,43 @@ knife vsphere vm clone --bootstrap --template 'abc' my-new-webserver1
 knife vsphere vm clone --bootstrap --template 'def' my-new-webserver2
 knife vsphere vm clone --bootstrap --template 'ghi' my-new-webserver3
     OUTPUT
-
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
   it "maintains consistent output from the example config with yml" do
-    `#{@spiceweasel_binary} -r --novalidation test/examples/example.yml`.should == @expected_output
+    spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
+      '-r',
+      '--novalidation',
+      'test/examples/example.yml',
+      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq @expected_output
   end
 
   it "maintains consistent output from the example config with json" do
-    `#{@spiceweasel_binary} -r --novalidation test/examples/example.json`.should == @expected_output
+    spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
+      '-r',
+      '--novalidation',
+      'test/examples/example.json',
+      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq @expected_output
   end
 
   it "maintains consistent output from the example config with rb" do
-    `#{@spiceweasel_binary} -r --novalidation test/examples/example.rb`.should == @expected_output
+    spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
+      '-r',
+      '--novalidation',
+      'test/examples/example.rb',
+      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
 describe 'The Spiceweasel binary' do
-  before(:each) do
-    @expected_output = <<-OUTPUT
+  it "maintains consistent output deleting from the example config with yml using --bulkdelete" do
+    expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife cookbook delete apt 1.2.0 -a -y
 knife cookbook delete mysql  -a -y
@@ -125,12 +144,14 @@ knife client delete winboxC -y
 knife node bulk delete .* -y
 for N in $(knife node list -E amazon); do knife client delete $N -y; knife node delete $N -y; done
     OUTPUT
-
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+      '--bulkdelete',
+      '-d',
+      '--novalidation',
+      'test/examples/example.yml',
+      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq expected_output
   end
-
-  it "maintains consistent output deleting from the example config with yml using --bulkdelete" do
-    `#{@spiceweasel_binary}  --bulkdelete -d --novalidation test/examples/example.yml`.should == @expected_output
-  end
-
 end

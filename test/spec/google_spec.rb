@@ -1,7 +1,7 @@
 require 'mixlib/shellout'
 
-describe '2.6 google' do
-  it "knife-google functionality from 2.6" do
+describe 'google from 2.6' do
+  it "knife-google functionality" do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
@@ -55,8 +55,8 @@ knife google server create g-qa2 -m n1-standard-1 -I debian-7-wheezy-v20130723 -
   end
 end
 
-describe '2.6 google --parallel' do
-  it "knife-google --parallel functionality from 2.6" do
+describe 'google --parallel from 2.6' do
+  it "knife-google --parallel functionality" do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
