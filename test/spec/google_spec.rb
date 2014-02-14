@@ -1,6 +1,8 @@
-describe 'testing 2.6 google' do
-  before(:each) do
-    @expected_output = <<-OUTPUT
+require 'mixlib/shellout'
+
+describe '2.6 google' do
+  it "knife-google functionality from 2.6" do
+    expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
 knife role delete base -y
@@ -42,19 +44,20 @@ knife google server create bar -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z 
 knife google server create g-qa1 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa1 -E qa -r 'role[mysql]'
 knife google server create g-qa2 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa2 -E qa -r 'role[mysql]'
     OUTPUT
-
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+      '-r',
+      '--novalidation',
+      'test/examples/google-example.yml',
+      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq expected_output
   end
-
-  it "test knife-google functionality from 2.6" do
-    `#{@spiceweasel_binary} -r --novalidation test/examples/google-example.yml`.should == @expected_output
-  end
-
 end
 
-describe 'testing 2.6 google --parallel' do
-  before(:each) do
-    @expected_output = <<-OUTPUT
+describe '2.6 google --parallel' do
+  it "knife-google --parallel functionality from 2.6" do
+    expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
 knife role delete base -y
@@ -94,12 +97,14 @@ knife google server create foo -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z 
 knife google server create bar -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
 seq 2 | parallel -u -j 0 -v "knife google server create g-qa{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa{} -E qa -r 'role[mysql]'"
     OUTPUT
-
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+      '--parallel',
+      '-r',
+      '--novalidation',
+      'test/examples/google-example.yml',
+      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq expected_output
   end
-
-  it "test knife-google functionality from 2.6" do
-    `#{@spiceweasel_binary} --parallel -r --novalidation test/examples/google-example.yml`.should == @expected_output
-  end
-
 end
