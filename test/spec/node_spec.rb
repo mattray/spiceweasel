@@ -1,6 +1,12 @@
+require 'mixlib/shellout'
+
 describe 'testing 2.6' do
   before(:each) do
-    @expected_output = <<-OUTPUT
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+  end
+
+  it "cluster deletion, digital_ocean and linode" do
+    expected_output = <<-OUTPUT
 knife node delete serverA -y
 knife client delete serverA -y
 knife node delete serverB -y
@@ -41,18 +47,13 @@ knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-7
 knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-7000f019 -f m1.small -N DOweb2 -E digital -r 'role[webserver],recipe[mysql::client]'
 knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-7000f019 -f m1.small -N DOweb3 -E digital -r 'role[webserver],recipe[mysql::client]'
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--rebuild', '--novalidation', 'test/examples/node-example.yml', :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq expected_output
   end
 
-  it "test for cluster deletion and digital_ocean and linode in 2.6" do
-    `#{@spiceweasel_binary} --rebuild --novalidation test/examples/node-example.yml`.should == @expected_output
-  end
-
-end
-
-describe 'testing 2.6 --node-only' do
-  before(:each) do
-    @expected_output = <<-OUTPUT
+  it "node deletion and creation using --node-only" do
+    expected_output = <<-OUTPUT
 knife node delete serverA -y
 knife client delete serverA -y
 knife node delete serverB -y
@@ -97,12 +98,8 @@ knife node run_list set DOweb2 'role[webserver],recipe[mysql::client]'
 knife node create -d DOweb3
 knife node run_list set DOweb3 'role[webserver],recipe[mysql::client]'
     OUTPUT
-
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary, '--node-only', '--rebuild', '--novalidation', 'test/examples/node-example.yml', :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq expected_output
   end
-
-  it "tests node deletion and creation using --node-only" do
-    `#{@spiceweasel_binary} --node-only --rebuild --novalidation test/examples/node-example.yml`.should == @expected_output
-  end
-
 end
