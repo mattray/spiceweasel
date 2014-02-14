@@ -1,18 +1,18 @@
-# Test new 2.4 functionality
-describe 'testing knife commands' do
-  before(:each) do
-    @expected_output = <<-OUTPUT
+require 'mixlib/shellout'
+
+describe 'knife commands' do
+  it "test knife commands from 2.4" do
+    expected_output = <<-OUTPUT
 knife node list
 knife client list
 knife ssh "role:database" "chef-client" -x root
 knife ssh "role:webserver" "sudo chef-client" -x ubuntu
     OUTPUT
-
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+      'test/examples/knife.yml',
+      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl.run_command
+    expect(spcwsl.stdout).to eq expected_output
   end
-
-  it "test knife commands from 2.4" do
-    `#{@spiceweasel_binary} test/examples/knife.yml`.should == @expected_output
-  end
-
 end
