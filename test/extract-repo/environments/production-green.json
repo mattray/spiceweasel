@@ -1,0 +1,177 @@
+{
+  "name": "production-green",
+  "default_attributes": {
+  },
+  "json_class": "Chef::Environment",
+  "description": "Production-Green OpenStack environment.",
+  "cookbook_versions": {
+  },
+  "override_attributes": {
+    "dns": {
+      "dynect": {
+        "cn": "ATT-SERVICES",
+        "user": "chef"
+      }
+    },
+    "openstack": {
+      "auth": {
+        "strategy": "token"
+      },
+      "secret": {
+       "key_path": "/etc/chef/encrypted_data_bag_secret"
+      },
+      "db": {
+        "root_user_use_databag": true
+      },
+      "logging": {
+        "ignore": {
+          "nova.api.openstack.wsgi": "WARNING",
+          "nova.osapi_compute.wsgi.server": "WARNING",
+          "keystone.middleware.auth_token": "ERROR"
+        }
+      }
+    },
+    "rsyslog": {
+      "server_search": "role:infra-logging"
+    },
+    "authorization": {
+      "sudo": {
+        "agent_forwarding": true,
+        "include_sudoers_d": true,
+        "groups": [
+          "sysadmin"
+        ]
+      }
+    },
+    "openssh": {
+      "client": {
+        "forward_agent": "yes"
+      }
+    },
+    "developer_mode": false,
+    "ntp": {
+      "servers": [
+        "12.129.64.150", "63.240.192.73", "63.240.129.148", "12.130.97.150", "63.241.193.69", "206.19.225.150", "12.129.192.149", "206.19.185.150", "63.240.1.42"
+      ]
+    },
+    "glance": {
+      "syslog": {
+        "use": true
+      },
+      "verbose": true,
+      "debug": false,
+      "glance_api_chef_role": "openstack-image",
+      "keystone_service_chef_role": "openstack-identity",
+      "rabbit_server_chef_role": "infra-messaging",
+      "image_upload": true,
+      "images": [
+        "ubuntu-12.10-2012.11.15",
+        "centos-5-2013.02.26",
+        "centos-6-2013.02.26",
+        "fedora-16-2013.02.26",
+        "fedora-15-2013.02.26",
+        "rhel-6-2013.02.26",
+        "ubuntu-12.04-2013.03.13",
+        "ubuntu-11.04-2013.03.13"
+      ],
+      "image": {
+        "ubuntu-12.10-2012.11.15": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/ubuntu-12.10-20121115.qcow2",
+        "centos-5-2013.02.26": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/centos-5.8-sda.qcow2",
+        "centos-6-2013.02.26": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/centos-6.2-sda.qcow2",
+        "fedora-16-2013.02.26": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/fedora-16-16-20130226.qcow2",
+        "fedora-15-2013.02.26": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/fedora-15-20130226.qcow2",
+        "rhel-6-2013.02.26": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/rhel-6-20130227.qcow2",
+        "ubuntu-12.04-2013.03.13": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/ubuntu-12.04.2-20130313.qcow2",
+        "ubuntu-11.04-2013.03.13": "https://data.iad1.attstorage.com/v1/AUTH_286b16b8-f68f-4292-a4e7-10c5fd706b99/guest-images/ubuntu-11.04-20130313.qcow2"
+      },
+      "api": {
+        "bind_interface": "bond1.2001"
+      },
+      "registry": {
+        "bind_interface": "bond1.2001"
+      }
+    },
+    "keystone": {
+      "syslog": {
+        "use": true
+      },
+      "verbose": true,
+      "debug": false,
+      "bind_interface": "bond1.2001",
+      "token": {
+        "backend": "memcache"
+      },
+      "roles": [
+        "admin",
+        "keystone_admin",
+        "keystone_service_admin",
+        "member",
+        "netadmin",
+        "sysadmin"
+      ],
+      "tenants": [
+        "admin",
+        "service",
+        "demo"
+      ],
+      "admin_user": "ksadmin",
+      "users": {
+        "ksadmin": {
+          "password": "ksadmin",
+          "default_tenant": "admin",
+          "roles": { // Each key is the role name, each value is a list of tenants
+            "admin": [
+              "admin"
+            ],
+            "keystone_admin": [
+              "admin"
+            ],
+            "keystone_service_admin": [
+              "admin"
+            ]
+          }
+        }
+      }
+    },
+    "cinder": {
+      "syslog": {
+        "use": true
+      },
+      "verbose": true,
+      "debug": false,
+      "glance_api_chef_role": "openstack-image",
+      "keystone_service_chef_role": "openstack-identity",
+      "rabbit_server_chef_role": "infra-messaging"
+    },
+    "nova": {
+      "syslog": {
+        "use": true
+      },
+      "verbose": true,
+      "debug": false,
+      "glance_api_chef_role": "openstack-image",
+      "keystone_service_chef_role": "openstack-identity",
+      "nova_setup_chef_role": "infra-db-openstack",
+      "rabbit_server_chef_role": "infra-messaging",
+      "network": {
+        "network_manager": "nova.network.manager.VlanManager",
+        "vlan_interface": "bond1",
+        "public_interface": "bond1.2002",
+        "fixed_range": "10.0.0.0/8"
+      },
+      "networks": []  // Created via script...
+    },
+    "horizon": {
+      "keystone_default_role": "member",
+      "debug": false,
+      "use_ssl": false,
+      "ssl_offload": true
+    },
+    "vms": {
+      "repo": {
+        "private_key": "2d93240144125951518ff463f8ce2206"
+      }
+    }
+  },
+  "chef_type": "environment"
+}

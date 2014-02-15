@@ -1,0 +1,13 @@
+{
+  "sources": {
+    "chef-pry": {
+      "locked_version": "0.2.0"
+    },
+    "def": {
+      "path": "./cookbooks/def"
+    },
+    "build-essential": {
+      "locked_version": "1.4.2"
+    }
+  }
+}

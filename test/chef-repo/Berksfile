@@ -1,0 +1,4 @@
+site :opscode
+
+cookbook 'chef-pry', '0.2.0'
+cookbook 'def', path: 'cookbooks/def'

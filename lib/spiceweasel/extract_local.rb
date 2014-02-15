@@ -33,8 +33,7 @@ module Spiceweasel
 
       # COOKBOOKS
       cookbooks = berksfile ? self.resolve_cookbooks(berksfile.cookbook_list) : self.resolve_cookbooks
-
-      objects['cookbooks'] = cookbooks unless cookbooks.empty?
+      objects['cookbooks'] = cookbooks.sort_by { |c| [c.keys[0]] } unless cookbooks.empty?
 
       # ROLES
       roles = []
@@ -43,7 +42,7 @@ module Spiceweasel
         Spiceweasel::Log.debug("dir_ext: role: '#{role}'")
         roles << {role => nil}
       end
-      objects['roles'] = roles unless roles.nil?
+      objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil?
 
       # ENVIRONMENTS
       environments = []
@@ -52,7 +51,7 @@ module Spiceweasel
         Spiceweasel::Log.debug("dir_ext: environment: '#{environment}'")
         environments << {environment => nil}
       end
-      objects['environments'] = environments unless environments.empty?
+      objects['environments'] = environments.sort_by { |e| [e.keys[0]] } unless environments.empty?
 
       # DATA BAGS
       data_bags = []
@@ -64,9 +63,9 @@ module Spiceweasel
           Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'")
           data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
         end if File.directory?(data_bag_full_path)
-        data_bags << {data_bag => {'items' => data_bag_items}}
+        data_bags << {data_bag => {'items' => data_bag_items.sort}}
       end
-      objects['data bags'] = data_bags unless data_bags.empty?
+      objects['data bags'] = data_bags.sort_by { |d| [d.keys[0]] } unless data_bags.empty?
 
       # NODES
       # TODO: Cant use this yet as node_list.rb doesnt support node from file syntax but expects the node info to be part of the objects passed in

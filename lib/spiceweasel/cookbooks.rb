@@ -33,7 +33,13 @@ module Spiceweasel
       #validate each of the cookbooks specified in the manifest
       if cookbooks
         @loader = Chef::CookbookLoader.new(Spiceweasel::Config[:cookbook_dir])
-        @loader.load_cookbooks
+        begin
+          @loader.load_cookbooks
+        rescue SyntaxError => e
+          STDERR.puts "ERROR: invalid cookbook metadata."
+          STDERR.puts e.message
+          exit(-1)
+        end
         Spiceweasel::Log.debug("cookbooks: #{cookbooks}")
 
         c_names = []

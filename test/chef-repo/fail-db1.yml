@@ -1,0 +1,12 @@
+data bags:
+- fail:
+    items:
+    - nope
+- users:
+    items:
+    - mray
+- junk:
+    items:
+    - "a*"
+    - "sub1/*"
+    - sub2/def1

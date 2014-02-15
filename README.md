@@ -17,7 +17,7 @@ Written and tested with the Chef 11.x series (previous versions of Chef may stil
 
 # File Syntax #
 
-The syntax for the Spiceweasel file may be Ruby, JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [examples/example.json](https://github.com/mattray/spiceweasel/blob/master/examples/example.json) or [examples/example.yml](https://github.com/mattray/spiceweasel/blob/master/examples/example.yml) for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
+The syntax for the Spiceweasel file may be Ruby, JSON or YAML format of Chef primitives describing what is to be instantiated. Please refer to the [test/examples/example.json](https://github.com/mattray/spiceweasel/blob/master/test/examples/example.json) or [test/examples/example.yml](https://github.com/mattray/spiceweasel/blob/master/test/examples/example.yml) for examples of the same infrastructure. Each subsection below shows the YAML syntax converted to knife commands.
 
 ## Cookbooks ##
 
@@ -368,15 +368,15 @@ Print the version of spiceweasel currently installed.
 
 Spiceweasel uses [RSpec](http://rspec.info/) for testing. You should run the following before commiting.
 
-    $ rspec
+    $ rspec test
 
 # License and Author #
 
 |                      |                                                    |
 |:---------------------|:---------------------------------------------------|
-| **Author**           |  Matt Ray (<matt@opscode.com>)                     |
+| **Author**           |  Matt Ray (<matt@getchef.com>)                     |
 |                      |                                                    |
-| **Copyright**        |  Copyright (c) 2011-2013, Opscode, Inc.            |
+| **Copyright**        |  Copyright (c) 2011-2014, Opscode, Inc.            |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

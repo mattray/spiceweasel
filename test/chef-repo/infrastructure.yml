@@ -1,0 +1,36 @@
+berksfile:
+    options: '--no-freeze --halt-on-frozen'
+
+cookbooks:
+- abc:
+- ghi:
+- jkl:
+- mno:
+    version: 0.10.0
+environments:
+- development:
+- "p*":
+- sub/efg1:
+- sub/efg2:
+roles:
+- "b*":
+- sub/bw2:
+- tc:
+data bags:
+- users:
+    items:
+    - mray
+- junk:
+    items:
+    - "a*"
+    - "sub1/*"
+    - sub2/def1
+nodes:
+- boxy.lab.atx:
+    run_list: role[tc], recipe[abc]
+    options: --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22
+- guenter.home.atx:
+    run_list: role[base], recipe[def]
+    options: -E development -i ~/.ssh/mray.pem -x user --sudo
+- wilhelm.home.atx:
+    options: -E development -i ~/.ssh/mray.pem -x user --sudo

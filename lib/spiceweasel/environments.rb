@@ -1,7 +1,7 @@
 #
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -78,7 +78,13 @@ module Spiceweasel
           else
             env = Chef::Environment.new
           end
-          env.from_file(file)
+          begin
+            env.from_file(file)
+          rescue SyntaxError => e
+            STDERR.puts "ERROR: Environment '#{file}' has syntax errors."
+            STDERR.puts e.message
+            exit(-1)
+          end
         end
         if(env.name != environment)
           STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{env.name}' within the #{file} file."
