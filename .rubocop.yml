@@ -1,0 +1,29 @@
+AllCops:
+  Includes:
+    - bin/**
+    - lib/**
+    - test/spec/**
+  Excludes:
+    - test/chef-repo/**
+    - test/examples/**
+    - test/extract-repo/**
+
+# ignore long lines
+LineLength:
+  Enabled: false
+
+# Allow small arrays before forcing  %w or %W
+WordArray:
+  MinSize: 3
+
+# Ignore this for now
+MethodLength:
+  Max: 125
+
+# validation requires other objects
+ParameterLists:
+  Enabled: false
+
+# this needs to be cleaned up in lib/spiceweasel/nodes.rb
+BlockNesting:
+  Enabled: false
