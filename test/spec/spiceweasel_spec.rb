@@ -1,3 +1,22 @@
+# encoding: UTF-8
+#
+# Author:: Matt Ray (<matt@getchef.com>)
+#
+# Copyright:: 2011-2014, Chef Software, Inc <legal@getchef.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'mixlib/shellout'
 
 # Cover-all spec to prevent regressions during refactor
@@ -72,39 +91,39 @@ knife vsphere vm clone --bootstrap --template 'ghi' my-new-webserver3
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
-  it "maintains consistent output from the example config with yml" do
+  it 'maintains consistent output from the example config with yml' do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-      '-r',
-      '--novalidation',
-      'test/examples/example.yml',
-      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+                                  '-r',
+                                  '--novalidation',
+                                  'test/examples/example.yml',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it "maintains consistent output from the example config with json" do
+  it 'maintains consistent output from the example config with json' do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-      '-r',
-      '--novalidation',
-      'test/examples/example.json',
-      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+                                  '-r',
+                                  '--novalidation',
+                                  'test/examples/example.json',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it "maintains consistent output from the example config with rb" do
+  it 'maintains consistent output from the example config with rb' do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-      '-r',
-      '--novalidation',
-      'test/examples/example.rb',
-      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+                                  '-r',
+                                  '--novalidation',
+                                  'test/examples/example.rb',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
 describe 'The Spiceweasel binary' do
-  it "maintains consistent output deleting from the example config with yml using --bulkdelete" do
+  it 'maintains consistent output deleting from the example config with yml using --bulkdelete' do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife cookbook delete apt 1.2.0 -a -y
@@ -146,11 +165,11 @@ for N in $(knife node list -E amazon); do knife client delete $N -y; knife node 
     OUTPUT
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-      '--bulkdelete',
-      '-d',
-      '--novalidation',
-      'test/examples/example.yml',
-      :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+                                  '--bulkdelete',
+                                  '-d',
+                                  '--novalidation',
+                                  'test/examples/example.yml',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end

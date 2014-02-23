@@ -1,7 +1,26 @@
+# encoding: UTF-8
+#
+# Author:: Matt Ray (<matt@getchef.com>)
+#
+# Copyright:: 2011-2014, Chef Software, Inc <legal@getchef.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'mixlib/shellout'
 
 describe 'kvm, cluster functionality from 2.5' do
-  it "kvm, cluster functionality" do
+  it 'kvm, cluster functionality' do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
@@ -21,7 +40,12 @@ seq 1 | parallel -u -j 0 -v "knife kvm vm create -E production --template-file ~
 seq 3 | parallel -u -j 0 -v "knife kvm vm create --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret -E qa -r 'role[webserver],recipe[mysql::client]'"
     OUTPUT
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
-    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary, '--parallel', '-r', '--novalidation', 'test/examples/kvm-example.yml', :environment => {'PWD' => "#{ENV['PWD']}/test/chef-repo"} )
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+                                  '--parallel',
+                                  '-r',
+                                  '--novalidation',
+                                  'test/examples/kvm-example.yml',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
 
     expect(spcwsl.stdout).to eq expected_output
