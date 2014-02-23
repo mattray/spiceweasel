@@ -18,15 +18,15 @@
 #
 
 module Spiceweasel
+  # load and parse berksfile
   class Berksfile
-
     attr_reader :create
     attr_reader :delete
     attr_reader :cookbook_list
 
     include CommandHelper
 
-    def initialize(berkshelf=nil)
+    def initialize(berkshelf = nil)
       @create = []
       @delete = []
       @cookbook_list = {}
@@ -49,7 +49,7 @@ module Spiceweasel
       create_command("berks upload #{berks_options}")
       Berkshelf.ui.mute do
         Spiceweasel::Log.debug("berkshelf resolving dependencies: #{resolve_opts}")
-        if(Gem::Version.new(Berkshelf::VERSION) >= Gem::Version.new('2.0.0'))
+        if Gem::Version.new(Berkshelf::VERSION) >= Gem::Version.new('2.0.0')
           ckbks = berks.install(resolve_opts)
         else
           ckbks = berks.resolve(resolve_opts)
@@ -61,5 +61,4 @@ module Spiceweasel
       end
     end
   end
-
 end
