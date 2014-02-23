@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # Author:: Matt Ray (<matt@getchef.com>)
 #

@@ -1,8 +1,9 @@
+# encoding: UTF-8
 #
 # Author:: Geoff Meakin
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2012-2013, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
