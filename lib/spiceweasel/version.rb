@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+# Spiceweasel version
 module Spiceweasel
   VERSION = '2.6.0'
 end
