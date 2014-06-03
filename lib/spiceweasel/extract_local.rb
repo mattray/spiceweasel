@@ -97,11 +97,11 @@ module Spiceweasel
       #push in the berkshelf cookbooks to cover any other deps
       berkshelf_cookbooks.each do |name, version|
         Spiceweasel::Log.debug("dir_ext:berks: #{name} #{version}")
-        graph.artifacts(name, version)
+        graph.artifact(name, version)
       end
       books.each do |name, cb|
         Spiceweasel::Log.debug("dir_ext: #{name} #{cb.version}")
-        artifact = graph.artifacts(name, cb.version)
+        artifact = graph.artifact(name, cb.version)
         cblist.push([name, cb.version])
         cb.metadata.dependencies.each do |dep_name, dep_version|
           artifact.depends(dep_name, dep_version)

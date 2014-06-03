@@ -1,13 +1,10 @@
-{
-  "sources": {
-    "chef-pry": {
-      "locked_version": "0.2.0"
-    },
-    "def": {
-      "path": "./cookbooks/def"
-    },
-    "build-essential": {
-      "locked_version": "1.4.2"
-    }
-  }
-}
+DEPENDENCIES
+  chef-pry (= 0.2.0)
+  def
+    path: cookbooks/def
+
+GRAPH
+  build-essential (2.0.2)
+  chef-pry (0.2.0)
+    build-essential (>= 0.0.0)
+  def (0.1.0)
