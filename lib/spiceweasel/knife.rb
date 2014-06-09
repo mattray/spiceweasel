@@ -19,13 +19,12 @@
 
 module Spiceweasel
   class Knife
-
     include CommandHelper
 
     attr_reader :knife_list, :create
 
     def initialize(knives = {}, allknifes = [])
-      @create = Array.new
+      @create = []
       if knives
         knives.each do |knife|
           Spiceweasel::Log.debug("knife: #{knife}")
@@ -45,11 +44,10 @@ module Spiceweasel
 
     # test that the knife command exists
     def validate(command, allknifes)
-      unless allknifes.index {|x| x.start_with?("knife #{command}")}
+      unless allknifes.index { |x| x.start_with?("knife #{command}") }
         STDERR.puts "ERROR: 'knife #{command}' is not a currently supported command for knife."
         exit(-1)
       end
     end
-
   end
 end

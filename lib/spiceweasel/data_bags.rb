@@ -21,20 +21,19 @@ require 'yajl/json_gem'
 
 module Spiceweasel
   class DataBags
-
     include CommandHelper
 
     attr_reader :create, :delete
 
     def initialize(data_bags = [])
-      @create = Array.new
-      @delete = Array.new
+      @create = []
+      @delete = []
       if data_bags
         Spiceweasel::Log.debug("data bags: #{data_bags}")
         data_bags.each do |data_bag|
           db = data_bag.keys.first
-          #check directories
-          if !File.directory?("data_bags") && !Spiceweasel::Config[:novalidation]
+          # check directories
+          if !File.directory?('data_bags') && !Spiceweasel::Config[:novalidation]
             STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
             exit(-1)
           end
@@ -56,17 +55,17 @@ module Spiceweasel
           Spiceweasel::Log.debug("data bag: #{db} #{secret} #{items}")
           items.each do |item|
             Spiceweasel::Log.debug("data bag #{db} item: #{item}")
-            if item =~ /\*/ #wildcard support, will fail if directory not present
+            if item =~ /\*/ # wildcard support, will fail if directory not present
               files = Dir.glob("data_bags/#{db}/#{item}")
-              #remove anything not ending in .json
-              files.delete_if {|x| !x.end_with?('.json')}
-              items.concat(files.collect {|x| x["data_bags/#{db}/".length..-6]})
+              # remove anything not ending in .json
+              files.delete_if { |x| !x.end_with?('.json') }
+              items.concat(files.map { |x| x["data_bags/#{db}/".length..-6] })
               Spiceweasel::Log.debug("found files '#{files}' for data bag: #{db} with wildcard #{item}")
               next
             end
             validateItem(db, item) unless Spiceweasel::Config[:novalidation]
           end
-          items.delete_if {|x| x.include?("*")} #remove wildcards
+          items.delete_if { |x| x.include?('*') } # remove wildcards
           items.sort!.uniq!
           unless items.empty?
             if secret
@@ -79,7 +78,7 @@ module Spiceweasel
       end
     end
 
-    #validate the item to be loaded
+    # validate the item to be loaded
     def validateItem(db, item)
       if !File.exists?("data_bags/#{db}/#{item}.json")
         STDERR.puts "ERROR: data bag '#{db}' item '#{item}' file 'data_bags/#{db}/#{item}.json' does not exist"
@@ -93,8 +92,8 @@ module Spiceweasel
         STDERR.puts e.message
         exit(-1)
       end
-      #validate the id matches the file name
-      if item =~ /\// #pull out directories
+      # validate the id matches the file name
+      if item =~ /\// # pull out directories
         item = item.split('/').last
       end
       if !item.eql?(itemfile['id'])
@@ -102,6 +101,5 @@ module Spiceweasel
         exit(-1)
       end
     end
-
   end
 end

@@ -22,7 +22,6 @@ require 'chef'
 
 module Spiceweasel
   class ExtractLocal
-
     def self.parse_objects
       objects = {}
 
@@ -33,24 +32,24 @@ module Spiceweasel
       end
 
       # COOKBOOKS
-      cookbooks = berksfile ? self.resolve_cookbooks(berksfile.cookbook_list) : self.resolve_cookbooks
+      cookbooks = berksfile ? resolve_cookbooks(berksfile.cookbook_list) : resolve_cookbooks
       objects['cookbooks'] = cookbooks.sort_by { |c| [c.keys[0]] } unless cookbooks.empty?
 
       # ROLES
       roles = []
-      Dir.glob("roles/*.{rb,json}").each do |role_full_path|
-        role = self.grab_name_from_path(role_full_path)
+      Dir.glob('roles/*.{rb,json}').each do |role_full_path|
+        role = grab_name_from_path(role_full_path)
         Spiceweasel::Log.debug("dir_ext: role: '#{role}'")
-        roles << {role => nil}
+        roles << { role => nil }
       end
       objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil?
 
       # ENVIRONMENTS
       environments = []
-      Dir.glob("environments/*.{rb,json}").each do |environment_full_path|
-        environment = self.grab_name_from_path(environment_full_path)
+      Dir.glob('environments/*.{rb,json}').each do |environment_full_path|
+        environment = grab_name_from_path(environment_full_path)
         Spiceweasel::Log.debug("dir_ext: environment: '#{environment}'")
-        environments << {environment => nil}
+        environments << { environment => nil }
       end
       objects['environments'] = environments.sort_by { |e| [e.keys[0]] } unless environments.empty?
 
@@ -62,9 +61,9 @@ module Spiceweasel
         data_bag_items = []
         Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
           Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'")
-          data_bag_items << self.grab_name_from_path(data_bag_item_full_path)
+          data_bag_items << grab_name_from_path(data_bag_item_full_path)
         end if File.directory?(data_bag_full_path)
-        data_bags << {data_bag => {'items' => data_bag_items.sort}}
+        data_bags << { data_bag => { 'items' => data_bag_items.sort } }
       end
       objects['data bags'] = data_bags.sort_by { |d| [d.keys[0]] } unless data_bags.empty?
 
@@ -94,7 +93,7 @@ module Spiceweasel
       books = loader.cookbooks_by_name
       graph = Solve::Graph.new
       cblist = []
-      #push in the berkshelf cookbooks to cover any other deps
+      # push in the berkshelf cookbooks to cover any other deps
       berkshelf_cookbooks.each do |name, version|
         Spiceweasel::Log.debug("dir_ext:berks: #{name} #{version}")
         graph.artifact(name, version)
@@ -107,16 +106,16 @@ module Spiceweasel
           artifact.depends(dep_name, dep_version)
         end
       end
-      #get the cookbooks and their versions, map to cookbook hash format
+      # get the cookbooks and their versions, map to cookbook hash format
       begin
         cookbooks = []
-        Solve.it!(graph, cblist).each {|k,v| cookbooks.push({k => {'version' => v}})}
+        Solve.it!(graph, cblist).each { |k, v| cookbooks.push(k => { 'version' => v  }) }
       rescue Solve::Errors::NoSolutionError => e
-        STDERR.puts "ERROR: There are missing cookbook dependencies, please check your metadata.rb files."
+        STDERR.puts 'ERROR: There are missing cookbook dependencies, please check your metadata.rb files.'
         exit(-1)
       end
-      #remove any cookbooks managed by berkshelf
-      cookbooks.delete_if {|x| berkshelf_cookbooks.keys.member?(x.keys[0])}
+      # remove any cookbooks managed by berkshelf
+      cookbooks.delete_if { |x| berkshelf_cookbooks.keys.member?(x.keys[0]) }
     end
   end
 end

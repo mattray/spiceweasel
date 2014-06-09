@@ -21,23 +21,22 @@ require 'chef/cookbook/metadata'
 
 module Spiceweasel
   class Cookbooks
-
     include CommandHelper
 
     attr_reader :cookbook_list, :create, :delete
 
     def initialize(cookbooks = [], other_cookbook_list = {})
-      @create = Array.new
-      @delete = Array.new
+      @create = []
+      @delete = []
       @cookbook_list = other_cookbook_list
-      @dependencies = Array.new
-      #validate each of the cookbooks specified in the manifest
+      @dependencies = []
+      # validate each of the cookbooks specified in the manifest
       if cookbooks
         @loader = Chef::CookbookLoader.new(Spiceweasel::Config[:cookbook_dir])
         begin
           @loader.load_cookbooks
         rescue SyntaxError => e
-          STDERR.puts "ERROR: invalid cookbook metadata."
+          STDERR.puts 'ERROR: invalid cookbook metadata.'
           STDERR.puts e.message
           exit(-1)
         end
@@ -51,14 +50,14 @@ module Spiceweasel
             options = cookbook[name]['options']
           end
           Spiceweasel::Log.debug("cookbook: #{name} #{version} #{options}")
-          if File.directory?("cookbooks")
+          if File.directory?('cookbooks')
 
             if @loader.cookbooks_by_name[name]
-              validateMetadata(name,version) unless Spiceweasel::Config[:novalidation]
+              validateMetadata(name, version) unless Spiceweasel::Config[:novalidation]
             else
-              if Spiceweasel::Config[:siteinstall] #use knife cookbook site install
+              if Spiceweasel::Config[:siteinstall] # use knife cookbook site install
                 create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} site install #{name} #{version} #{options}")
-              else #use knife cookbook site download, untar and then remove the tarball
+              else # use knife cookbook site download, untar and then remove the tarball
                 create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} site download #{name} #{version} --file cookbooks/#{name}.tgz #{options}")
                 create_command("tar -C cookbooks/ -xf cookbooks/#{name}.tgz")
                 create_command("rm -f cookbooks/#{name}.tgz")
@@ -69,7 +68,7 @@ module Spiceweasel
             exit(-1)
           end
 
-          if(options)
+          if options
             if !c_names.empty?
               create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
               c_names = []
@@ -79,18 +78,18 @@ module Spiceweasel
             c_names.push(name)
           end
           delete_command("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y")
-          @cookbook_list[name] = version #used for validation
+          @cookbook_list[name] = version # used for validation
         end
         if !c_names.empty?
           create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
         end
-        validateDependencies() unless Spiceweasel::Config[:novalidation]
+        validateDependencies unless Spiceweasel::Config[:novalidation]
       end
     end
 
-    #check the metadata for versions and gather deps
-    def validateMetadata(cookbook,version)
-      #check metadata.rb for requested version
+    # check the metadata for versions and gather deps
+    def validateMetadata(cookbook, version)
+      # check metadata.rb for requested version
       metadata = @loader.cookbooks_by_name[cookbook].metadata
       Spiceweasel::Log.debug("validateMetadata: #{cookbook} #{metadata.name} #{metadata.version}")
       # Should the cookbook directory match the name in the metadata?
@@ -110,8 +109,8 @@ module Spiceweasel
       end
     end
 
-    #compare the list of cookbook deps with those specified
-    def validateDependencies()
+    # compare the list of cookbook deps with those specified
+    def validateDependencies
       Spiceweasel::Log.debug("cookbook validateDependencies: '#{@dependencies}'")
       @dependencies.each do |dep|
         if !member?(dep)
@@ -124,6 +123,5 @@ module Spiceweasel
     def member?(cookbook)
       cookbook_list.keys.include?(cookbook)
     end
-
   end
 end

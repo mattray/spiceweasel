@@ -42,6 +42,5 @@ module Spiceweasel
     parallel false
     rebuild false
     siteinstall false
-
   end
 end
