@@ -44,12 +44,12 @@ knife bootstrap wilhelm.home.atx -E development -i ~/.ssh/mray.pem -x user --sud
   end
 end
 
-describe 'failed validation with a chef-repo' do
+describe 'expected failure validation with a chef-repo' do
   before(:each) do
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
   end
 
-  it '--extractjson fails Ruby parse' do
+  it '--extractjson expected to fail Ruby parse' do
     expected_output = "ERROR: There are missing cookbook dependencies, please check your metadata.rb files.\n"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--extractjson',
@@ -59,7 +59,7 @@ describe 'failed validation with a chef-repo' do
     expect(spcwsl.stderr).to eq expected_output
   end
 
-  it '--extractlocal fails Ruby parse' do
+  it '--extractlocal expected to fail Ruby parse' do
     expected_output = "ERROR: There are missing cookbook dependencies, please check your metadata.rb files.\n"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--extractlocal',
@@ -69,7 +69,7 @@ describe 'failed validation with a chef-repo' do
     expect(spcwsl.stderr).to eq expected_output
   end
 
-  it '--extractyaml fails Ruby parse' do
+  it '--extractyaml expected to fail Ruby parse' do
     expected_output = "ERROR: There are missing cookbook dependencies, please check your metadata.rb files.\n"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--extractyaml',
@@ -149,7 +149,7 @@ describe 'failed validation with a chef-repo' do
     expect(spcwsl.stderr).to eq expected_output
   end
 
-  it 'role file fails Ruby parse' do
+  it 'role file expected to fail Ruby parse' do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   'fail-roles3.yml',
                                   cwd: 'test/chef-repo',
@@ -200,7 +200,7 @@ describe 'failed validation with a chef-repo' do
     expect(spcwsl.stderr).to eq expected_output
   end
 
-  it 'environment file fails Ruby parse' do
+  it 'environment file expected to fail Ruby parse' do
     expected_output = <<-OUTPUT
 ERROR: Environment 'environments/fail2.rb' has syntax errors.
 environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
@@ -243,7 +243,7 @@ environments/fail2.rb:8: syntax error, unexpected ')', expecting '}'
     expect(spcwsl.stderr).to eq expected_output
   end
 
-  it 'data bag fails JSON parse' do
+  it 'data bag expected to fail JSON parse' do
     expected_output = <<-OUTPUT
 ERROR: data bag 'users item 'badjson' has JSON errors.
 757: unexpected token at '{
