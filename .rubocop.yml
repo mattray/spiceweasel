@@ -8,6 +8,10 @@ AllCops:
     - test/examples/**
     - test/extract-repo/**
 
+# ignore long classes
+ClassLength:
+  Enabled: false
+
 # ignore long lines
 LineLength:
   Enabled: false
