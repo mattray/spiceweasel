@@ -21,12 +21,13 @@ require 'yajl/json_gem'
 require 'chef'
 
 module Spiceweasel
+  # manages parsing of Roles
   class Roles
     include CommandHelper
 
     attr_reader :role_list, :create, :delete
 
-    def initialize(roles = {}, environments = [], cookbooks = {})
+    def initialize(roles = {}, environments = [], cookbooks = {}) # rubocop:disable CyclomaticComplexity
       @create = []
       @delete = []
       @role_list = []
@@ -64,12 +65,10 @@ module Spiceweasel
     end
 
     # validate the content of the role file
-    def validate(role, environments, cookbooks, roles)
+    def validate(role, environments, cookbooks, roles) # rubocop:disable CyclomaticComplexity
       # validate the role passed in match the name of either the .rb or .json
       file = %W(roles/#{role}.rb roles/#{role}.json).find { |f| File.exists?(f) }
-      if role =~ /\// # pull out directories
-        role = role.split('/').last
-      end
+      role = role.split('/').last if role =~ /\// # pull out directories
       if file
         case file
         when /\.json$/
@@ -89,14 +88,14 @@ module Spiceweasel
           end
         end
         Spiceweasel::Log.debug("role: '#{role}' name: '#{c_role.name}'")
-        if !role.eql?(c_role.name)
+        unless role.eql?(c_role.name)
           STDERR.puts "ERROR: Role '#{role}' listed in the manifest does not match the name '#{c_role.name}' within the #{file} file."
           exit(-1)
         end
         c_role.run_list.each do |runlist_item|
           if runlist_item.recipe?
             Spiceweasel::Log.debug("recipe: #{runlist_item.name}")
-            cookbook, recipe = runlist_item.name.split('::')
+            cookbook, _recipe = runlist_item.name.split('::')
             Spiceweasel::Log.debug("role: '#{role}' cookbook: '#{cookbook}' dep: '#{runlist_item}'")
             unless cookbooks.member?(cookbook)
               STDERR.puts "ERROR: Cookbook dependency '#{runlist_item}' from role '#{role}' is missing from the list of cookbooks in the manifest."
@@ -113,7 +112,6 @@ module Spiceweasel
             exit(-1)
           end
         end
-        # TODO validate any environment-specific runlists
       else # role is not here
         STDERR.puts "ERROR: Invalid Role '#{role}' listed in the manifest but not found in the roles directory."
         exit(-1)
