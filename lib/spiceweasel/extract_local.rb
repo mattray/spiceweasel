@@ -21,8 +21,9 @@
 require 'chef'
 
 module Spiceweasel
+  # models the existing Chef repository as a manifest
   class ExtractLocal
-    def self.parse_objects
+    def self.parse_objects # rubocop:disable CyclomaticComplexity
       objects = {}
 
       # BERKSHELF
@@ -80,9 +81,7 @@ module Spiceweasel
 
     def self.grab_name_from_path(path)
       name = path.split('/').last.split('.')
-      if name.length > 1
-        name.pop
-      end
+      name.pop if name.length > 1
       name.join('.')
     end
 
@@ -110,7 +109,7 @@ module Spiceweasel
       begin
         cookbooks = []
         Solve.it!(graph, cblist).each { |k, v| cookbooks.push(k => { 'version' => v  }) }
-      rescue Solve::Errors::NoSolutionError => e
+      rescue Solve::Errors::NoSolutionError
         STDERR.puts 'ERROR: There are missing cookbook dependencies, please check your metadata.rb files.'
         exit(-1)
       end

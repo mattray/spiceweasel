@@ -20,6 +20,7 @@
 require 'spiceweasel/command'
 
 module Spiceweasel
+  # helpers for create and delete commands
   module CommandHelper
     def create_command(*args)
       @create ||= []

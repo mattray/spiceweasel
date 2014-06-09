@@ -20,6 +20,7 @@
 require 'mixlib/config'
 
 module Spiceweasel
+  # provides defaults and manages the configuration via Mixlib::Config
   class Config
     extend Mixlib::Config
 

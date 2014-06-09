@@ -18,6 +18,7 @@
 #
 
 module Spiceweasel
+  # manages parsing of Nodes
   class Nodes
     include CommandHelper
 
@@ -25,7 +26,7 @@ module Spiceweasel
 
     attr_reader :create, :delete
 
-    def initialize(nodes, cookbooks, environments, roles, knifecommands)
+    def initialize(nodes, cookbooks, environments, roles, knifecommands) # rubocop:disable CyclomaticComplexity
       @create = []
       @delete = []
       chefclient = []
@@ -132,7 +133,7 @@ module Spiceweasel
     end
 
     # handle --nodes-only
-    def process_nodes_only(names, options, run_list, create_command_options)
+    def process_nodes_only(names, options, run_list, create_command_options) # rubocop:disable CyclomaticComplexity
       nodenames = []
       if PROVIDERS.member?(names[0])
         count = names.length == 2 ? names[1] : 1
@@ -182,7 +183,7 @@ module Spiceweasel
     end
 
     # manage all the provider logic
-    def process_providers(names, count, name, options, run_list, create_command_options, knifecommands)
+    def process_providers(names, count, name, options, run_list, create_command_options, knifecommands) # rubocop:disable CyclomaticComplexity
       provider = names[0]
       validate_provider(provider, names, count, options, knifecommands) unless Spiceweasel::Config[:novalidation]
       provided_names = []
@@ -270,7 +271,7 @@ module Spiceweasel
       end
     end
 
-    def process_chef_client(names, options, run_list)
+    def process_chef_client(names, options, run_list) # rubocop:disable CyclomaticComplexity
       commands = []
       environment = nil
       protocol = 'ssh'

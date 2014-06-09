@@ -20,12 +20,13 @@
 require 'yajl/json_gem'
 
 module Spiceweasel
+  # manages parsing of Data Bags
   class DataBags
     include CommandHelper
 
     attr_reader :create, :delete
 
-    def initialize(data_bags = [])
+    def initialize(data_bags = []) # rubocop:disable CyclomaticComplexity
       @create = []
       @delete = []
       if data_bags
@@ -63,7 +64,7 @@ module Spiceweasel
               Spiceweasel::Log.debug("found files '#{files}' for data bag: #{db} with wildcard #{item}")
               next
             end
-            validateItem(db, item) unless Spiceweasel::Config[:novalidation]
+            validate_item(db, item) unless Spiceweasel::Config[:novalidation]
           end
           items.delete_if { |x| x.include?('*') } # remove wildcards
           items.sort!.uniq!
@@ -79,24 +80,22 @@ module Spiceweasel
     end
 
     # validate the item to be loaded
-    def validateItem(db, item)
-      if !File.exists?("data_bags/#{db}/#{item}.json")
+    def validate_item(db, item)
+      unless File.exists?("data_bags/#{db}/#{item}.json")
         STDERR.puts "ERROR: data bag '#{db}' item '#{item}' file 'data_bags/#{db}/#{item}.json' does not exist"
         exit(-1)
       end
       f = File.read("data_bags/#{db}/#{item}.json")
       begin
-      itemfile = JSON.parse(f)
+        itemfile = JSON.parse(f)
       rescue JSON::ParserError => e # invalid JSON
         STDERR.puts "ERROR: data bag '#{db} item '#{item}' has JSON errors."
         STDERR.puts e.message
         exit(-1)
       end
       # validate the id matches the file name
-      if item =~ /\// # pull out directories
-        item = item.split('/').last
-      end
-      if !item.eql?(itemfile['id'])
+      item = item.split('/').last if item =~ /\// # pull out directories
+      unless item.eql?(itemfile['id'])
         STDERR.puts "ERROR: data bag '#{db}' item '#{item}' listed in the manifest does not match the id '#{itemfile['id']}' within the 'data_bags/#{db}/#{item}.json' file."
         exit(-1)
       end

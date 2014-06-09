@@ -20,12 +20,13 @@
 require 'yajl/json_gem'
 
 module Spiceweasel
+  # manages parsing of Environments
   class Environments
     include CommandHelper
 
     attr_reader :environment_list, :create, :delete
 
-    def initialize(environments = [], cookbooks = {})
+    def initialize(environments = [], cookbooks = {}) # rubocop:disable CyclomaticComplexity
       @create = []
       @delete = []
       @environment_list = []
@@ -63,11 +64,9 @@ module Spiceweasel
     end
 
     # validate the content of the environment file
-    def validate(environment, cookbooks)
+    def validate(environment, cookbooks) # rubocop:disable CyclomaticComplexity
       file = %W(environments/#{environment}.rb environments/#{environment}.json).find { |f| File.exists?(f) }
-      if environment =~ /\// # pull out directories
-        environment = environment.split('/').last
-      end
+      environment = environment.split('/').last if environment =~ /\// # pull out directories
       if file
         case file
         when /\.json$/

@@ -20,6 +20,7 @@
 require 'mixlib/log'
 
 module Spiceweasel
+  # configure logging
   class Log
     extend Mixlib::Log
 

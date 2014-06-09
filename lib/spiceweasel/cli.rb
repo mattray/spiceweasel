@@ -43,139 +43,139 @@ module Spiceweasel
        spiceweasel [option] --extractlocal')
 
     option :clusterfile,
-    long: '--cluster-file file',
-    description: 'Specify an additional cluster manifest file, overriding any other node or cluster definitions'
+           long: '--cluster-file file',
+           description: 'Specify an additional cluster manifest file, overriding any other node or cluster definitions'
 
     option :debug,
-    long: '--debug',
-    description: 'Verbose debugging messages',
-    boolean: true
+           long: '--debug',
+           description: 'Verbose debugging messages',
+           boolean: true
 
     option :bulkdelete,
-    long: '--bulkdelete',
-    description: 'Delete all nodes for the provider(s) in the infrastructure',
-    boolean: false
+           long: '--bulkdelete',
+           description: 'Delete all nodes for the provider(s) in the infrastructure',
+           boolean: false
 
     option :attribute,
-    short: '-a',
-    long: '--attribute ATTR',
-    description: "The attribute to use for opening the connection - default depends on the context. Used in conjunction with '--chef-client'"
+           short: '-a',
+           long: '--attribute ATTR',
+           description: "The attribute to use for opening the connection - default depends on the context. Used in conjunction with '--chef-client'"
 
     option :chefclient,
-    long: '--chef-client',
-    description: 'Print the knife commands to run chef-client on the nodes of the infrastructure',
-    boolean: true
+           long: '--chef-client',
+           description: 'Print the knife commands to run chef-client on the nodes of the infrastructure',
+           boolean: true
 
     option :delete,
-    short: '-d',
-    long: '--delete',
-    description: 'Print the knife commands to delete the infrastructure',
-    boolean: true
+           short: '-d',
+           long: '--delete',
+           description: 'Print the knife commands to delete the infrastructure',
+           boolean: true
 
     option :execute,
-    short: '-e',
-    long: '--execute',
-    description: 'Execute the knife commands to create the infrastructure directly',
-    boolean: true
+           short: '-e',
+           long: '--execute',
+           description: 'Execute the knife commands to create the infrastructure directly',
+           boolean: true
 
     option :extractlocal,
-    long: '--extractlocal',
-    description: 'Use contents of local chef repository directories to generate knife commands to build infrastructure'
+           long: '--extractlocal',
+           description: 'Use contents of local chef repository directories to generate knife commands to build infrastructure'
 
     option :extractjson,
-    long: '--extractjson',
-    description: 'Use contents of local chef repository directories to generate JSON spiceweasel manifest'
+           long: '--extractjson',
+           description: 'Use contents of local chef repository directories to generate JSON spiceweasel manifest'
 
     option :extractyaml,
-    long: '--extractyaml',
-    description: 'Use contents of local chef repository directories to generate YAML spiceweasel manifest'
+           long: '--extractyaml',
+           description: 'Use contents of local chef repository directories to generate YAML spiceweasel manifest'
 
     option :help,
-    short: '-h',
-    long: '--help',
-    description: 'Show this message',
-    on: :tail,
-    boolean: true,
-    show_options: true,
-    exit: 0
+           short: '-h',
+           long: '--help',
+           description: 'Show this message',
+           on: :tail,
+           boolean: true,
+           show_options: true,
+           exit: 0
 
     option :knifeconfig,
-    short: '-c CONFIG',
-    long: '--knifeconfig CONFIG',
-    description: 'Specify the knife.rb configuration file'
+           short: '-c CONFIG',
+           long: '--knifeconfig CONFIG',
+           description: 'Specify the knife.rb configuration file'
 
     option :log_level,
-    short: '-l LEVEL',
-    long: '--loglevel LEVEL',
-    description: 'Set the log level (debug, info, warn, error, fatal)',
-    proc: lambda { |l| l.to_sym }
+           short: '-l LEVEL',
+           long: '--loglevel LEVEL',
+           description: 'Set the log level (debug, info, warn, error, fatal)',
+           proc: lambda { |l| l.to_sym } # rubocop:disable Lambda
 
     option :log_location,
-    short: '-L LOGLOCATION',
-    long: '--logfile LOGLOCATION',
-    description: 'Set the log file location, defaults to STDOUT',
-    proc: nil
+           short: '-L LOGLOCATION',
+           long: '--logfile LOGLOCATION',
+           description: 'Set the log file location, defaults to STDOUT',
+           proc: nil
 
     option :node_only,
-    long: '--node-only',
-    description: 'Create node(s) on the server, do not bootstrap',
-    boolean: false
+           long: '--node-only',
+           description: 'Create node(s) on the server, do not bootstrap',
+           boolean: false
 
     option :novalidation,
-    long: '--novalidation',
-    description: 'Disable validation',
-    boolean: true
+           long: '--novalidation',
+           description: 'Disable validation',
+           boolean: true
 
     option :parallel,
-    long: '--parallel',
-    description: "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands where applicable",
-    boolean: true
+           long: '--parallel',
+           description: "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands where applicable",
+           boolean: true
 
     option :rebuild,
-    short: '-r',
-    long: '--rebuild',
-    description: 'Print the knife commands to delete and recreate the infrastructure',
-    boolean: true
+           short: '-r',
+           long: '--rebuild',
+           description: 'Print the knife commands to delete and recreate the infrastructure',
+           boolean: true
 
     option :serverurl,
-    short: '-s URL',
-    long: '--server-url URL',
-    description: 'Specify the Chef Server URL'
+           short: '-s URL',
+           long: '--server-url URL',
+           description: 'Specify the Chef Server URL'
 
     option :siteinstall,
-    long: '--siteinstall',
-    description: "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
-    boolean: true
+           long: '--siteinstall',
+           description: "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
+           boolean: true
 
     option :timeout,
-    short: '-T seconds',
-    long: '--timeout',
-    description: 'Specify the maximum number of seconds a command is allowed to run without producing output.  Default is 300 seconds',
-    default: 300
+           short: '-T seconds',
+           long: '--timeout',
+           description: 'Specify the maximum number of seconds a command is allowed to run without producing output.  Default is 300 seconds',
+           default: 300
 
     option :version,
-    short: '-v',
-    long: '--version',
-    description: 'Show spiceweasel version',
-    boolean: true,
-    proc: lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
-    exit: 0
+           short: '-v',
+           long: '--version',
+           description: 'Show spiceweasel version',
+           boolean: true,
+           proc: lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
+           exit: 0
 
     option :cookbook_directory,
-    short: '-C COOKBOOK_DIR',
-    long: '--cookbook-dir COOKBOOK_DIR',
-    description: 'Set cookbook directory. Specify multiple times for multiple directories.',
-    proc: lambda { |v|
+           short: '-C COOKBOOK_DIR',
+           long: '--cookbook-dir COOKBOOK_DIR',
+           description: 'Set cookbook directory. Specify multiple times for multiple directories.',
+           proc: lambda { |v| # rubocop:disable Blocks
       Spiceweasel::Config[:cookbook_dir] ||= []
       Spiceweasel::Config[:cookbook_dir] << v
       Spiceweasel::Config[:cookbook_dir].uniq!
     }
 
     option :unique_id,
-    long: '--unique-id UID',
-    description: 'Unique ID generally used for ruby based configs'
+           long: '--unique-id UID',
+           description: 'Unique ID generally used for ruby based configs'
 
-    def run
+    def run # rubocop:disable CyclomaticComplexity
       if Spiceweasel::Config[:extractlocal] || Spiceweasel::Config[:extractjson] || Spiceweasel::Config[:extractyaml]
         manifest = Spiceweasel::ExtractLocal.parse_objects
       else
@@ -269,7 +269,7 @@ module Spiceweasel
       end
     end
 
-    def parse_and_validate_input(file)
+    def parse_and_validate_input(file) # rubocop:disable CyclomaticComplexity
       begin
         Spiceweasel::Log.debug("file: #{file}")
         unless File.file?(file)
@@ -295,7 +295,7 @@ module Spiceweasel
         STDERR.puts e.message
         STDERR.puts "ERROR: Parsing error in #{file}."
         exit(-1)
-      rescue Exception => e
+      rescue Exception => e # rubocop:disable RescueException
         STDERR.puts 'ERROR: Invalid or missing  manifest .json, .rb, or .yml file provided.'
         if Spiceweasel::Config[:log_level].to_s == 'debug'
           STDERR.puts "ERROR: #{e}\n#{e.backtrace.join("\n")}"

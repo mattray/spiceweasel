@@ -20,12 +20,13 @@
 require 'chef/cookbook/metadata'
 
 module Spiceweasel
+  # manages parsing of Cookbooks
   class Cookbooks
     include CommandHelper
 
     attr_reader :cookbook_list, :create, :delete
 
-    def initialize(cookbooks = [], other_cookbook_list = {})
+    def initialize(cookbooks = [], other_cookbook_list = {}) # rubocop:disable CyclomaticComplexity
       @create = []
       @delete = []
       @cookbook_list = other_cookbook_list
@@ -53,7 +54,7 @@ module Spiceweasel
           if File.directory?('cookbooks')
 
             if @loader.cookbooks_by_name[name]
-              validateMetadata(name, version) unless Spiceweasel::Config[:novalidation]
+              validate_metadata(name, version) unless Spiceweasel::Config[:novalidation]
             else
               if Spiceweasel::Config[:siteinstall] # use knife cookbook site install
                 create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} site install #{name} #{version} #{options}")
@@ -69,7 +70,7 @@ module Spiceweasel
           end
 
           if options
-            if !c_names.empty?
+            unless c_names.empty?
               create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
               c_names = []
             end
@@ -80,18 +81,18 @@ module Spiceweasel
           delete_command("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y")
           @cookbook_list[name] = version # used for validation
         end
-        if !c_names.empty?
+        unless c_names.empty?
           create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
         end
-        validateDependencies unless Spiceweasel::Config[:novalidation]
+        validate_dependencies unless Spiceweasel::Config[:novalidation]
       end
     end
 
     # check the metadata for versions and gather deps
-    def validateMetadata(cookbook, version)
+    def validate_metadata(cookbook, version)
       # check metadata.rb for requested version
       metadata = @loader.cookbooks_by_name[cookbook].metadata
-      Spiceweasel::Log.debug("validateMetadata: #{cookbook} #{metadata.name} #{metadata.version}")
+      Spiceweasel::Log.debug("validate_metadata: #{cookbook} #{metadata.name} #{metadata.version}")
       # Should the cookbook directory match the name in the metadata?
       if metadata.name.empty?
         Spiceweasel::Log.warn("No cookbook name in the #{cookbook} metadata.rb.")
@@ -110,10 +111,10 @@ module Spiceweasel
     end
 
     # compare the list of cookbook deps with those specified
-    def validateDependencies
-      Spiceweasel::Log.debug("cookbook validateDependencies: '#{@dependencies}'")
+    def validate_dependencies
+      Spiceweasel::Log.debug("cookbook validate_dependencies: '#{@dependencies}'")
       @dependencies.each do |dep|
-        if !member?(dep)
+        unless member?(dep)
           STDERR.puts "ERROR: Cookbook dependency '#{dep}' is missing from the list of cookbooks in the manifest."
           exit(-1)
         end

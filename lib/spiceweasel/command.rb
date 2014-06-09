@@ -18,6 +18,7 @@
 #
 
 module Spiceweasel
+  # prepares shellout calls
   class Command
     attr_reader :allow_failure
     attr_reader :timeout

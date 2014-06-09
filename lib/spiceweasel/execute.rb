@@ -20,6 +20,7 @@
 require 'mixlib/shellout'
 
 module Spiceweasel
+  # executes the knife commands from parsing manifests
   class Execute
     # run the commands passed in
     def initialize(commands)
@@ -32,7 +33,7 @@ module Spiceweasel
         puts knife.stderr
         Spiceweasel::Log.debug(cmd)
         Spiceweasel::Log.debug(knife.stdout)
-        Spiceweasel::Log.fatal(knife.stderr) if !knife.stderr.empty?
+        Spiceweasel::Log.fatal(knife.stderr) unless knife.stderr.empty?
         find.error! unless cmd.allow_failure?
       end
     end

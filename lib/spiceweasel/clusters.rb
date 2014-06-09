@@ -18,6 +18,7 @@
 #
 
 module Spiceweasel
+  # manages parsing of cluster files
   class Clusters
     attr_reader :create, :delete
 

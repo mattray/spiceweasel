@@ -18,6 +18,7 @@
 #
 
 module Spiceweasel
+  # create knife commands from the manifest
   class Knife
     include CommandHelper
 
