@@ -77,7 +77,8 @@ else
     STDERR.puts e.message
     STDERR.puts "ERROR: Parsing error in #{file}."
     exit(-1)
-  rescue Exception
+  rescue Exception => e
+		STDERR.puts e.message
     STDERR.puts "ERROR: No infrastructure .json or .yml file provided."
     puts cli.opt_parser.to_s
     exit(-1)
