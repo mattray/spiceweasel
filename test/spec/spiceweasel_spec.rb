@@ -43,15 +43,39 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
-knife rackspace server delete db1 -y
-knife node delete db1 -y
-knife client delete db1 -y
-knife rackspace server delete db2 -y
-knife node delete db2 -y
-knife client delete db2 -y
-knife rackspace server delete db3 -y
-knife node delete db3 -y
-knife client delete db3 -y
+knife rackspace server delete db01 -y
+knife node delete db01 -y
+knife client delete db01 -y
+knife rackspace server delete db02 -y
+knife node delete db02 -y
+knife client delete db02 -y
+knife rackspace server delete db03 -y
+knife node delete db03 -y
+knife client delete db03 -y
+knife rackspace server delete db04 -y
+knife node delete db04 -y
+knife client delete db04 -y
+knife rackspace server delete db05 -y
+knife node delete db05 -y
+knife client delete db05 -y
+knife rackspace server delete db06 -y
+knife node delete db06 -y
+knife client delete db06 -y
+knife rackspace server delete db07 -y
+knife node delete db07 -y
+knife client delete db07 -y
+knife rackspace server delete db08 -y
+knife node delete db08 -y
+knife client delete db08 -y
+knife rackspace server delete db09 -y
+knife node delete db09 -y
+knife client delete db09 -y
+knife rackspace server delete db10 -y
+knife node delete db10 -y
+knife client delete db10 -y
+knife rackspace server delete db11 -y
+knife node delete db11 -y
+knife client delete db11 -y
 knife node delete winboxA -y
 knife client delete winboxA -y
 knife node delete winboxB -y
@@ -72,9 +96,17 @@ knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret
 knife bootstrap serverA --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[base]'
 knife bootstrap serverB -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
 knife bootstrap serverC -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
-knife rackspace server create --image 49 -E qa --flavor 2 -N db1 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 -E qa --flavor 2 -N db2 -r 'recipe[mysql],role[monitoring]'
-knife rackspace server create --image 49 -E qa --flavor 2 -N db3 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db01 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db02 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db03 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db04 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db05 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db06 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db07 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db08 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db09 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db10 -r 'recipe[mysql],role[monitoring]'
+knife rackspace server create --image 49 -E qa --flavor 2 -N db11 -r 'recipe[mysql],role[monitoring]'
 knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
@@ -145,15 +177,39 @@ knife node delete serverB -y
 knife client delete serverB -y
 knife node delete serverC -y
 knife client delete serverC -y
-knife rackspace server delete db1 -y
-knife node delete db1 -y
-knife client delete db1 -y
-knife rackspace server delete db2 -y
-knife node delete db2 -y
-knife client delete db2 -y
-knife rackspace server delete db3 -y
-knife node delete db3 -y
-knife client delete db3 -y
+knife rackspace server delete db01 -y
+knife node delete db01 -y
+knife client delete db01 -y
+knife rackspace server delete db02 -y
+knife node delete db02 -y
+knife client delete db02 -y
+knife rackspace server delete db03 -y
+knife node delete db03 -y
+knife client delete db03 -y
+knife rackspace server delete db04 -y
+knife node delete db04 -y
+knife client delete db04 -y
+knife rackspace server delete db05 -y
+knife node delete db05 -y
+knife client delete db05 -y
+knife rackspace server delete db06 -y
+knife node delete db06 -y
+knife client delete db06 -y
+knife rackspace server delete db07 -y
+knife node delete db07 -y
+knife client delete db07 -y
+knife rackspace server delete db08 -y
+knife node delete db08 -y
+knife client delete db08 -y
+knife rackspace server delete db09 -y
+knife node delete db09 -y
+knife client delete db09 -y
+knife rackspace server delete db10 -y
+knife node delete db10 -y
+knife client delete db10 -y
+knife rackspace server delete db11 -y
+knife node delete db11 -y
+knife client delete db11 -y
 knife node delete winboxA -y
 knife client delete winboxA -y
 knife node delete winboxB -y
