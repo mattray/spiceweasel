@@ -433,7 +433,7 @@ module Spiceweasel
 
     # replace the {{n}} with the zero padding number
     def node_numerate(name, num, count)
-      digits = count.to_s.length
+      digits = count.to_s.length + 1
       pad = sprintf("%0#{digits}i", num)
       name.gsub(/\{\{n\}\}/, pad)
     end
