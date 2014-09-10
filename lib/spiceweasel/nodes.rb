@@ -142,7 +142,7 @@ module Spiceweasel
             optname = opt.sub(/-N|--node-name/, '').lstrip
             optname = options.split[options.split.find_index(opt) + 1] if optname.empty?
             count.to_i.times do |i|
-              nodenames.push(node_numerate(optname, i+1, count))
+              nodenames.push(node_numerate(optname, i + 1, count))
             end
           end
         end
