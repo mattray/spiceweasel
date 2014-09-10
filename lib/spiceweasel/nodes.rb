@@ -74,7 +74,7 @@ module Spiceweasel
             else
               # node bootstrap support
               name.split.each_with_index do |server, i|
-                servercommand = "knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+                servercommand = node_numerate("knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}", i + 1, count)
                 servercommand += " -r '#{run_list}'" unless run_list.empty?
                 create_command(servercommand, create_command_options)
                 delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
@@ -142,7 +142,7 @@ module Spiceweasel
             optname = opt.sub(/-N|--node-name/, '').lstrip
             optname = options.split[options.split.find_index(opt) + 1] if optname.empty?
             count.to_i.times do |i|
-              nodenames.push(optname.gsub(/\{\{n\}\}/, (i + 1).to_s))
+              nodenames.push(node_numerate(optname, i+1, count))
             end
           end
         end
@@ -189,7 +189,7 @@ module Spiceweasel
       provided_names = []
       if name.nil? && options.split.index('-N') # pull this out for deletes
         name = options.split[options.split.index('-N') + 1]
-        count.to_i.times { |i| provided_names << name.gsub('{{n}}', (i + 1).to_s) } if name
+        count.to_i.times { |i| provided_names << node_numerate(name, i + 1, count) } if name
       end
       # google can have names or numbers
       if provider.eql?('google') && names[1].to_i == 0
@@ -219,15 +219,15 @@ module Spiceweasel
         else
           count.to_i.times do |i|
             if provider.eql?('vsphere')
-              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}", i + 1, count)
             elsif provider.eql?('kvm')
-              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}", i + 1, count)
             elsif provider.eql?('digital_ocean')
-              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}", i + 1, count)
             elsif provider.eql?('google')
-              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}", i + 1, count)
             else
-              server = "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, (i + 1).to_s)
+              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}", i + 1, count)
             end
             server += " -r '#{run_list}'" unless run_list.empty?
             create_command(server, create_command_options)
@@ -429,6 +429,13 @@ module Spiceweasel
       run_list.gsub!(/ /, ',')
       run_list.gsub!(/,+/, ',')
       run_list
+    end
+
+    # replace the {{n}} with the zero padding number
+    def node_numerate(name, num, count)
+      digits = count.to_s.length + 1
+      pad = sprintf("%0#{digits}i", num)
+      name.gsub(/\{\{n\}\}/, pad)
     end
   end
 end

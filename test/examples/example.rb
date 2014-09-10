@@ -61,7 +61,7 @@
         "options" =>  "-E development -i ~/.ssh/mray.pem -x user --sudo"
       }
     },
-    {"rackspace 3" =>
+    {"rackspace 11" =>
       {
         "run_list" =>  "recipe[mysql],role[monitoring]",
         "options" =>  "--image 49 -E qa --flavor 2 -N db{{n}}"
