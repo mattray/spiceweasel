@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.executables   = Dir.glob('bin/**/*').map{ |f| File.basename(f) }
   s.require_path  = "lib"
 
-  s.add_dependency('yajl-ruby', '~> 1.1')
+  s.add_dependency('ffi-yajl', '~> 1.0')
   s.add_dependency('mixlib-config', '~> 2.0')
   s.add_dependency('mixlib-cli', '~> 1.5')
   s.add_dependency('mixlib-log', '~> 1.3')

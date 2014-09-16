@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'yajl/json_gem'
+require 'ffi_yajl'
 
 module Spiceweasel
   # manages parsing of Environments

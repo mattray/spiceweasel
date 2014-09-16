@@ -18,7 +18,7 @@
 #
 
 require 'mixlib/cli'
-require 'yajl/json_gem'
+require 'ffi_yajl'
 require 'yaml'
 
 require 'spiceweasel'
