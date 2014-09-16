@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # Author:: Matt Ray (<matt@getchef.com>)
 #
@@ -19,30 +20,30 @@
 require 'yajl/json_gem'
 
 module Spiceweasel
+  # manages parsing of Environments
   class Environments
-
     include CommandHelper
 
     attr_reader :environment_list, :create, :delete
 
-    def initialize(environments = [], cookbooks = {})
-      @create = Array.new
-      @delete = Array.new
-      @environment_list = Array.new
+    def initialize(environments = [], cookbooks = {}) # rubocop:disable CyclomaticComplexity
+      @create = []
+      @delete = []
+      @environment_list = []
       if environments
         Spiceweasel::Log.debug("environments: #{environments}")
-        flatenvs = environments.collect {|x| x.keys}.flatten
+        flatenvs = environments.map { |x| x.keys }.flatten
         envfiles = []
         flatenvs.each do |env|
           Spiceweasel::Log.debug("environment: #{env}")
-          if File.directory?("environments")
-            #expand wildcards and push into environments
-            if env =~ /\*/ #wildcard support
+          if File.directory?('environments')
+            # expand wildcards and push into environments
+            if env =~ /\*/ # wildcard support
               wildenvs = Dir.glob("environments/#{env}")
-              #remove anything not ending in .json or .rb
-              wildenvs.delete_if {|x| !x.end_with?(".rb", ".json")}
+              # remove anything not ending in .json or .rb
+              wildenvs.delete_if { |x| !x.end_with?('.rb', '.json') }
               Spiceweasel::Log.debug("found environments '#{wildenvs}' for wildcard: #{env}")
-              flatenvs.concat(wildenvs.collect {|x| x[x.rindex('/')+1..x.rindex('.')-1]})
+              flatenvs.concat(wildenvs.map { |x| x[x.rindex('/') + 1..x.rindex('.') - 1] })
               next
             end
             validate(env, cookbooks) unless Spiceweasel::Config[:novalidation]
@@ -52,7 +53,7 @@ module Spiceweasel
           end
           if File.exists?("environments/#{env}.json")
             envfiles.push("#{env}.json")
-          else #assume no .json means they want .rb and catchall for misssing dir
+          else # assume no .json means they want .rb and catchall for misssing dir
             envfiles.push("#{env}.rb")
           end
           delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{env} -y")
@@ -62,18 +63,16 @@ module Spiceweasel
       end
     end
 
-    #validate the content of the environment file
-    def validate(environment, cookbooks)
-      file = %W(environments/#{environment}.rb environments/#{environment}.json).detect{|f| File.exists?(f)}
-      if environment =~ /\// #pull out directories
-        environment = environment.split('/').last
-      end
+    # validate the content of the environment file
+    def validate(environment, cookbooks) # rubocop:disable CyclomaticComplexity
+      file = %W(environments/#{environment}.rb environments/#{environment}.json).find { |f| File.exists?(f) }
+      environment = environment.split('/').last if environment =~ /\// # pull out directories
       if file
         case file
         when /\.json$/
           env = Chef::JSONCompat.from_json(IO.read(file))
         when /\.rb$/
-          if (Chef::VERSION.split('.')[0].to_i < 11)
+          if Chef::VERSION.split('.')[0].to_i < 11
             env = Chef::Environment.new(false)
           else
             env = Chef::Environment.new
@@ -86,7 +85,7 @@ module Spiceweasel
             exit(-1)
           end
         end
-        if(env.name != environment)
+        if env.name != environment
           STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{env.name}' within the #{file} file."
           exit(-1)
         end
@@ -97,7 +96,7 @@ module Spiceweasel
             exit(-1)
           end
         end
-      else #environment is not here
+      else # environment is not here
         STDERR.puts "ERROR: Invalid Environment '#{environment}' listed in the manifest but not found in the environments directory."
         exit(-1)
       end
@@ -106,6 +105,5 @@ module Spiceweasel
     def member?(environment)
       environment_list.include?(environment)
     end
-
   end
 end

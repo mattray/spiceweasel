@@ -1,7 +1,8 @@
+# encoding: UTF-8
 #
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2013, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2013-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,15 +18,15 @@
 #
 
 module Spiceweasel
+  # load and parse berksfile
   class Berksfile
-
     attr_reader :create
     attr_reader :delete
     attr_reader :cookbook_list
 
     include CommandHelper
 
-    def initialize(berkshelf=nil)
+    def initialize(berkshelf = nil)
       @create = []
       @delete = []
       @cookbook_list = {}
@@ -48,11 +49,7 @@ module Spiceweasel
       create_command("berks upload #{berks_options}")
       Berkshelf.ui.mute do
         Spiceweasel::Log.debug("berkshelf resolving dependencies: #{resolve_opts}")
-        if(Gem::Version.new(Berkshelf::VERSION) >= Gem::Version.new('2.0.0'))
-          ckbks = berks.install(resolve_opts)
-        else
-          ckbks = berks.resolve(resolve_opts)
-        end
+        ckbks = berks.install
         ckbks.each do |cb|
           @cookbook_list[cb.cookbook_name] = cb.version
           delete_command("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{cb.cookbook_name} #{cb.version} -a -y")
@@ -60,5 +57,4 @@ module Spiceweasel
       end
     end
   end
-
 end

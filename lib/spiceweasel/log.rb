@@ -1,7 +1,8 @@
+# encoding: UTF-8
 #
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2012, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,12 +20,11 @@
 require 'mixlib/log'
 
 module Spiceweasel
+  # configure logging
   class Log
     extend Mixlib::Log
 
-    #not quite ready for timestamps
+    # not quite ready for timestamps
     Mixlib::Log::Formatter.show_time = false
-
   end
 end
-

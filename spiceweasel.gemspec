@@ -18,14 +18,14 @@ Gem::Specification.new do |s|
   s.executables   = Dir.glob('bin/**/*').map{ |f| File.basename(f) }
   s.require_path  = "lib"
 
-  s.add_dependency('yajl-ruby')
-  s.add_dependency('mixlib-cli')
-  s.add_dependency('mixlib-config')
-  s.add_dependency('mixlib-log')
-  s.add_dependency('mixlib-shellout')
-  s.add_dependency('chef', '>= 0.10')
-  s.add_dependency('berkshelf', '~> 2')
-  s.add_dependency('solve') # some what redundant since provided via berkshelf
-  s.add_development_dependency('rspec')
-  s.add_development_dependency('rake')
+  s.add_dependency('yajl-ruby', '~> 1.1')
+  s.add_dependency('mixlib-config', '~> 2.0')
+  s.add_dependency('mixlib-cli', '~> 1.5')
+  s.add_dependency('mixlib-log', '~> 1.3')
+  s.add_dependency('mixlib-shellout', '~> 1.4')
+  s.add_dependency('chef', '~> 11.0')
+  s.add_dependency('berkshelf', '~> 3.1')
+  s.add_development_dependency('rspec', '~> 3')
+  s.add_development_dependency('rake', '~> 10.3')
+  s.add_development_dependency('rubocop', '~> 0.18.1')
 end

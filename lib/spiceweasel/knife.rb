@@ -1,7 +1,8 @@
+# encoding: UTF-8
 #
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2013, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2013-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,14 +18,14 @@
 #
 
 module Spiceweasel
+  # create knife commands from the manifest
   class Knife
-
     include CommandHelper
 
     attr_reader :knife_list, :create
 
     def initialize(knives = {}, allknifes = [])
-      @create = Array.new
+      @create = []
       if knives
         knives.each do |knife|
           Spiceweasel::Log.debug("knife: #{knife}")
@@ -44,11 +45,10 @@ module Spiceweasel
 
     # test that the knife command exists
     def validate(command, allknifes)
-      unless allknifes.index {|x| x.start_with?("knife #{command}")}
+      unless allknifes.index { |x| x.start_with?("knife #{command}") }
         STDERR.puts "ERROR: 'knife #{command}' is not a currently supported command for knife."
         exit(-1)
       end
     end
-
   end
 end

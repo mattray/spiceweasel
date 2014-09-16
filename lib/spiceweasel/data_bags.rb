@@ -1,7 +1,8 @@
+# encoding: UTF-8
 #
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2011-2013, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,21 +20,21 @@
 require 'yajl/json_gem'
 
 module Spiceweasel
+  # manages parsing of Data Bags
   class DataBags
-
     include CommandHelper
 
     attr_reader :create, :delete
 
-    def initialize(data_bags = [])
-      @create = Array.new
-      @delete = Array.new
+    def initialize(data_bags = []) # rubocop:disable CyclomaticComplexity
+      @create = []
+      @delete = []
       if data_bags
         Spiceweasel::Log.debug("data bags: #{data_bags}")
         data_bags.each do |data_bag|
           db = data_bag.keys.first
-          #check directories
-          if !File.directory?("data_bags") && !Spiceweasel::Config[:novalidation]
+          # check directories
+          if !File.directory?('data_bags') && !Spiceweasel::Config[:novalidation]
             STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
             exit(-1)
           end
@@ -55,17 +56,17 @@ module Spiceweasel
           Spiceweasel::Log.debug("data bag: #{db} #{secret} #{items}")
           items.each do |item|
             Spiceweasel::Log.debug("data bag #{db} item: #{item}")
-            if item =~ /\*/ #wildcard support, will fail if directory not present
+            if item =~ /\*/ # wildcard support, will fail if directory not present
               files = Dir.glob("data_bags/#{db}/#{item}")
-              #remove anything not ending in .json
-              files.delete_if {|x| !x.end_with?('.json')}
-              items.concat(files.collect {|x| x["data_bags/#{db}/".length..-6]})
+              # remove anything not ending in .json
+              files.delete_if { |x| !x.end_with?('.json') }
+              items.concat(files.map { |x| x["data_bags/#{db}/".length..-6] })
               Spiceweasel::Log.debug("found files '#{files}' for data bag: #{db} with wildcard #{item}")
               next
             end
-            validateItem(db, item) unless Spiceweasel::Config[:novalidation]
+            validate_item(db, item) unless Spiceweasel::Config[:novalidation]
           end
-          items.delete_if {|x| x.include?("*")} #remove wildcards
+          items.delete_if { |x| x.include?('*') } # remove wildcards
           items.sort!.uniq!
           unless items.empty?
             if secret
@@ -78,29 +79,26 @@ module Spiceweasel
       end
     end
 
-    #validate the item to be loaded
-    def validateItem(db, item)
-      if !File.exists?("data_bags/#{db}/#{item}.json")
+    # validate the item to be loaded
+    def validate_item(db, item)
+      unless File.exists?("data_bags/#{db}/#{item}.json")
         STDERR.puts "ERROR: data bag '#{db}' item '#{item}' file 'data_bags/#{db}/#{item}.json' does not exist"
         exit(-1)
       end
       f = File.read("data_bags/#{db}/#{item}.json")
       begin
-      itemfile = JSON.parse(f)
+        itemfile = JSON.parse(f)
       rescue JSON::ParserError => e # invalid JSON
         STDERR.puts "ERROR: data bag '#{db} item '#{item}' has JSON errors."
         STDERR.puts e.message
         exit(-1)
       end
-      #validate the id matches the file name
-      if item =~ /\// #pull out directories
-        item = item.split('/').last
-      end
-      if !item.eql?(itemfile['id'])
+      # validate the id matches the file name
+      item = item.split('/').last if item =~ /\// # pull out directories
+      unless item.eql?(itemfile['id'])
         STDERR.puts "ERROR: data bag '#{db}' item '#{item}' listed in the manifest does not match the id '#{itemfile['id']}' within the 'data_bags/#{db}/#{item}.json' file."
         exit(-1)
       end
     end
-
   end
 end

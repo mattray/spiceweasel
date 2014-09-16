@@ -1,7 +1,8 @@
+# encoding: UTF-8
 #
-# Author:: Matt Ray (<matt@opscode.com>)
+# Author:: Matt Ray (<matt@getchef.com>)
 #
-# Copyright:: 2012-2013, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2012-2014, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +18,13 @@
 #
 
 module Spiceweasel
+  # manages parsing of cluster files
   class Clusters
-
     attr_reader :create, :delete
 
     def initialize(clusters, cookbooks, environments, roles, knifecommands)
-      @create = Array.new
-      @delete = Array.new
+      @create = []
+      @delete = []
       if clusters
         Spiceweasel::Log.debug("clusters: #{clusters}")
         clusters.each do |cluster|
@@ -40,13 +41,13 @@ module Spiceweasel
         node_name = node.keys.first
         options = node[node_name]['options'] || ''
         validate_environment(options, environment, environments) unless Spiceweasel::Config[:novalidation]
-        #push the Environment back on the options
+        # push the Environment back on the options
         node[node_name]['options'] = options + " -E #{environment}"
       end
       # let's reuse the Nodes logic
       nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands)
       @create.concat(nodes.create)
-      #what about providers??
+      # what about providers??
       nodes.delete.each do |del|
         @delete << del unless del.to_s =~ /^knife client|^knife node/
       end
@@ -58,12 +59,11 @@ module Spiceweasel
         STDERR.puts "ERROR: Environment '#{cluster}' is listed in the cluster, but not specified as an 'environment' in the manifest."
         exit(-1)
       end
-      if options =~ /-E/ #Environment must match the cluster
+      if options =~ /-E/ # Environment must match the cluster
         env = options.split('-E')[1].split[0]
         STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
         exit(-1)
       end
     end
-
   end
 end
