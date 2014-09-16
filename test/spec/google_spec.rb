@@ -107,14 +107,14 @@ for N in $(knife node list -E qa); do knife client delete $N -y; knife node dele
 knife cookbook upload apache2
 knife environment from file qa.rb
 knife role from file base.rb webserver.rb
-seq 1 | parallel -u -j 0 -v "knife google server create gmas{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gmas{} -r 'role[base]'"
-seq 2 | parallel -u -j 0 -v "knife google server create gdef{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gdef{} -r 'role[base]'"
+seq 1 | parallel -u -j 0 -v -- knife google server create gmas{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gmas{} -r 'role[base]'
+seq 2 | parallel -u -j 0 -v -- knife google server create gdef{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N gdef{} -r 'role[base]'
 knife google server create aaa -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create bbb -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create ccc -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create foo -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
 knife google server create bar -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
-seq 2 | parallel -u -j 0 -v "knife google server create g-qa{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa{} -E qa -r 'role[mysql]'"
+seq 2 | parallel -u -j 0 -v -- knife google server create g-qa{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa{} -E qa -r 'role[mysql]'
     OUTPUT
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
