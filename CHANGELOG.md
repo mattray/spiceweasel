@@ -2,8 +2,8 @@ This is the current, previous and future development milestones and contains the
 
 # 2.8.0 (in development)#
 * Zero padding with {{n}} ISSUE 62
+* fix Ubuntu parallel issue ISSUE 72
 
-* fix Ubuntu parallel issue ISSUES 72 (fix zero pad too)
 * Printed deletion knife commands are incorrect for rackspace server delete ISSUE 65
 * flags for just 1 part of the manifest (implies no validation) ISSUE 57
  * --nodes
