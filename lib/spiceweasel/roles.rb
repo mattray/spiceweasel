@@ -52,7 +52,7 @@ module Spiceweasel
             STDERR.puts "ERROR: 'roles' directory not found, unable to validate or load roles"
             exit(-1)
           end
-          if File.exists?("roles/#{role}.json")
+          if File.exist?("roles/#{role}.json")
             rolefiles.push("#{role}.json")
           else # assume no .json means they want .rb and catchall for misssing dir
             rolefiles.push("#{role}.rb")
@@ -67,7 +67,7 @@ module Spiceweasel
     # validate the content of the role file
     def validate(role, environments, cookbooks, roles) # rubocop:disable CyclomaticComplexity
       # validate the role passed in match the name of either the .rb or .json
-      file = %W(roles/#{role}.rb roles/#{role}.json).find { |f| File.exists?(f) }
+      file = %W(roles/#{role}.rb roles/#{role}.json).find { |f| File.exist?(f) }
       role = role.split('/').last if role =~ /\// # pull out directories
       if file
         case file

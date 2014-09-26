@@ -1,12 +1,12 @@
 AllCops:
   Includes:
-    - bin/**
-    - lib/**
-    - test/spec/**
+    - bin/**/*
+    - lib/**/*
+    - test/spec/**/*
   Excludes:
-    - test/chef-repo/**
-    - test/examples/**
-    - test/extract-repo/**
+    - test/chef-repo/**/*
+    - test/examples/**/*
+    - test/extract-repo/**/*
 
 # ignore long classes
 ClassLength:

@@ -47,7 +47,7 @@ module Spiceweasel
           if data_bag[db]
             items = data_bag[db]['items']
             secret = data_bag[db]['secret']
-            if secret && !File.exists?(File.expand_path(secret)) && !Spiceweasel::Config[:novalidation]
+            if secret && !File.exist?(File.expand_path(secret)) && !Spiceweasel::Config[:novalidation]
               STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
               exit(-1)
             end
@@ -81,7 +81,7 @@ module Spiceweasel
 
     # validate the item to be loaded
     def validate_item(db, item)
-      unless File.exists?("data_bags/#{db}/#{item}.json")
+      unless File.exist?("data_bags/#{db}/#{item}.json")
         STDERR.puts "ERROR: data bag '#{db}' item '#{item}' file 'data_bags/#{db}/#{item}.json' does not exist"
         exit(-1)
       end

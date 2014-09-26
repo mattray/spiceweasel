@@ -51,7 +51,7 @@ module Spiceweasel
             STDERR.puts "'environments' directory not found, unable to validate or load environments"
             exit(-1)
           end
-          if File.exists?("environments/#{env}.json")
+          if File.exist?("environments/#{env}.json")
             envfiles.push("#{env}.json")
           else # assume no .json means they want .rb and catchall for misssing dir
             envfiles.push("#{env}.rb")
@@ -65,7 +65,7 @@ module Spiceweasel
 
     # validate the content of the environment file
     def validate(environment, cookbooks) # rubocop:disable CyclomaticComplexity
-      file = %W(environments/#{environment}.rb environments/#{environment}.json).find { |f| File.exists?(f) }
+      file = %W(environments/#{environment}.rb environments/#{environment}.json).find { |f| File.exist?(f) }
       environment = environment.split('/').last if environment =~ /\// # pull out directories
       if file
         case file

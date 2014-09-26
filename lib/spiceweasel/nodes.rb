@@ -22,7 +22,7 @@ module Spiceweasel
   class Nodes
     include CommandHelper
 
-    PROVIDERS = %w{bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
+    PROVIDERS = %w(bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace slicehost terremark vagrant voxel vsphere)
 
     attr_reader :create, :delete
 
@@ -153,7 +153,7 @@ module Spiceweasel
       end
       nodenames.flatten.each do |node|
         if File.directory?('nodes/')
-          if File.exists?("nodes/#{node}.json")
+          if File.exist?("nodes/#{node}.json")
             validate_node_file(node) unless Spiceweasel::Config[:novalidation]
             servercommand = "knife node from file #{node}.json #{Spiceweasel::Config[:knife_options]}".rstrip
           else

@@ -158,7 +158,7 @@ module Spiceweasel
            long: '--version',
            description: 'Show spiceweasel version',
            boolean: true,
-           proc: lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
+           proc: ->() { puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
            exit: 0
 
     option :cookbook_directory,
@@ -220,7 +220,7 @@ module Spiceweasel
       exit 0
     end
 
-    def initialize(argv = [])
+    def initialize(_argv = [])
       super()
       parse_and_validate_options
       Config.merge!(@config)
@@ -276,6 +276,7 @@ module Spiceweasel
           STDERR.puts "ERROR: #{file} is an invalid manifest file, please check your path."
           exit(-1)
         end
+        output = nil
         if file.end_with?('.yml')
           output = YAML.load_file(file)
         elsif file.end_with?('.json')
@@ -315,6 +316,8 @@ module Spiceweasel
     end
 
     def process_manifest(manifest)
+      do_not_validate = Spiceweasel::Config[:novalidation]
+      berksfile = nil
       berksfile = Berksfile.new(manifest['berksfile']) if manifest.include?('berksfile')
       if berksfile
         cookbooks = Cookbooks.new(manifest['cookbooks'], berksfile.cookbook_list)
@@ -328,7 +331,8 @@ module Spiceweasel
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
-      knifecommands = find_knife_commands unless Spiceweasel::Config[:novalidation]
+      knifecommands = nil
+      knifecommands = find_knife_commands unless do_not_validate
       nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, knifecommands)
       clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, knifecommands)
       knife = Knife.new(manifest['knife'], knifecommands)
