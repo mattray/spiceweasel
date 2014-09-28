@@ -257,7 +257,7 @@ module Spiceweasel
     end
 
     # check that the knife plugin is installed
-    def validate_provider(provider, names, count, options, knifecommands)
+    def validate_provider(provider, names, _count, options, knifecommands)
       unless knifecommands.index { |x| x.start_with?("knife #{provider}") }
         STDERR.puts "ERROR: 'knife #{provider}' is not a currently installed plugin for knife."
         exit(-1)
@@ -419,7 +419,7 @@ module Spiceweasel
         item.sub!(/::/, '\:\:')
         search.push(item)
       end
-      "#{search.join(" and ")}"
+      "#{search.join(' and ')}"
     end
 
     # standardize the node run_list formatting

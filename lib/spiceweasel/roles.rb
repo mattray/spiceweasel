@@ -19,6 +19,7 @@
 
 require 'ffi_yajl'
 require 'chef'
+require 'spiceweasel/command_helper'
 
 module Spiceweasel
   # manages parsing of Roles
@@ -33,7 +34,7 @@ module Spiceweasel
       @role_list = []
       if roles
         Spiceweasel::Log.debug("roles: #{roles}")
-        flatroles = roles.map { |x| x.keys }.flatten
+        flatroles = roles.map(&:keys).flatten
         rolefiles = []
         flatroles.each do |role|
           Spiceweasel::Log.debug("role: #{role}")
@@ -65,11 +66,12 @@ module Spiceweasel
     end
 
     # validate the content of the role file
-    def validate(role, environments, cookbooks, roles) # rubocop:disable CyclomaticComplexity
+    def validate(role, _environments, cookbooks, roles) # rubocop:disable CyclomaticComplexity
       # validate the role passed in match the name of either the .rb or .json
       file = %W(roles/#{role}.rb roles/#{role}.json).find { |f| File.exist?(f) }
       role = role.split('/').last if role =~ /\// # pull out directories
       if file
+        c_role = nil
         case file
         when /\.json$/
           c_role = Chef::JSONCompat.from_json(IO.read(file))

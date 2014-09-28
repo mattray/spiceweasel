@@ -18,6 +18,7 @@
 #
 
 require 'ffi_yajl'
+require 'spiceweasel/command_helper'
 
 module Spiceweasel
   # manages parsing of Environments
@@ -32,7 +33,7 @@ module Spiceweasel
       @environment_list = []
       if environments
         Spiceweasel::Log.debug("environments: #{environments}")
-        flatenvs = environments.map { |x| x.keys }.flatten
+        flatenvs = environments.map(&:keys).flatten
         envfiles = []
         flatenvs.each do |env|
           Spiceweasel::Log.debug("environment: #{env}")
@@ -65,6 +66,7 @@ module Spiceweasel
 
     # validate the content of the environment file
     def validate(environment, cookbooks) # rubocop:disable CyclomaticComplexity
+      env = nil
       file = %W(environments/#{environment}.rb environments/#{environment}.json).find { |f| File.exist?(f) }
       environment = environment.split('/').last if environment =~ /\// # pull out directories
       if file

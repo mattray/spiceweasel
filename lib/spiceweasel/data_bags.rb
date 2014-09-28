@@ -19,6 +19,8 @@
 
 require 'ffi_yajl'
 
+require 'spiceweasel/command_helper'
+
 module Spiceweasel
   # manages parsing of Data Bags
   class DataBags
@@ -44,6 +46,8 @@ module Spiceweasel
           end
           create_command("knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}")
           delete_command("knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y")
+          items = nil
+          secret = nil
           if data_bag[db]
             items = data_bag[db]['items']
             secret = data_bag[db]['secret']
