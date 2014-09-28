@@ -31,37 +31,38 @@ module Spiceweasel
       @create = []
       @delete = []
       @environment_list = []
-      if environments
-        Spiceweasel::Log.debug("environments: #{environments}")
-        flatenvs = environments.map(&:keys).flatten
-        envfiles = []
-        flatenvs.each do |env|
-          Spiceweasel::Log.debug("environment: #{env}")
-          if File.directory?('environments')
-            # expand wildcards and push into environments
-            if env =~ /\*/ # wildcard support
-              wildenvs = Dir.glob("environments/#{env}")
-              # remove anything not ending in .json or .rb
-              wildenvs.delete_if { |x| !x.end_with?('.rb', '.json') }
-              Spiceweasel::Log.debug("found environments '#{wildenvs}' for wildcard: #{env}")
-              flatenvs.concat(wildenvs.map { |x| x[x.rindex('/') + 1..x.rindex('.') - 1] })
-              next
-            end
-            validate(env, cookbooks) unless Spiceweasel::Config[:novalidation]
-          elsif !Spiceweasel::Config[:novalidation]
-            STDERR.puts "'environments' directory not found, unable to validate or load environments"
-            exit(-1)
+
+      return unless environments
+
+      Spiceweasel::Log.debug("environments: #{environments}")
+      flatenvs = environments.map(&:keys).flatten
+      envfiles = []
+      flatenvs.each do |env|
+        Spiceweasel::Log.debug("environment: #{env}")
+        if File.directory?('environments')
+          # expand wildcards and push into environments
+          if env =~ /\*/ # wildcard support
+            wildenvs = Dir.glob("environments/#{env}")
+            # remove anything not ending in .json or .rb
+            wildenvs.delete_if { |x| !x.end_with?('.rb', '.json') }
+            Spiceweasel::Log.debug("found environments '#{wildenvs}' for wildcard: #{env}")
+            flatenvs.concat(wildenvs.map { |x| x[x.rindex('/') + 1..x.rindex('.') - 1] })
+            next
           end
-          if File.exist?("environments/#{env}.json")
-            envfiles.push("#{env}.json")
-          else # assume no .json means they want .rb and catchall for misssing dir
-            envfiles.push("#{env}.rb")
-          end
-          delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{env} -y")
-          @environment_list.push(env)
+          validate(env, cookbooks) unless Spiceweasel::Config[:novalidation]
+        elsif !Spiceweasel::Config[:novalidation]
+          STDERR.puts "'environments' directory not found, unable to validate or load environments"
+          exit(-1)
         end
-        create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{envfiles.uniq.sort.join(' ')}")
+        if File.exist?("environments/#{env}.json")
+          envfiles.push("#{env}.json")
+        else # assume no .json means they want .rb and catchall for misssing dir
+          envfiles.push("#{env}.rb")
+        end
+        delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{env} -y")
+        @environment_list.push(env)
       end
+      create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{envfiles.uniq.sort.join(' ')}")
     end
 
     # validate the content of the environment file

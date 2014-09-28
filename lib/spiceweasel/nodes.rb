@@ -31,70 +31,71 @@ module Spiceweasel
       @delete = []
       chefclient = []
       create_command_options = {}
-      if nodes
-        Spiceweasel::Log.debug("nodes: #{nodes}")
-        nodes.each do |node|
-          name = node.keys.first
-          names = name.split
-          Spiceweasel::Log.debug("node: '#{name}' '#{node[name]}'")
-          # get the node's run_list and options
-          if node[name]
-            run_list = process_run_list(node[name]['run_list'])
-            Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
-            validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
-            options = node[name]['options'] || ''
-            Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
-            validate_options(name, options, environments) unless Spiceweasel::Config[:novalidation]
-            %w(allow_create_failure timeout).each do |key|
-              if node[name].key?(key)
-                create_command_options[key] = node[name][key]
-              end
+
+      return unless nodes
+
+      Spiceweasel::Log.debug("nodes: #{nodes}")
+      nodes.each do |node|
+        name = node.keys.first
+        names = name.split
+        Spiceweasel::Log.debug("node: '#{name}' '#{node[name]}'")
+        # get the node's run_list and options
+        if node[name]
+          run_list = process_run_list(node[name]['run_list'])
+          Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
+          validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
+          options = node[name]['options'] || ''
+          Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
+          validate_options(name, options, environments) unless Spiceweasel::Config[:novalidation]
+          %w(allow_create_failure timeout).each do |key|
+            if node[name].key?(key)
+              create_command_options[key] = node[name][key]
             end
-            additional_commands = node[name]['additional_commands'] || []
           end
-          if Spiceweasel::Config[:chefclient]
-            chefclient.push(process_chef_client(names, options, run_list))
-          elsif Spiceweasel::Config[:node_only]
-            process_nodes_only(names, options, run_list, create_command_options)
-          else # create/delete
-            # provider support
-            if PROVIDERS.member?(names[0])
-              count = names.length == 2 ? names[1] : 1
-              process_providers(names, count, node[name]['name'], options, run_list, create_command_options, knifecommands)
-            elsif names[0].start_with?('windows_')
-              # windows node bootstrap support
-              protocol = names.shift.split('_') # split on 'windows_ssh' etc
-              names.each do |server|
-                servercommand = "knife bootstrap #{protocol[0]} #{protocol[1]}#{Spiceweasel::Config[:knife_options]} #{server} #{options}"
-                servercommand += " -r '#{run_list}'" unless run_list.empty?
-                create_command(servercommand, create_command_options)
-                delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
-                delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
-              end
-            else
-              # node bootstrap support
-              name.split.each_with_index do |server, i|
-                servercommand = node_numerate("knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}", i + 1, count)
-                servercommand += " -r '#{run_list}'" unless run_list.empty?
-                create_command(servercommand, create_command_options)
-                delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
-                delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
-              end
+          additional_commands = node[name]['additional_commands'] || []
+        end
+        if Spiceweasel::Config[:chefclient]
+          chefclient.push(process_chef_client(names, options, run_list))
+        elsif Spiceweasel::Config[:node_only]
+          process_nodes_only(names, options, run_list, create_command_options)
+        else # create/delete
+          # provider support
+          if PROVIDERS.member?(names[0])
+            count = names.length == 2 ? names[1] : 1
+            process_providers(names, count, node[name]['name'], options, run_list, create_command_options, knifecommands)
+          elsif names[0].start_with?('windows_')
+            # windows node bootstrap support
+            protocol = names.shift.split('_') # split on 'windows_ssh' etc
+            names.each do |server|
+              servercommand = "knife bootstrap #{protocol[0]} #{protocol[1]}#{Spiceweasel::Config[:knife_options]} #{server} #{options}"
+              servercommand += " -r '#{run_list}'" unless run_list.empty?
+              create_command(servercommand, create_command_options)
+              delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
             end
-            unless additional_commands.empty?
-              additional_commands.each do |cmd|
-                create_command(cmd, create_command_options)
-              end
+          else
+            # node bootstrap support
+            name.split.each_with_index do |server, i|
+              servercommand = node_numerate("knife bootstrap#{Spiceweasel::Config[:knife_options]} #{server} #{options}", i + 1, count)
+              servercommand += " -r '#{run_list}'" unless run_list.empty?
+              create_command(servercommand, create_command_options)
+              delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+              delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{server} -y")
+            end
+          end
+          unless additional_commands.empty?
+            additional_commands.each do |cmd|
+              create_command(cmd, create_command_options)
             end
           end
         end
-        if Spiceweasel::Config[:bulkdelete]
-          delete_command("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
-        end
-        # remove repeats in chefclient and push into create_command
-        chefclient.flatten.each_with_index { |x, i| create_command(x, create_command_options) unless x.eql?(chefclient[i - 1]) } if Spiceweasel::Config[:chefclient]
-        # nodeonly
       end
+      if Spiceweasel::Config[:bulkdelete]
+        delete_command("knife node#{Spiceweasel::Config[:knife_options]} bulk delete .* -y")
+      end
+      # remove repeats in chefclient and push into create_command
+      chefclient.flatten.each_with_index { |x, i| create_command(x, create_command_options) unless x.eql?(chefclient[i - 1]) } if Spiceweasel::Config[:chefclient]
+      # nodeonly
     end
 
     # ensure run_list contents are listed previously.
@@ -175,11 +176,12 @@ module Spiceweasel
     def validate_node_file(name)
       # read in the file
       node = Chef::JSONCompat.from_json(IO.read("nodes/#{name}.json"))
+
       # check the node name vs. contents of the file
-      if node['name'] != name
-        STDERR.puts "ERROR: Node '#{name}' listed in the manifest does not match the name '#{node['name']}' within the nodes/#{name}.json file."
-        exit(-1)
-      end
+      return unless node['name'] != name
+
+      STDERR.puts "ERROR: Node '#{name}' listed in the manifest does not match the name '#{node['name']}' within the nodes/#{name}.json file."
+      exit(-1)
     end
 
     # manage all the provider logic
@@ -262,12 +264,13 @@ module Spiceweasel
         STDERR.puts "ERROR: 'knife #{provider}' is not a currently installed plugin for knife."
         exit(-1)
       end
-      if provider.eql?('google')
-        if names[1].to_i != 0 && !options.split.member?('-N')
-          STDERR.puts "ERROR: 'knife google' currently requires providing a name. Please use -N within the options."
-          exit(-1)
-        end
-      end
+
+      return unless provider.eql?('google')
+
+      return unless names[1].to_i != 0 && !options.split.member?('-N')
+
+      STDERR.puts "ERROR: 'knife google' currently requires providing a name. Please use -N within the options."
+      exit(-1)
     end
 
     def process_chef_client(names, options, run_list) # rubocop:disable CyclomaticComplexity

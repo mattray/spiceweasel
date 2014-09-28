@@ -32,37 +32,38 @@ module Spiceweasel
       @create = []
       @delete = []
       @role_list = []
-      if roles
-        Spiceweasel::Log.debug("roles: #{roles}")
-        flatroles = roles.map(&:keys).flatten
-        rolefiles = []
-        flatroles.each do |role|
-          Spiceweasel::Log.debug("role: #{role}")
-          if File.directory?('roles')
-            # expand wildcards and push into flatroles
-            if role =~ /\*/ # wildcard support
-              wildroles = Dir.glob("roles/#{role}")
-              # remove anything not ending in .json or .rb
-              wildroles.delete_if { |x| !x.end_with?('.rb', '.json') }
-              Spiceweasel::Log.debug("found roles '#{wildroles}' for wildcard: #{role}")
-              flatroles.concat(wildroles.map { |x| x[x.rindex('/') + 1..x.rindex('.') - 1] })
-              next
-            end
-            validate(role, environments, cookbooks, flatroles) unless Spiceweasel::Config[:novalidation]
-          elsif !Spiceweasel::Config[:novalidation]
-            STDERR.puts "ERROR: 'roles' directory not found, unable to validate or load roles"
-            exit(-1)
+
+      return unless roles
+
+      Spiceweasel::Log.debug("roles: #{roles}")
+      flatroles = roles.map(&:keys).flatten
+      rolefiles = []
+      flatroles.each do |role|
+        Spiceweasel::Log.debug("role: #{role}")
+        if File.directory?('roles')
+          # expand wildcards and push into flatroles
+          if role =~ /\*/ # wildcard support
+            wildroles = Dir.glob("roles/#{role}")
+            # remove anything not ending in .json or .rb
+            wildroles.delete_if { |x| !x.end_with?('.rb', '.json') }
+            Spiceweasel::Log.debug("found roles '#{wildroles}' for wildcard: #{role}")
+            flatroles.concat(wildroles.map { |x| x[x.rindex('/') + 1..x.rindex('.') - 1] })
+            next
           end
-          if File.exist?("roles/#{role}.json")
-            rolefiles.push("#{role}.json")
-          else # assume no .json means they want .rb and catchall for misssing dir
-            rolefiles.push("#{role}.rb")
-          end
-          delete_command("knife role#{Spiceweasel::Config[:knife_options]} delete #{role} -y")
-          @role_list.push(role)
+          validate(role, environments, cookbooks, flatroles) unless Spiceweasel::Config[:novalidation]
+        elsif !Spiceweasel::Config[:novalidation]
+          STDERR.puts "ERROR: 'roles' directory not found, unable to validate or load roles"
+          exit(-1)
         end
-        create_command("knife role#{Spiceweasel::Config[:knife_options]} from file #{rolefiles.uniq.sort.join(' ')}")
+        if File.exist?("roles/#{role}.json")
+          rolefiles.push("#{role}.json")
+        else # assume no .json means they want .rb and catchall for misssing dir
+          rolefiles.push("#{role}.rb")
+        end
+        delete_command("knife role#{Spiceweasel::Config[:knife_options]} delete #{role} -y")
+        @role_list.push(role)
       end
+      create_command("knife role#{Spiceweasel::Config[:knife_options]} from file #{rolefiles.uniq.sort.join(' ')}")
     end
 
     # validate the content of the role file
@@ -88,6 +89,9 @@ module Spiceweasel
             STDERR.puts e.message
             exit(-1)
           end
+        else
+          STDERR.puts "ERROR: Role unreacable else block of 'case file' entered"
+          exit(-1)
         end
         Spiceweasel::Log.debug("role: '#{role}' name: '#{c_role.name}'")
         unless role.eql?(c_role.name)

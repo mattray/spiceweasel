@@ -26,18 +26,19 @@ module Spiceweasel
 
     def initialize(knives = {}, allknifes = [])
       @create = []
-      if knives
-        knives.each do |knife|
-          Spiceweasel::Log.debug("knife: #{knife}")
-          knife.keys.each do |knf|
-            validate(knf, allknifes) unless Spiceweasel::Config[:novalidation]
-            if knife[knf]
-              knife[knf].each do |options|
-                create_command("knife #{knf} #{options}")
-              end
-            else
-              create_command("knife #{knf}")
+
+      return unless knives
+
+      knives.each do |knife|
+        Spiceweasel::Log.debug("knife: #{knife}")
+        knife.keys.each do |knf|
+          validate(knf, allknifes) unless Spiceweasel::Config[:novalidation]
+          if knife[knf]
+            knife[knf].each do |options|
+              create_command("knife #{knf} #{options}")
             end
+          else
+            create_command("knife #{knf}")
           end
         end
       end
