@@ -37,55 +37,77 @@ module Spiceweasel
       Spiceweasel::Log.debug("data bags: #{data_bags}")
 
       data_bags.each do |data_bag|
-        db = data_bag.keys.first
-        # check directories
-        if !File.directory?('data_bags') && !Spiceweasel::Config[:novalidation]
-          STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
-          exit(-1)
-        end
+        db, items, secret = knife_data_bag_create_delete(data_bag)
+        items = invoke_validate_item(db, items, secret)
 
-        if !File.directory?("data_bags/#{db}") && !Spiceweasel::Config[:novalidation]
-          STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
-          exit(-1)
-        end
-
-        create_command("knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}")
-        delete_command("knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y")
-
-        items = nil
-        secret = nil
-        if data_bag[db]
-          items = data_bag[db]['items']
-          secret = data_bag[db]['secret']
-          if secret && !File.exist?(File.expand_path(secret)) && !Spiceweasel::Config[:novalidation]
-            STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
-            exit(-1)
-          end
-        end
-        items = [] if items.nil?
-        Spiceweasel::Log.debug("data bag: #{db} #{secret} #{items}")
-        items.each do |item|
-          Spiceweasel::Log.debug("data bag #{db} item: #{item}")
-          if item =~ /\*/ # wildcard support, will fail if directory not present
-            files = Dir.glob("data_bags/#{db}/#{item}")
-            # remove anything not ending in .json
-            files.delete_if { |x| !x.end_with?('.json') }
-            items.concat(files.map { |x| x["data_bags/#{db}/".length..-6] })
-            Spiceweasel::Log.debug("found files '#{files}' for data bag: #{db} with wildcard #{item}")
-            next
-          end
-          validate_item(db, item) unless Spiceweasel::Config[:novalidation]
-        end
         items.delete_if { |x| x.include?('*') } # remove wildcards
+
         items.sort!.uniq!
-        unless items.empty?
-          if secret
-            create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")
-          else
-            create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json")
-          end
+
+        data_bag_from_file(db, items, secret)
+      end
+    end
+
+    def data_bag_from_file(db, items, secret)
+      return if  items.empty?
+
+      if secret
+        create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")
+      else
+        create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json")
+      end
+    end
+
+    def invoke_validate_item(db, items, secret)
+      items = [] if items.nil?
+      Spiceweasel::Log.debug("data bag: #{db} #{secret} #{items}")
+      items.each do |item|
+        Spiceweasel::Log.debug("data bag #{db} item: #{item}")
+        if item =~ /\*/ # wildcard support, will fail if directory not present
+          files = Dir.glob("data_bags/#{db}/#{item}")
+          # remove anything not ending in .json
+          files.delete_if { |x| !x.end_with?('.json') }
+          items.concat(files.map { |x| x["data_bags/#{db}/".length..-6] })
+          Spiceweasel::Log.debug("found files '#{files}' for data bag: #{db} with wildcard #{item}")
+          next
+        end
+        validate_item(db, item) unless Spiceweasel::Config[:novalidation]
+      end
+      items
+    end
+
+    def knife_data_bag_create_delete(data_bag)
+      db = data_bag.keys.first
+      # check directories
+      if !File.directory?('data_bags') && !Spiceweasel::Config[:novalidation]
+        STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
+        exit(-1)
+      end
+
+      if !File.directory?("data_bags/#{db}") && !Spiceweasel::Config[:novalidation]
+        STDERR.puts "ERROR: 'data_bags/#{db}' directory not found, unable to validate or load data bag items"
+        exit(-1)
+      end
+
+      create_command("knife data bag#{Spiceweasel::Config[:knife_options]} create #{db}")
+      delete_command("knife data bag#{Spiceweasel::Config[:knife_options]} delete #{db} -y")
+
+      items, secret = identify_items_secret(data_bag, db)
+      return db, items, secret
+    end
+
+    def identify_items_secret(data_bag, db)
+      items = nil
+      secret = nil
+      if data_bag[db]
+        items = data_bag[db]['items']
+        secret = data_bag[db]['secret']
+        if secret && !File.exist?(File.expand_path(secret)) && !Spiceweasel::Config[:novalidation]
+          STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
+          exit(-1)
         end
       end
+      return items, secret
     end
 
     # validate the item to be loaded

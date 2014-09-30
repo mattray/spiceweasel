@@ -186,29 +186,26 @@ module Spiceweasel
           manifest.merge!(parse_and_validate_input(Spiceweasel::Config[:clusterfile]))
         end
       end
+
       Spiceweasel::Log.debug("file manifest: #{manifest}")
 
       create, delete = process_manifest(manifest)
 
+      evaluate_configuration(create, delete, manifest)
+
+      exit 0
+    end
+
+    def evaluate_configuration(create, delete, manifest)
       case
       when Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(manifest)
       when Spiceweasel::Config[:extractyaml]
         puts manifest.to_yaml
       when Spiceweasel::Config[:delete]
-        if Spiceweasel::Config[:execute]
-          Execute.new(delete)
-        else
-          puts delete unless delete.empty?
-        end
+        do_config_execute_delete(delete)
       when Spiceweasel::Config[:rebuild]
-        if Spiceweasel::Config[:execute]
-          Execute.new(delete)
-          Execute.new(create)
-        else
-          puts delete unless delete.empty?
-          puts create unless create.empty?
-        end
+        do_execute_rebuild(create, delete)
       else
         if Spiceweasel::Config[:execute]
           Execute.new(create)
@@ -216,8 +213,24 @@ module Spiceweasel
           puts create unless create.empty?
         end
       end
+    end
 
-      exit 0
+    def do_execute_rebuild(create, delete)
+      if Spiceweasel::Config[:execute]
+        Execute.new(delete)
+        Execute.new(create)
+      else
+        puts delete unless delete.empty?
+        puts create unless create.empty?
+      end
+    end
+
+    def do_config_execute_delete(delete)
+      if Spiceweasel::Config[:execute]
+        Execute.new(delete)
+      else
+        puts delete unless delete.empty?
+      end
     end
 
     def initialize(_argv = [])

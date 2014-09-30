@@ -35,6 +35,11 @@ module Spiceweasel
       return unless environments
 
       Spiceweasel::Log.debug("environments: #{environments}")
+      envfiles = do_flattened_environments(cookbooks, environments)
+      create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{envfiles.uniq.sort.join(' ')}")
+    end
+
+    def do_flattened_environments(cookbooks, environments)
       flatenvs = environments.map(&:keys).flatten
       envfiles = []
       flatenvs.each do |env|
@@ -62,7 +67,7 @@ module Spiceweasel
         delete_command("knife environment#{Spiceweasel::Config[:knife_options]} delete #{env} -y")
         @environment_list.push(env)
       end
-      create_command("knife environment#{Spiceweasel::Config[:knife_options]} from file #{envfiles.uniq.sort.join(' ')}")
+      envfiles
     end
 
     # validate the content of the environment file
@@ -75,34 +80,44 @@ module Spiceweasel
         when /\.json$/
           env = Chef::JSONCompat.from_json(IO.read(file))
         when /\.rb$/
-          if Chef::VERSION.split('.')[0].to_i < 11
-            env = Chef::Environment.new(false)
-          else
-            env = Chef::Environment.new
-          end
-          begin
-            env.from_file(file)
-          rescue SyntaxError => e
-            STDERR.puts "ERROR: Environment '#{file}' has syntax errors."
-            STDERR.puts e.message
-            exit(-1)
-          end
+          env = do_ruby_environment_file(file)
         end
         if env.name != environment
           STDERR.puts "ERROR: Environment '#{environment}' listed in the manifest does not match the name '#{env.name}' within the #{file} file."
           exit(-1)
         end
         env.cookbook_versions.keys.each do |dep|
-          Spiceweasel::Log.debug("environment: '#{environment}' cookbook: '#{dep}'")
-          unless cookbooks.member?(dep)
-            STDERR.puts "ERROR: Cookbook dependency '#{dep}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
-            exit(-1)
-          end
+          do_cookbook_version(cookbooks, dep, environment)
         end
       else # environment is not here
         STDERR.puts "ERROR: Invalid Environment '#{environment}' listed in the manifest but not found in the environments directory."
         exit(-1)
       end
+    end
+
+    def do_cookbook_version(cookbooks, dep, environment)
+      Spiceweasel::Log.debug("environment: '#{environment}' cookbook: '#{dep}'")
+
+      return if cookbooks.member?(dep)
+
+      STDERR.puts "ERROR: Cookbook dependency '#{dep}' from environment '#{environment}' is missing from the list of cookbooks in the manifest."
+      exit(-1)
+    end
+
+    def do_ruby_environment_file(file)
+      if Chef::VERSION.split('.')[0].to_i < 11
+        env = Chef::Environment.new(false)
+      else
+        env = Chef::Environment.new
+      end
+      begin
+        env.from_file(file)
+      rescue SyntaxError => e
+        STDERR.puts "ERROR: Environment '#{file}' has syntax errors."
+        STDERR.puts e.message
+        exit(-1)
+      end
+      env
     end
 
     def member?(environment)

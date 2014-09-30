@@ -46,10 +46,10 @@ module Spiceweasel
 
     # test that the knife command exists
     def validate(command, allknifes)
-      unless allknifes.index { |x| x.start_with?("knife #{command}") }
-        STDERR.puts "ERROR: 'knife #{command}' is not a currently supported command for knife."
-        exit(-1)
-      end
+      return if  allknifes.index { |x| x.start_with?("knife #{command}") }
+
+      STDERR.puts "ERROR: 'knife #{command}' is not a currently supported command for knife."
+      exit(-1)
     end
   end
 end

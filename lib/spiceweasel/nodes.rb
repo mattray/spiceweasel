@@ -138,38 +138,46 @@ module Spiceweasel
       nodenames = []
       if PROVIDERS.member?(names[0])
         count = names.length == 2 ? names[1] : 1
-        options.split.each do |opt|
-          if opt =~ /^-N|^--node-name/
-            optname = opt.sub(/-N|--node-name/, '').lstrip
-            optname = options.split[options.split.find_index(opt) + 1] if optname.empty?
-            count.to_i.times do |i|
-              nodenames.push(node_numerate(optname, i + 1, count))
-            end
-          end
-        end
+        do_provider_members(count, nodenames, options)
       elsif names[0].start_with?('windows_')
         nodenames.push(names[1..-1])
       else # standard nodes
         nodenames.push(names)
       end
       nodenames.flatten.each do |node|
-        if File.directory?('nodes/')
-          if File.exist?("nodes/#{node}.json")
-            validate_node_file(node) unless Spiceweasel::Config[:novalidation]
-            servercommand = "knife node from file #{node}.json #{Spiceweasel::Config[:knife_options]}".rstrip
-          else
-            STDERR.puts "'nodes/#{node}.json' not found, unable to validate or load node. Using 'knife node create' instead."
-            servercommand = "knife node create -d #{node} #{Spiceweasel::Config[:knife_options]}".rstrip
+        node_names_flatten(create_command_options, node, run_list)
+      end
+    end
+
+    def do_provider_members(count, nodenames, options)
+      options.split.each do |opt|
+        if opt =~ /^-N|^--node-name/
+          optname = opt.sub(/-N|--node-name/, '').lstrip
+          optname = options.split[options.split.find_index(opt) + 1] if optname.empty?
+          count.to_i.times do |i|
+            nodenames.push(node_numerate(optname, i + 1, count))
           end
+        end
+      end
+    end
+
+    def node_names_flatten(create_command_options, node, run_list)
+      if File.directory?('nodes/')
+        if File.exist?("nodes/#{node}.json")
+          validate_node_file(node) unless Spiceweasel::Config[:novalidation]
+          servercommand = "knife node from file #{node}.json #{Spiceweasel::Config[:knife_options]}".rstrip
         else
-          STDERR.puts "'nodes' directory not found, unable to validate or load nodes. Using 'knife node create' instead."
+          STDERR.puts "'nodes/#{node}.json' not found, unable to validate or load node. Using 'knife node create' instead."
           servercommand = "knife node create -d #{node} #{Spiceweasel::Config[:knife_options]}".rstrip
         end
-        create_command(servercommand, create_command_options)
-        create_command("knife node run_list set #{node} '#{run_list}'", create_command_options) unless run_list.empty?
-        delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{node} -y")
-        delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{node} -y")
+      else
+        STDERR.puts "'nodes' directory not found, unable to validate or load nodes. Using 'knife node create' instead."
+        servercommand = "knife node create -d #{node} #{Spiceweasel::Config[:knife_options]}".rstrip
       end
+      create_command(servercommand, create_command_options)
+      create_command("knife node run_list set #{node} '#{run_list}'", create_command_options) unless run_list.empty?
+      delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{node} -y")
+      delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{node} -y")
     end
 
     # validate individual node files
@@ -193,69 +201,88 @@ module Spiceweasel
         name = options.split[options.split.index('-N') + 1]
         count.to_i.times { |i| provided_names << node_numerate(name, i + 1, count) } if name
       end
+
       # google can have names or numbers
       if provider.eql?('google') && names[1].to_i == 0
-        names[1..-1].each do |gname|
-          server = "knife google#{Spiceweasel::Config[:knife_options]} server create #{gname} #{options}"
-          server += " -r '#{run_list}'" unless run_list.empty?
-          create_command(server, create_command_options)
-          provided_names << gname
-        end
+        do_google_numeric_provider(create_command_options, names, options, provided_names, run_list)
+      elsif Spiceweasel::Config[:parallel]
+        process_parallel(count, create_command_options, name, options, provider, run_list)
       else
-        if Spiceweasel::Config[:parallel]
-          parallel = "seq #{count} | parallel -u -j 0 -v -- "
-          if provider.eql?('vsphere')
-            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
-          elsif provider.eql?('kvm')
-            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
-          elsif provider.eql?('digital_ocean')
-            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
-          elsif provider.eql?('google')
-            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
-          else
-            parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
-          end
-          parallel += " -r '#{run_list}'" unless run_list.empty?
-          create_command(parallel, create_command_options)
-        else
-          count.to_i.times do |i|
-            if provider.eql?('vsphere')
-              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}", i + 1, count)
-            elsif provider.eql?('kvm')
-              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}", i + 1, count)
-            elsif provider.eql?('digital_ocean')
-              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}", i + 1, count)
-            elsif provider.eql?('google')
-              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}", i + 1, count)
-            else
-              server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}", i + 1, count)
-            end
-            server += " -r '#{run_list}'" unless run_list.empty?
-            create_command(server, create_command_options)
-          end
-        end
+        determine_cloud_provider(count, create_command_options, name, options, provider, run_list)
       end
       if Spiceweasel::Config[:bulkdelete] && provided_names.empty?
-        if ['kvm', 'vsphere'].member?(provider)
-          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
-        elsif ['digital_ocean'].member?(provider)
-          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} droplet destroy -y")
-        else
-          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} server delete -y")
-        end
+        do_bulk_delete(provider)
       else
         provided_names.each do |p_name|
-          if ['kvm', 'vsphere'].member?(provider)
-            delete_command("knife #{provider} vm delete #{p_name} -y")
-          elsif ['digital_ocean'].member?(provider)
-            delete_command("knife #{provider} droplet destroy #{p_name} -y")
-          else
-            delete_command("knife #{provider} server delete #{p_name} -y")
-          end
-          delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
-          delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+          do_provided_names(p_name, provider)
         end
       end
+    end
+
+    def determine_cloud_provider(count, create_command_options, name, options, provider, run_list)
+      count.to_i.times do |i|
+        if provider.eql?('vsphere')
+          server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}", i + 1, count)
+        elsif provider.eql?('kvm')
+          server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}", i + 1, count)
+        elsif provider.eql?('digital_ocean')
+          server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}", i + 1, count)
+        elsif provider.eql?('google')
+          server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}", i + 1, count)
+        else
+          server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}", i + 1, count)
+        end
+        server += " -r '#{run_list}'" unless run_list.empty?
+        create_command(server, create_command_options)
+      end
+    end
+
+    def do_google_numeric_provider(create_command_options, names, options, provided_names, run_list)
+      names[1..-1].each do |gname|
+        server = "knife google#{Spiceweasel::Config[:knife_options]} server create #{gname} #{options}"
+        server += " -r '#{run_list}'" unless run_list.empty?
+        create_command(server, create_command_options)
+        provided_names << gname
+      end
+    end
+
+    def do_provided_names(p_name, provider)
+      if ['kvm', 'vsphere'].member?(provider)
+        delete_command("knife #{provider} vm delete #{p_name} -y")
+      elsif ['digital_ocean'].member?(provider)
+        delete_command("knife #{provider} droplet destroy #{p_name} -y")
+      else
+        delete_command("knife #{provider} server delete #{p_name} -y")
+      end
+      delete_command("knife node#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+      delete_command("knife client#{Spiceweasel::Config[:knife_options]} delete #{p_name} -y")
+    end
+
+    def do_bulk_delete(provider)
+      if ['kvm', 'vsphere'].member?(provider)
+        delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
+      elsif ['digital_ocean'].member?(provider)
+        delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} droplet destroy -y")
+      else
+        delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} server delete -y")
+      end
+    end
+
+    def process_parallel(count, create_command_options, name, options, provider, run_list)
+      parallel = "seq #{count} | parallel -u -j 0 -v -- "
+      if provider.eql?('vsphere')
+        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+      elsif provider.eql?('kvm')
+        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+      elsif provider.eql?('digital_ocean')
+        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
+      elsif provider.eql?('google')
+        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
+      else
+        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+      end
+      parallel += " -r '#{run_list}'" unless run_list.empty?
+      create_command(parallel, create_command_options)
     end
 
     # check that the knife plugin is installed
