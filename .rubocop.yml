@@ -32,6 +32,6 @@ ParameterLists:
 BlockNesting:
   Enabled: false
 
-Style/RedundantReturn:
+RedundantReturn:
   # When true allows code like `return x, y`.
   AllowMultipleReturnValues: true
