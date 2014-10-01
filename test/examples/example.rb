@@ -65,7 +65,7 @@
     { 'rackspace 11' =>
       {
         'run_list' =>  'recipe[mysql],role[monitoring]',
-        'options' =>  '--image 49 -E qa --flavor 2 -N db{{n} }'
+        'options' =>  '--image 49 -E qa --flavor 2 -N db{{n}}'
       }
     },
     { 'windows_winrm winboxA' =>
@@ -104,7 +104,7 @@
   [
     { 'ssh' =>
       [
-        "role:monitoring' 'sudo chef-client' -x user"
+        "'role:monitoring' 'sudo chef-client' -x user"
       ]
     },
     { 'rackspace server delete' =>
