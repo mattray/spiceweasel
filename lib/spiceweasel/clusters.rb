@@ -25,12 +25,11 @@ module Spiceweasel
     def initialize(clusters, cookbooks, environments, roles, knifecommands)
       @create = []
       @delete = []
-      if clusters
-        Spiceweasel::Log.debug("clusters: #{clusters}")
-        clusters.each do |cluster|
-          cluster_name = cluster.keys.first
-          cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands)
-        end
+      return unless clusters
+      Spiceweasel::Log.debug("clusters: #{clusters}")
+      clusters.each do |cluster|
+        cluster_name = cluster.keys.first
+        cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands)
       end
     end
 
@@ -59,11 +58,12 @@ module Spiceweasel
         STDERR.puts "ERROR: Environment '#{cluster}' is listed in the cluster, but not specified as an 'environment' in the manifest."
         exit(-1)
       end
-      if options =~ /-E/ # Environment must match the cluster
-        env = options.split('-E')[1].split[0]
-        STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
-        exit(-1)
-      end
+
+      return unless options =~ /-E/ # Environment must match the cluster
+
+      env = options.split('-E')[1].split[0]
+      STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
+      exit(-1)
     end
   end
 end

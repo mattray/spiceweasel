@@ -1,12 +1,12 @@
 AllCops:
   Includes:
-    - bin/**
-    - lib/**
-    - test/spec/**
+    - bin/**/*
+    - lib/**/*
+    - test/spec/**/*
   Excludes:
-    - test/chef-repo/**
-    - test/examples/**
-    - test/extract-repo/**
+    - test/chef-repo/**/*
+    - test/examples/**/*
+    - test/extract-repo/**/*
 
 # ignore long classes
 ClassLength:
@@ -31,3 +31,7 @@ ParameterLists:
 # this needs to be cleaned up in lib/spiceweasel/nodes.rb
 BlockNesting:
   Enabled: false
+
+RedundantReturn:
+  # When true allows code like `return x, y`.
+  AllowMultipleReturnValues: true

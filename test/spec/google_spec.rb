@@ -63,7 +63,7 @@ knife google server create bar -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z 
 knife google server create g-qa01 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa01 -E qa -r 'role[mysql]'
 knife google server create g-qa02 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa02 -E qa -r 'role[mysql]'
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '-r',
                                   '--novalidation',
@@ -116,7 +116,7 @@ knife google server create foo -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z 
 knife google server create bar -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
 seq 2 | parallel -u -j 0 -v -- knife google server create g-qa{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa{} -E qa -r 'role[mysql]'
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--parallel',
                                   '-r',
