@@ -1,9 +1,10 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
 # 2.8.0 (in development)#
-* Zero padding with {{n}} ISSUE 62
-* fix Ubuntu parallel issue ISSUE 72
-* upgrade to ffi-yajl ISSUE 75
+* Berkshelf 3 support (Issue 69)
+* Zero padding with {{n}} (Issue 62)
+* fix Ubuntu parallel (Issue 72)
+* upgrade to ffi-yajl (Issue 75)
 
 * Printed deletion knife commands are incorrect for rackspace server delete ISSUE 65
 * flags for just 1 part of the manifest (implies no validation) ISSUE 57
@@ -14,7 +15,6 @@ This is the current, previous and future development milestones and contains the
 * cluster delete throws an error https://github.com/mattray/spiceweasel/issues/59
 * data_bag should be encrypted only if secret: is passed https://github.com/mattray/spiceweasel/issues/58
 * Chef Zero as a target
-* Berkshelf 3 support
 
 # 2.7.0 (unreleased) #
 * updated Gem dependencies to match ChefDK
