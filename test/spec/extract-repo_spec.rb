@@ -165,3 +165,37 @@ describe 'extract from an empty chef-repo2' do
     expect(spcwsl.stderr).to eq expected_output
   end
 end
+
+describe 'extractyaml from an empty chef-repo2' do
+  it 'spiceweasel --extractyaml' do
+    expected_output = <<-OUTPUT
+    OUTPUT
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+      '--extractyaml',
+      cwd: 'test/extract-repo2',
+      environment: { 'PWD' => "#{ENV['PWD']}/test/extract-repo2" })
+    spcwsl.run_command
+
+    expect(spcwsl.stdout).to eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
+  end
+end
+
+describe 'extractjson from an empty chef-repo2' do
+  it 'spiceweasel --extractjson' do
+    expected_output = <<-OUTPUT
+{
+}
+    OUTPUT
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+      '--extractjson',
+      cwd: 'test/extract-repo2',
+      environment: { 'PWD' => "#{ENV['PWD']}/test/extract-repo2" })
+    spcwsl.run_command
+
+    expect(spcwsl.stdout).to eq expected_output
+    expect(spcwsl.stderr).to eq ''
+  end
+end
