@@ -1,6 +1,7 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
 # 2.8.0 (in development)#
+* Sync with ChefDK dependencies (Issue 74)
 * Berkshelf 3 support (Issue 69)
 * Zero padding with {{n}} (Issue 62)
 * fix Ubuntu parallel (Issue 72)
