@@ -1,11 +1,13 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
 # 2.8.0 (in development)#
-* Sync with ChefDK dependencies (Issue 74)
-* Berkshelf 3 support (Issue 69)
+
 * Zero padding with {{n}} (Issue 62)
+* Berkshelf 3 support (Issue 69)
 * fix Ubuntu parallel (Issue 72)
+* Sync with ChefDK dependencies (Issue 74)
 * upgrade to ffi-yajl (Issue 75)
+* Better handling of empty directories. (Issue 79)
 * --chef-client produces lower-case search query (Issue 81)
 * Rubocop cleanups (Andrew Glick)
 
@@ -20,6 +22,7 @@ This is the current, previous and future development milestones and contains the
 * Chef Zero as a target
 
 # 2.7.0 (unreleased) #
+
 * updated Gem dependencies to match ChefDK
 * Berkshelf 3.x upgrade
 * rubocop cleanups
