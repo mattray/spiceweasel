@@ -33,7 +33,7 @@ module Spiceweasel
       @delete = []
       @role_list = []
 
-      return unless roles
+      return if roles.nil? || roles.empty?
 
       Spiceweasel::Log.debug("roles: #{roles}")
       rolefiles = identify_role_files(cookbooks, environments, roles)
