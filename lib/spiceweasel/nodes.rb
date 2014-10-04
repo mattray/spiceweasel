@@ -449,7 +449,7 @@ module Spiceweasel
         item.sub!(/::/, '\:\:')
         search.push(item)
       end
-      "#{search.join(' and ')}"
+      "#{search.join(' AND ')}"
     end
 
     # standardize the node run_list formatting
