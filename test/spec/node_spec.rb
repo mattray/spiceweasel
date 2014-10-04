@@ -21,7 +21,7 @@ require 'mixlib/shellout'
 
 describe 'clusters, digital_ocean and linode from 2.6' do
   before(:each) do
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
   end
 
   it 'cluster deletion, digital_ocean and linode' do

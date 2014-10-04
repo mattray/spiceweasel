@@ -158,7 +158,7 @@ module Spiceweasel
            long: '--version',
            description: 'Show spiceweasel version',
            boolean: true,
-           proc: lambda { |v| puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
+           proc: ->() { puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
            exit: 0
 
     option :cookbook_directory,
@@ -186,29 +186,26 @@ module Spiceweasel
           manifest.merge!(parse_and_validate_input(Spiceweasel::Config[:clusterfile]))
         end
       end
+
       Spiceweasel::Log.debug("file manifest: #{manifest}")
 
       create, delete = process_manifest(manifest)
 
+      evaluate_configuration(create, delete, manifest)
+
+      exit 0
+    end
+
+    def evaluate_configuration(create, delete, manifest)
       case
       when Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(manifest)
       when Spiceweasel::Config[:extractyaml]
         puts manifest.to_yaml
       when Spiceweasel::Config[:delete]
-        if Spiceweasel::Config[:execute]
-          Execute.new(delete)
-        else
-          puts delete unless delete.empty?
-        end
+        do_config_execute_delete(delete)
       when Spiceweasel::Config[:rebuild]
-        if Spiceweasel::Config[:execute]
-          Execute.new(delete)
-          Execute.new(create)
-        else
-          puts delete unless delete.empty?
-          puts create unless create.empty?
-        end
+        do_execute_rebuild(create, delete)
       else
         if Spiceweasel::Config[:execute]
           Execute.new(create)
@@ -216,11 +213,27 @@ module Spiceweasel
           puts create unless create.empty?
         end
       end
-
-      exit 0
     end
 
-    def initialize(argv = [])
+    def do_execute_rebuild(create, delete)
+      if Spiceweasel::Config[:execute]
+        Execute.new(delete)
+        Execute.new(create)
+      else
+        puts delete unless delete.empty?
+        puts create unless create.empty?
+      end
+    end
+
+    def do_config_execute_delete(delete)
+      if Spiceweasel::Config[:execute]
+        Execute.new(delete)
+      else
+        puts delete unless delete.empty?
+      end
+    end
+
+    def initialize(_argv = [])
       super()
       parse_and_validate_options
       Config.merge!(@config)
@@ -276,6 +289,7 @@ module Spiceweasel
           STDERR.puts "ERROR: #{file} is an invalid manifest file, please check your path."
           exit(-1)
         end
+        output = nil
         if file.end_with?('.yml')
           output = YAML.load_file(file)
         elsif file.end_with?('.json')
@@ -315,6 +329,8 @@ module Spiceweasel
     end
 
     def process_manifest(manifest)
+      do_not_validate = Spiceweasel::Config[:novalidation]
+      berksfile = nil
       berksfile = Berksfile.new(manifest['berksfile']) if manifest.include?('berksfile')
       if berksfile
         cookbooks = Cookbooks.new(manifest['cookbooks'], berksfile.cookbook_list)
@@ -328,7 +344,8 @@ module Spiceweasel
       environments = Environments.new(manifest['environments'], cookbooks)
       roles = Roles.new(manifest['roles'], environments, cookbooks)
       data_bags = DataBags.new(manifest['data bags'])
-      knifecommands = find_knife_commands unless Spiceweasel::Config[:novalidation]
+      knifecommands = nil
+      knifecommands = find_knife_commands unless do_not_validate
       nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, knifecommands)
       clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, knifecommands)
       knife = Knife.new(manifest['knife'], knifecommands)
