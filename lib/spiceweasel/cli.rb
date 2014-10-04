@@ -201,7 +201,7 @@ module Spiceweasel
       when Spiceweasel::Config[:extractjson]
         puts JSON.pretty_generate(manifest)
       when Spiceweasel::Config[:extractyaml]
-        puts manifest.to_yaml
+        puts manifest.to_yaml unless manifest.empty?
       when Spiceweasel::Config[:delete]
         do_config_execute_delete(delete)
       when Spiceweasel::Config[:rebuild]

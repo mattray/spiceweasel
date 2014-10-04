@@ -83,7 +83,7 @@ module Spiceweasel
         Spiceweasel::Log.debug("dir_ext: role: '#{role}'")
         roles << { role => nil }
       end
-      objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil?
+      objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil? || roles.empty?
     end
 
     def self.parse_berkshelf(objects)
