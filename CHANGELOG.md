@@ -5,6 +5,8 @@ This is the current, previous and future development milestones and contains the
 * Zero padding with {{n}} (Issue 62)
 * fix Ubuntu parallel (Issue 72)
 * upgrade to ffi-yajl (Issue 75)
+* --chef-client produces lower-case search query (Issue 81)
+* Rubocop cleanups (Andrew Glick)
 
 * Printed deletion knife commands are incorrect for rackspace server delete ISSUE 65
 * flags for just 1 part of the manifest (implies no validation) ISSUE 57

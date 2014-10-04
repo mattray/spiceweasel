@@ -22,15 +22,15 @@ require 'mixlib/shellout'
 describe '--chef-client from 2.5' do
   before(:each) do
     @expected_output = <<-OUTPUT
-knife ssh 'name:serverA and role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user --no-host-key-verify -p 22
-knife ssh 'name:serverB and chef_environment:development and role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
-knife ssh 'name:serverC and chef_environment:development and role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
-knife ssh 'name:db* and chef_environment:qa and recipe:mysql and role:monitoring' 'chef-client'
-knife winrm 'name:winboxA and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
-knife ssh 'name:winboxB and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
-knife ssh 'name:winboxC and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
-knife ssh 'chef_environment:amazon and role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
-knife ssh 'chef_environment:amazon and role:webserver and recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
+knife ssh 'name:serverA AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user --no-host-key-verify -p 22
+knife ssh 'name:serverB AND chef_environment:development AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+knife ssh 'name:serverC AND chef_environment:development AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+knife ssh 'name:db* AND chef_environment:qa AND recipe:mysql AND role:monitoring' 'chef-client'
+knife winrm 'name:winboxA AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxB AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxC AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'chef_environment:amazon AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
+knife ssh 'chef_environment:amazon AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
     OUTPUT
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
   end
@@ -69,12 +69,12 @@ end
 describe '--chef-client --cluster-file from 2.5' do
   before(:each) do
     @expected_output = <<-OUTPUT
-knife ssh 'name:serverB and chef_environment:qa and role:base and role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
-knife ssh 'name:serverC and chef_environment:qa and role:base and role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
-knife winrm 'name:winboxA and chef_environment:qa and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
-knife ssh 'name:winboxB and chef_environment:qa and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
-knife ssh 'name:winboxC and chef_environment:qa and role:base and role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
-knife ssh 'chef_environment:qa and role:webserver and recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
+knife ssh 'name:serverB AND chef_environment:qa AND role:base AND role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+knife ssh 'name:serverC AND chef_environment:qa AND role:base AND role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+knife winrm 'name:winboxA AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxB AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'name:winboxC AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+knife ssh 'chef_environment:qa AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
     OUTPUT
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
   end
@@ -119,8 +119,8 @@ end
 describe '--chef-client -a from 2.5' do
   it '--chef-client -a ec2.public_hostname' do
     expected_output = <<-OUTPUT
-knife ssh 'chef_environment:mycluster and role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
-knife ssh 'chef_environment:mycluster and role:webserver and recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
+knife ssh 'chef_environment:mycluster AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
+knife ssh 'chef_environment:mycluster AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
     OUTPUT
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
