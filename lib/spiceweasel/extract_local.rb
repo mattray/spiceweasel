@@ -63,6 +63,7 @@ module Spiceweasel
     def self.parse_data_bags
       data_bags = []
       Dir.glob('data_bags/*').each do |data_bag_full_path|
+        next unless File.directory?(data_bag_full_path)
         data_bag = data_bag_full_path.split('/').last
         Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}'")
         data_bag_items = []
@@ -82,7 +83,7 @@ module Spiceweasel
         Spiceweasel::Log.debug("dir_ext: role: '#{role}'")
         roles << { role => nil }
       end
-      objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil?
+      objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil? || roles.empty?
     end
 
     def self.parse_berkshelf(objects)
