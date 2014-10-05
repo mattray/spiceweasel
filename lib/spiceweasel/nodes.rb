@@ -22,7 +22,7 @@ module Spiceweasel
   class Nodes
     include CommandHelper
 
-    PROVIDERS = %w(bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace slicehost terremark vagrant voxel vsphere)
+    PROVIDERS = %w(bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace vagrant vcair vsphere)
 
     attr_reader :create, :delete
 

@@ -10,6 +10,7 @@ This is the current, previous and future development milestones and contains the
 * Better handling of empty directories. (Issue 79)
 * --chef-client produces lower-case search query (Issue 81)
 * Rubocop cleanups (Andrew Glick)
+* Support for knife-vcair, cleanup of stale cloud providers
 
 * Printed deletion knife commands are incorrect for rackspace server delete ISSUE 65
 * flags for just 1 part of the manifest (implies no validation) ISSUE 57

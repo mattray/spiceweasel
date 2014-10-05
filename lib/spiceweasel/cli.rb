@@ -21,7 +21,6 @@ require 'mixlib/cli'
 require 'ffi_yajl'
 require 'yaml'
 
-require 'spiceweasel'
 require 'spiceweasel/command_helper'
 require 'spiceweasel/cookbooks'
 require 'spiceweasel/berksfile'

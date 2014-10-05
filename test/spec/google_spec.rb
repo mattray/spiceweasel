@@ -19,8 +19,8 @@
 
 require 'mixlib/shellout'
 
-describe 'google from 2.6' do
-  it 'knife-google functionality' do
+describe 'google from 2.6, vcair from 2.8' do
+  it 'knife-google/vcair functionality' do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
@@ -49,6 +49,7 @@ knife google server delete bar -y
 knife google server delete g-qa01 -y
 knife google server delete g-qa02 -y
 for N in $(knife node list -E qa); do knife client delete $N -y; knife node delete $N -y; done
+for N in $(knife node list -E dev); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife environment from file qa.rb
 knife role from file base.rb webserver.rb
@@ -58,10 +59,15 @@ knife google server create gdef02 -m n1-standard-1 -I debian-7-wheezy-v20130723 
 knife google server create aaa -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create bbb -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create ccc -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
+knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -r 'role[base]'
+knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -r 'role[base]'
+knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -r 'role[base]'
 knife google server create foo -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
 knife google server create bar -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
 knife google server create g-qa01 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa01 -E qa -r 'role[mysql]'
 knife google server create g-qa02 -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa02 -E qa -r 'role[mysql]'
+knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -E dev -r 'role[base]'
+knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -E dev -r 'role[base]'
     OUTPUT
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
@@ -74,8 +80,8 @@ knife google server create g-qa02 -m n1-standard-1 -I debian-7-wheezy-v20130723 
   end
 end
 
-describe 'google --parallel from 2.6' do
-  it 'knife-google --parallel functionality' do
+describe 'google/vcair --parallel from 2.6' do
+  it 'knife-google/vcair --parallel functionality' do
     expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
@@ -104,6 +110,7 @@ knife google server delete bar -y
 knife google server delete g-qa01 -y
 knife google server delete g-qa02 -y
 for N in $(knife node list -E qa); do knife client delete $N -y; knife node delete $N -y; done
+for N in $(knife node list -E dev); do knife client delete $N -y; knife node delete $N -y; done
 knife cookbook upload apache2
 knife environment from file qa.rb
 knife role from file base.rb webserver.rb
@@ -112,9 +119,11 @@ seq 2 | parallel -u -j 0 -v -- knife google server create gdef{} -m n1-standard-
 knife google server create aaa -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create bbb -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
 knife google server create ccc -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -r 'role[mysql]'
+seq 3 | parallel -u -j 0 -v -- knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -r 'role[base]'
 knife google server create foo -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
 knife google server create bar -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -E qa -r 'role[mysql]'
 seq 2 | parallel -u -j 0 -v -- knife google server create g-qa{} -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa{} -E qa -r 'role[mysql]'
+seq 2 | parallel -u -j 0 -v -- knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -E dev -r 'role[base]'
     OUTPUT
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
