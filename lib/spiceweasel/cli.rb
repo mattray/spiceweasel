@@ -128,7 +128,7 @@ module Spiceweasel
            boolean: true
 
     option :only,
-           long: "--only ONLY_LIST",
+           long: '--only ONLY_LIST',
            description: "Comma separated list of manifest components to apply. #{MANIFEST_OPTIONS}",
            proc: lambda { |o| o.split(/[\s,]+/) },
            default: []
@@ -350,7 +350,7 @@ module Spiceweasel
       end
       only_list.push('berksfile') if only_list.member?('cookbooks')
       only_list.push('data bags') if only_list.delete('data_bags')
-      manifest.keep_if {|key, val| only_list.member?(key)}
+      manifest.keep_if { |key, val| only_list.member?(key) }
     end
 
     def process_manifest(manifest)

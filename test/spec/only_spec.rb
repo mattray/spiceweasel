@@ -42,7 +42,6 @@ knife cookbook upload mysql ntp
   end
 
   xit '--only cookbooks from the example config with yml' do
-    option = "--only cookbooks"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only cookbooks',
                                   '--novalidation',
@@ -110,7 +109,6 @@ knife environment from file development.rb production.rb qa.rb
   end
 
   xit '--only environments from the example config with yml' do
-    option = "--only environments"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only environments',
                                   '--novalidation',
@@ -130,7 +128,6 @@ knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
   end
 
   xit '--only roles from the example config with yml' do
-    option = "--only roles"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only roles',
                                   '--novalidation',
@@ -154,7 +151,6 @@ knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret
   end
 
   xit '--only data_bags from the example config with yml' do
-    option = "--only data_bags"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only data_bags',
                                   '--novalidation',
@@ -190,7 +186,6 @@ knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' 
   end
 
   xit '--only nodes from the example config with yml' do
-    option = "--only nodes"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only nodes',
                                   '--novalidation',
@@ -213,7 +208,6 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
   end
 
   xit '--only clusters from the example config with yml' do
-    option = "--only clusters"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only clusters',
                                   '--novalidation',
@@ -264,7 +258,6 @@ knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' 
   end
 
   xit '--only cookbooks,nodes from the example config with yml' do
-    option = "--only cookbooks,nodes"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only cookbooks,nodes',
                                   '--novalidation',
@@ -285,7 +278,6 @@ ERROR: Valid options are ["cookbooks", "environments", "roles", "data_bags", "no
   end
 
   xit '--only cookbooks,foo,roles expected to fail' do
-    option = "--only cookbooks,foo,roles"
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
                                   '--only cookbooks,foo,roles',
                                   '--novalidation',
