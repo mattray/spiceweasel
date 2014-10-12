@@ -38,6 +38,8 @@ module Spiceweasel
   class CLI
     include Mixlib::CLI
 
+    MANIFEST_OPTIONS = %w(cookbooks environments roles data_bags nodes clusters knife)
+
     banner('Usage: spiceweasel [option] file
        spiceweasel [option] --extractlocal')
 
@@ -125,6 +127,12 @@ module Spiceweasel
            description: 'Disable validation',
            boolean: true
 
+    option :only,
+           long: "--only ONLY_LIST",
+           description: "Comma separated list of manifest components to apply. #{MANIFEST_OPTIONS}",
+           proc: lambda { |o| o.split(/[\s,]+/) },
+           default: []
+
     option :parallel,
            long: '--parallel',
            description: "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands where applicable",
@@ -187,6 +195,8 @@ module Spiceweasel
       end
 
       Spiceweasel::Log.debug("file manifest: #{manifest}")
+
+      manifest = process_only(manifest)
 
       create, delete = process_manifest(manifest)
 
@@ -325,6 +335,22 @@ module Spiceweasel
           return arg unless ARGV[ARGV.find_index(arg) - 1].eql?('--cluster-file')
         end
       end
+    end
+
+    # the --only options
+    def process_only(manifest)
+      only_list = Spiceweasel::Config[:only]
+      return manifest if only_list.empty?
+      only_list.each do |key|
+        unless MANIFEST_OPTIONS.member?(key)
+          STDERR.puts "ERROR: '--only #{key}' is an invalid option."
+          STDERR.puts "ERROR: Valid options are #{MANIFEST_OPTIONS}."
+          exit(-1)
+        end
+      end
+      only_list.push('berksfile') if only_list.member?('cookbooks')
+      only_list.push('data bags') if only_list.delete('data_bags')
+      manifest.keep_if {|key, val| only_list.member?(key)}
     end
 
     def process_manifest(manifest)
