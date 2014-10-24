@@ -28,7 +28,13 @@ data bags:
 nodes:
 - boxy.lab.atx:
     run_list: role[tc], recipe[abc]
-    options: --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22
+    options: >-
+      --identity-file
+      ~/.ssh/mray.pem
+      --ssh-user user
+      --sudo
+      --no-host-key-verify
+      --ssh-port 22
 - guenter.home.atx:
     run_list: role[base], recipe[def]
     options: -E development -i ~/.ssh/mray.pem -x user --sudo
