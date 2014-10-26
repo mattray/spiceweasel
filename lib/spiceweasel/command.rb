@@ -26,7 +26,7 @@ module Spiceweasel
 
     def initialize(command, options = {})
       if bundler?
-        @command = 'bundle exec '+command.rstrip
+        @command = 'bundle exec ' + command.rstrip
       else
         @command = command.rstrip
       end
