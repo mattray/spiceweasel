@@ -120,7 +120,7 @@ knife vsphere vm clone --bootstrap --template 'abc' my-new-webserver1
 knife vsphere vm clone --bootstrap --template 'def' my-new-webserver2
 knife vsphere vm clone --bootstrap --template 'ghi' my-new-webserver3
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it 'maintains consistent output from the example config with yml' do
@@ -219,7 +219,7 @@ knife client delete winboxC -y
 knife node bulk delete .* -y
 for N in $(knife node list -E amazon); do knife client delete $N -y; knife node delete $N -y; done
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--bulkdelete',
                                   '-d',

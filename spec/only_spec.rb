@@ -26,7 +26,7 @@ knife cookbook upload apache2
 knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--only cookbooks from the example config with yml' do
@@ -67,7 +67,7 @@ knife cookbook delete mno 0.10.0 -a -y
 berks upload --no-freeze --halt-on-frozen -b ./Berksfile
 knife cookbook upload abc ghi jkl mno
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   # fails because can't find Berksfile
@@ -85,7 +85,7 @@ describe '--only environments' do
     @expected_output = <<-OUTPUT
 knife environment from file development.rb production.rb qa.rb
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--only environments from the example config with yml' do
@@ -102,7 +102,7 @@ describe '--only roles' do
     @expected_output = <<-OUTPUT
 knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--only roles from the example config with yml' do
@@ -123,7 +123,7 @@ knife data bag create data
 knife data bag create passwords
 knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--only data_bags from the example config with yml' do
@@ -156,7 +156,7 @@ knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password
 knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--only nodes from the example config with yml' do
@@ -176,7 +176,7 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--only clusters from the example config with yml' do
@@ -261,7 +261,7 @@ knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password
 knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   # failing because of the comma
@@ -280,7 +280,7 @@ describe '--only cookbooks,foo,roles' do
 ERROR: '--only foo' is an invalid option.
 ERROR: Valid options are ["cookbooks", "environments", "roles", "data_bags", "nodes", "clusters", "knife"].
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--only cookbooks,foo,roles expected to fail' do

@@ -32,7 +32,7 @@ knife ssh 'name:winboxC AND role:base AND role:iisserver' 'chef-client' -x Admin
 knife ssh 'chef_environment:amazon AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
 knife ssh 'chef_environment:amazon AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--chef-client, yml' do
@@ -76,7 +76,7 @@ knife ssh 'name:winboxB AND chef_environment:qa AND role:base AND role:iisserver
 knife ssh 'name:winboxC AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
 knife ssh 'chef_environment:qa AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--chef-client --cluster-file, yml' do
@@ -122,7 +122,7 @@ describe '--chef-client -a from 2.5' do
 knife ssh 'chef_environment:mycluster AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
 knife ssh 'chef_environment:mycluster AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--novalidation',
                                   '--chef-client',
