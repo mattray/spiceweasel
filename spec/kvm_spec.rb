@@ -21,7 +21,27 @@ require 'mixlib/shellout'
 
 describe 'kvm, cluster functionality from 2.5' do
   it 'kvm, cluster functionality' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec knife cookbook delete apache2  -a -y
+bundle exec knife environment delete qa -y
+bundle exec knife role delete base -y
+bundle exec knife node delete winboxA -y
+bundle exec knife client delete winboxA -y
+bundle exec knife node delete winboxB -y
+bundle exec knife client delete winboxB -y
+for N in $(bundle exec knife node list -E qa); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done
+bundle exec knife cookbook upload apache2
+bundle exec knife environment from file qa.rb
+bundle exec knife role from file base.rb
+bundle exec seq 2 | parallel -u -j 0 -v -- bundle exec knife kvm vm create -E qa --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret -r 'role[base]'
+bundle exec knife bootstrap windows winrm winboxA -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
+bundle exec knife bootstrap windows winrm winboxB -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
+bundle exec seq 1 | parallel -u -j 0 -v -- bundle exec knife kvm vm create -E production --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret -E qa -r 'role[mysql]'
+bundle exec seq 3 | parallel -u -j 0 -v -- bundle exec knife kvm vm create --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret -E qa -r 'role[webserver],recipe[mysql::client]'
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
 knife role delete base -y
@@ -39,6 +59,7 @@ knife bootstrap windows winrm winboxB -x Administrator -P 'super_secret_password
 seq 1 | parallel -u -j 0 -v -- knife kvm vm create -E production --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret -E qa -r 'role[mysql]'
 seq 3 | parallel -u -j 0 -v -- knife kvm vm create --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret -E qa -r 'role[webserver],recipe[mysql::client]'
     OUTPUT
+    end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--parallel',

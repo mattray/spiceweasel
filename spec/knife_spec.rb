@@ -21,12 +21,21 @@ require 'mixlib/shellout'
 
 describe 'knife commands' do
   it 'test knife commands from 2.4' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec knife node list
+bundle exec knife client list
+bundle exec knife ssh "role:database" "chef-client" -x root
+bundle exec knife ssh "role:webserver" "sudo chef-client" -x ubuntu
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 knife node list
 knife client list
 knife ssh "role:database" "chef-client" -x root
 knife ssh "role:webserver" "sudo chef-client" -x ubuntu
     OUTPUT
+    end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   'test/examples/knife.yml',

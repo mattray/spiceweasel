@@ -83,7 +83,17 @@ end
 
 describe '--chef-client --cluster-file from 2.5' do
   before(:each) do
-    @expected_output = <<-OUTPUT
+    if bundler?
+      @expected_output = <<-OUTPUT
+bundle exec knife ssh 'name:serverB AND chef_environment:qa AND role:base AND role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+bundle exec knife ssh 'name:serverC AND chef_environment:qa AND role:base AND role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+bundle exec knife winrm 'name:winboxA AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+bundle exec knife ssh 'name:winboxB AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+bundle exec knife ssh 'name:winboxC AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+bundle exec knife ssh 'chef_environment:qa AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
+    OUTPUT
+    else
+      @expected_output = <<-OUTPUT
 knife ssh 'name:serverB AND chef_environment:qa AND role:base AND role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
 knife ssh 'name:serverC AND chef_environment:qa AND role:base AND role:webserver' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
 knife winrm 'name:winboxA AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
@@ -91,6 +101,7 @@ knife ssh 'name:winboxB AND chef_environment:qa AND role:base AND role:iisserver
 knife ssh 'name:winboxC AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
 knife ssh 'chef_environment:qa AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
     OUTPUT
+end
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
@@ -133,10 +144,17 @@ end
 
 describe '--chef-client -a from 2.5' do
   it '--chef-client -a ec2.public_hostname' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec knife ssh 'chef_environment:mycluster AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
+bundle exec knife ssh 'chef_environment:mycluster AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 knife ssh 'chef_environment:mycluster AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
 knife ssh 'chef_environment:mycluster AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
     OUTPUT
+  end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--novalidation',

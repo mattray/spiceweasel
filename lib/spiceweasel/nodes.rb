@@ -260,26 +260,58 @@ module Spiceweasel
 
     def do_bulk_delete(provider)
       if ['kvm', 'vsphere'].member?(provider)
-        delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
+        if bundler?
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs bundle exec knife #{provider} vm delete -y")
+        else
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
+        end
       elsif ['digital_ocean'].member?(provider)
-        delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} droplet destroy -y")
+        if bundler?
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs bundle exec knife #{provider} droplet destroy -y")
+        else
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} droplet destroy -y")
+        end
       else
-        delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} server delete -y")
+        if bundler?
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs bundle exec knife #{provider} server delete -y")
+        else
+          delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} server delete -y")
+        end
       end
     end
 
     def process_parallel(count, create_command_options, name, options, provider, run_list)
       parallel = "seq #{count} | parallel -u -j 0 -v -- "
       if provider.eql?('vsphere')
-        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+        if bundler?
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+        else
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+        end
       elsif provider.eql?('kvm')
-        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+        if bundler?
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+        else
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+        end
       elsif provider.eql?('digital_ocean')
-        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
+        if bundler?
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
+        else
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
+        end
       elsif provider.eql?('google')
-        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
+        if bundler?
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
+        else
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
+        end
       else
-        parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+        if bundler?
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+        else
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+        end
       end
       parallel += " -r '#{run_list}'" unless run_list.empty?
       create_command(parallel, create_command_options)

@@ -50,9 +50,17 @@ bundle exec knife client delete winboxB -y
 bundle exec knife node delete winboxC -y
 bundle exec knife client delete winboxC -y
 bundle exec knife digital_ocean droplet destroy DOmysql -y
+bundle exec knife node delete DOmysql -y
+bundle exec knife client delete DOmysql -y
 bundle exec knife digital_ocean droplet destroy DOweb01 -y
+bundle exec knife node delete DOweb01 -y
+bundle exec knife client delete DOweb01 -y
 bundle exec knife digital_ocean droplet destroy DOweb02 -y
+bundle exec knife node delete DOweb02 -y
+bundle exec knife client delete DOweb02 -y
 bundle exec knife digital_ocean droplet destroy DOweb03 -y
+bundle exec knife node delete DOweb03 -y
+bundle exec knife client delete DOweb03 -y
 for N in $(bundle exec knife node list -E digital); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done
 bundle exec knife bootstrap serverA --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[base]'
 bundle exec knife bootstrap serverB -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base]'
@@ -141,6 +149,14 @@ bundle exec knife node delete winboxB -y
 bundle exec knife client delete winboxB -y
 bundle exec knife node delete winboxC -y
 bundle exec knife client delete winboxC -y
+bundle exec knife node delete DOmysql -y
+bundle exec knife client delete DOmysql -y
+bundle exec knife node delete DOweb01 -y
+bundle exec knife client delete DOweb01 -y
+bundle exec knife node delete DOweb02 -y
+bundle exec knife client delete DOweb02 -y
+bundle exec knife node delete DOweb03 -y
+bundle exec knife client delete DOweb03 -y
 for N in $(bundle exec knife node list -E digital); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done
 bundle exec knife node create -d serverA
 bundle exec knife node run_list set serverA 'role[base]'

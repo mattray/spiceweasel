@@ -320,6 +320,9 @@ bundle exec knife client delete winboxB -y
 bundle exec knife node delete winboxC -y
 bundle exec knife client delete winboxC -y
 bundle exec knife node bulk delete .* -y
+bundle exec knife node list | xargs bundle exec knife ec2 server delete -y
+bundle exec knife node list | xargs bundle exec knife ec2 server delete -y
+bundle exec knife node bulk delete .* -y
 for N in $(bundle exec knife node list -E amazon); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done
     OUTPUT
     else

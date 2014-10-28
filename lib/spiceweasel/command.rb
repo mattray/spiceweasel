@@ -25,11 +25,7 @@ module Spiceweasel
     attr_reader :command
 
     def initialize(command, options = {})
-      if bundler?
-        @command = 'bundle exec ' + command.rstrip
-      else
-        @command = command.rstrip
-      end
+      @command = command.rstrip
       @options = options
       @timeout = options['timeout']
       @allow_failure = options.key?('allow_failure') ? options['allow_failure'] : true
@@ -39,10 +35,6 @@ module Spiceweasel
       opts = {}
       opts[:timeout] = timeout if timeout
       opts
-    end
-
-    def bundler?
-      ENV.key?('BUNDLE_BIN_PATH')
     end
 
     alias_method :allow_failure?, :allow_failure
