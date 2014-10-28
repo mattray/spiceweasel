@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require 'spiceweasel/command'
-
 module Spiceweasel
   # manages parsing of cluster files
   class Clusters
@@ -71,5 +69,10 @@ module Spiceweasel
       STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
       exit(-1)
     end
+
+    def bundler?
+      ENV.key?('BUNDLE_BIN_PATH')
+    end
+
   end
 end
