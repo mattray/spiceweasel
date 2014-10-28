@@ -23,7 +23,7 @@ require 'spec_helper'
 describe '--only cookbooks' do
   before(:each) do
     if bundler?
-    @expected_output = <<-OUTPUT
+      @expected_output = <<-OUTPUT
 bundle exec knife cookbook upload apache2
 bundle exec knife cookbook upload apt --freeze
 bundle exec knife cookbook upload mysql ntp
@@ -105,9 +105,15 @@ end
 
 describe '--only environments' do
   before(:each) do
-    @expected_output = <<-OUTPUT
+    if bundler?
+      @expected_output = <<-OUTPUT
+bundle exec knife environment from file development.rb production.rb qa.rb
+    OUTPUT
+    else
+      @expected_output = <<-OUTPUT
 knife environment from file development.rb production.rb qa.rb
     OUTPUT
+    end
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 

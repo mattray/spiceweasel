@@ -258,7 +258,72 @@ end
 
 describe 'The Spiceweasel binary' do
   it 'maintains consistent output deleting from the example config with yml using --bulkdelete' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec knife cookbook delete apache2  -a -y
+bundle exec knife cookbook delete apt 1.2.0 -a -y
+bundle exec knife cookbook delete mysql  -a -y
+bundle exec knife cookbook delete ntp  -a -y
+bundle exec knife environment delete development -y
+bundle exec knife environment delete qa -y
+bundle exec knife environment delete production -y
+bundle exec knife role delete base -y
+bundle exec knife role delete iisserver -y
+bundle exec knife role delete monitoring -y
+bundle exec knife role delete webserver -y
+bundle exec knife data bag delete users -y
+bundle exec knife data bag delete data -y
+bundle exec knife data bag delete passwords -y
+bundle exec knife node delete serverA -y
+bundle exec knife client delete serverA -y
+bundle exec knife node delete serverB -y
+bundle exec knife client delete serverB -y
+bundle exec knife node delete serverC -y
+bundle exec knife client delete serverC -y
+bundle exec knife rackspace server delete db001 -y
+bundle exec knife node delete db001 -y
+bundle exec knife client delete db001 -y
+bundle exec knife rackspace server delete db002 -y
+bundle exec knife node delete db002 -y
+bundle exec knife client delete db002 -y
+bundle exec knife rackspace server delete db003 -y
+bundle exec knife node delete db003 -y
+bundle exec knife client delete db003 -y
+bundle exec knife rackspace server delete db004 -y
+bundle exec knife node delete db004 -y
+bundle exec knife client delete db004 -y
+bundle exec knife rackspace server delete db005 -y
+bundle exec knife node delete db005 -y
+bundle exec knife client delete db005 -y
+bundle exec knife rackspace server delete db006 -y
+bundle exec knife node delete db006 -y
+bundle exec knife client delete db006 -y
+bundle exec knife rackspace server delete db007 -y
+bundle exec knife node delete db007 -y
+bundle exec knife client delete db007 -y
+bundle exec knife rackspace server delete db008 -y
+bundle exec knife node delete db008 -y
+bundle exec knife client delete db008 -y
+bundle exec knife rackspace server delete db009 -y
+bundle exec knife node delete db009 -y
+bundle exec knife client delete db009 -y
+bundle exec knife rackspace server delete db010 -y
+bundle exec knife node delete db010 -y
+bundle exec knife client delete db010 -y
+bundle exec knife rackspace server delete db011 -y
+bundle exec knife node delete db011 -y
+bundle exec knife client delete db011 -y
+bundle exec knife node delete winboxA -y
+bundle exec knife client delete winboxA -y
+bundle exec knife node delete winboxB -y
+bundle exec knife client delete winboxB -y
+bundle exec knife node delete winboxC -y
+bundle exec knife client delete winboxC -y
+bundle exec knife node bulk delete .* -y
+for N in $(bundle exec knife node list -E amazon); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife cookbook delete apt 1.2.0 -a -y
 knife cookbook delete mysql  -a -y
@@ -321,6 +386,7 @@ knife client delete winboxC -y
 knife node bulk delete .* -y
 for N in $(knife node list -E amazon); do knife client delete $N -y; knife node delete $N -y; done
     OUTPUT
+    end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--bulkdelete',

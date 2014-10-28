@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+require 'spiceweasel/command'
+
 module Spiceweasel
   # manages parsing of cluster files
   class Clusters
@@ -50,7 +52,11 @@ module Spiceweasel
       nodes.delete.each do |del|
         @delete << del unless del.to_s =~ /^knife client|^knife node/
       end
-      @delete << "for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done"
+      if bundler?
+        @delete << "for N in $(bundle exec knife node list -E #{environment}); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done"
+      else
+        @delete << "for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done"
+      end
     end
 
     def validate_environment(options, cluster, environments)
