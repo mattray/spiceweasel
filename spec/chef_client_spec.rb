@@ -101,7 +101,7 @@ knife ssh 'name:winboxB AND chef_environment:qa AND role:base AND role:iisserver
 knife ssh 'name:winboxC AND chef_environment:qa AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
 knife ssh 'chef_environment:qa AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
     OUTPUT
-end
+    end
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
@@ -154,7 +154,7 @@ bundle exec knife ssh 'chef_environment:mycluster AND role:webserver AND recipe:
 knife ssh 'chef_environment:mycluster AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
 knife ssh 'chef_environment:mycluster AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
     OUTPUT
-  end
+    end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--novalidation',
