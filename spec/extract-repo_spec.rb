@@ -18,10 +18,23 @@
 #
 
 require 'mixlib/shellout'
+require 'spec_helper'
 
 describe '--extractlocal from extract-repo' do
   it 'spiceweasel --extractlocal' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec berks upload -b ./Berksfile
+bundle exec knife cookbook upload abc ghi jkl mno
+bundle exec knife environment from file development.rb production-blue.json production-green.json production-red.json qa.rb
+bundle exec knife role from file base.rb base2.rb base3.rb base4.rb tc.rb
+bundle exec knife data bag create junk
+bundle exec knife data bag from file junk abc.json ade.json afg.json bcd.json
+bundle exec knife data bag create users
+bundle exec knife data bag from file users mray.json ubuntu.json
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 berks upload -b ./Berksfile
 knife cookbook upload abc ghi jkl mno
 knife environment from file development.rb production-blue.json production-green.json production-red.json qa.rb
@@ -31,6 +44,7 @@ knife data bag from file junk abc.json ade.json afg.json bcd.json
 knife data bag create users
 knife data bag from file users mray.json ubuntu.json
     OUTPUT
+    end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--extractlocal',

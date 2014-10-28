@@ -18,10 +18,24 @@
 #
 
 require 'mixlib/shellout'
+require 'spec_helper'
 
 describe '--chef-client from 2.5' do
   before(:each) do
-    @expected_output = <<-OUTPUT
+    if bundler?
+      @expected_output = <<-OUTPUT
+bundle exec knife ssh 'name:serverA AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user --no-host-key-verify -p 22
+bundle exec knife ssh 'name:serverB AND chef_environment:development AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+bundle exec knife ssh 'name:serverC AND chef_environment:development AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
+bundle exec knife ssh 'name:db* AND chef_environment:qa AND recipe:mysql AND role:monitoring' 'chef-client'
+bundle exec knife winrm 'name:winboxA AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+bundle exec knife ssh 'name:winboxB AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+bundle exec knife ssh 'name:winboxC AND role:base AND role:iisserver' 'chef-client' -x Administrator -P 'super_secret_password'
+bundle exec knife ssh 'chef_environment:amazon AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
+bundle exec knife ssh 'chef_environment:amazon AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
+    OUTPUT
+    else
+      @expected_output = <<-OUTPUT
 knife ssh 'name:serverA AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user --no-host-key-verify -p 22
 knife ssh 'name:serverB AND chef_environment:development AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
 knife ssh 'name:serverC AND chef_environment:development AND role:base' 'sudo chef-client' -i ~/.ssh/mray.pem -x user
@@ -32,6 +46,7 @@ knife ssh 'name:winboxC AND role:base AND role:iisserver' 'chef-client' -x Admin
 knife ssh 'chef_environment:amazon AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
 knife ssh 'chef_environment:amazon AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
     OUTPUT
+    end
     @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
