@@ -50,7 +50,11 @@ module Spiceweasel
       nodes.delete.each do |del|
         @delete << del unless del.to_s =~ /^knife client|^knife node/
       end
-      @delete << "for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done"
+      if bundler?
+        @delete << "for N in $(bundle exec knife node list -E #{environment}); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done"
+      else
+        @delete << "for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done"
+      end
     end
 
     def validate_environment(options, cluster, environments)
@@ -64,6 +68,10 @@ module Spiceweasel
       env = options.split('-E')[1].split[0]
       STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
       exit(-1)
+    end
+
+    def bundler?
+      ENV.key?('BUNDLE_BIN_PATH')
     end
   end
 end

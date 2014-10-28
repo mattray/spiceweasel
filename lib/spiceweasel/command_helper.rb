@@ -24,12 +24,26 @@ module Spiceweasel
   module CommandHelper
     def create_command(*args)
       @create ||= []
-      @create.push(Command.new(*args))
+      if bundler?
+        args[0] = 'bundle exec ' + args[0]
+        @create.push(Command.new(*args))
+      else
+        @create.push(Command.new(*args))
+      end
     end
 
     def delete_command(*args)
       @delete ||= []
-      @delete.push(Command.new(*args))
+      if bundler?
+        args[0] = 'bundle exec ' + args[0]
+        @delete.push(Command.new(*args))
+      else
+        @delete.push(Command.new(*args))
+      end
+    end
+
+    def bundler?
+      ENV.key?('BUNDLE_BIN_PATH')
     end
   end
 end

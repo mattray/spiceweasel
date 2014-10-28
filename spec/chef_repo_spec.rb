@@ -51,7 +51,7 @@ knife bootstrap guenter.home.atx -E development -i ~/.ssh/mray.pem -x user --sud
 knife bootstrap wilhelm.home.atx -E development -i ~/.ssh/mray.pem -x user --sudo
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   'infrastructure.yml',
                                   cwd: 'test/chef-repo',
@@ -63,7 +63,7 @@ end
 
 describe 'expected failure validation with a chef-repo' do
   before(:each) do
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--extractjson expected to fail Ruby parse' do

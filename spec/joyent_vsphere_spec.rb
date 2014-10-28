@@ -21,7 +21,22 @@ require 'mixlib/shellout'
 
 describe 'joyent, vsphere, --bulkdelete functionality 2.3' do
   it 'knife-joyent, knife-vsphere and --bulkdelete' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec knife cookbook delete apache2  -a -y
+bundle exec knife environment delete qa -y
+bundle exec knife role delete base -y
+bundle exec knife node list | xargs bundle exec knife joyent server delete -y
+bundle exec knife node list | xargs bundle exec knife vsphere vm delete -y
+bundle exec knife node bulk delete .* -y
+bundle exec knife cookbook upload apache2
+bundle exec knife environment from file qa.rb
+bundle exec knife role from file base.rb
+bundle exec seq 2 | parallel -u -j 0 -v -- bundle exec knife joyent server create -i ~/.ssh/joyent.pem -E qa -r 'role[base]'
+bundle exec seq 2 | parallel -u -j 0 -v -- bundle exec knife vsphere vm clone -P secret_password -x Administrator --template some_template -r 'role[base]'
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 knife cookbook delete apache2  -a -y
 knife environment delete qa -y
 knife role delete base -y
@@ -34,7 +49,8 @@ knife role from file base.rb
 seq 2 | parallel -u -j 0 -v -- knife joyent server create -i ~/.ssh/joyent.pem -E qa -r 'role[base]'
 seq 2 | parallel -u -j 0 -v -- knife vsphere vm clone -P secret_password -x Administrator --template some_template -r 'role[base]'
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. .. bin spiceweasel))
+    end
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--parallel',
                                   '--bulkdelete',
