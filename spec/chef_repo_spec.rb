@@ -29,7 +29,7 @@ bundle exec knife cookbook upload abc ghi jkl mno
 bundle exec knife environment from file development.rb production-blue.json production-green.json production-red.json sub/efg1.rb sub/efg2.json
 bundle exec knife role from file base.rb base2.rb base3.rb base4.rb sub/bw2.json tc.rb
 bundle exec knife data bag create users
-bundle exec knife data bag from file users mray.json
+bundle exec knife data bag from file users mray.json --secret-file PASSWORD
 bundle exec knife data bag create junk
 bundle exec knife data bag from file junk abc.json ade.json afg.json sub1/cde1.json sub1/cde2.json sub2/def1.json
 bundle exec knife bootstrap boxy.lab.atx --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[tc],recipe[abc]'
@@ -43,7 +43,7 @@ knife cookbook upload abc ghi jkl mno
 knife environment from file development.rb production-blue.json production-green.json production-red.json sub/efg1.rb sub/efg2.json
 knife role from file base.rb base2.rb base3.rb base4.rb sub/bw2.json tc.rb
 knife data bag create users
-knife data bag from file users mray.json
+knife data bag from file users mray.json --secret-file PASSWORD
 knife data bag create junk
 knife data bag from file junk abc.json ade.json afg.json sub1/cde1.json sub1/cde2.json sub2/def1.json
 knife bootstrap boxy.lab.atx --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[tc],recipe[abc]'

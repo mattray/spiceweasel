@@ -18,6 +18,7 @@ roles:
 - tc:
 data bags:
 - users:
+    secret: PASSWORD
     items:
     - mray
 - junk:
