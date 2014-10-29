@@ -3,7 +3,9 @@ This is the current, previous and future development milestones and contains the
 # 2.8.0 (in development)#
 
 * flags for subsets of the manifest with --only (Issue 57)
+* cluster delete throws an error (Issue 59)
 * Zero padding with {{n}} (Issue 62)
+* Printed deletion knife commands are incorrect for rackspace server delete (Issue 65)
 * bundler support (Issue 67)
 * Berkshelf 3 support (Issue 69)
 * fix Ubuntu parallel (Issue 72)
@@ -14,8 +16,6 @@ This is the current, previous and future development milestones and contains the
 * Rubocop cleanups (Andrew Glick)
 * Support for knife-vcair, cleanup of stale cloud providers
 
-* Printed deletion knife commands are incorrect for rackspace server delete ISSUE 65
-* cluster delete throws an error https://github.com/mattray/spiceweasel/issues/59
 * data_bag should be encrypted only if secret: is passed https://github.com/mattray/spiceweasel/issues/58
 
 # 2.7.0 (unreleased) #
