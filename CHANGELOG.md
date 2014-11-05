@@ -4,6 +4,7 @@ This is the current, previous and future development milestones and contains the
 
 * flags for subsets of the manifest with --only (Issue 57)
 * cluster delete throws an error (Issue 59)
+* Support for an options key that tags on options to all nodes (Chris Yates)
 * Zero padding with {{n}} (Issue 62)
 * Printed deletion knife commands are incorrect for rackspace server delete (Issue 65)
 * bundler support (Issue 67)
@@ -15,8 +16,6 @@ This is the current, previous and future development milestones and contains the
 * --chef-client produces lower-case search query (Issue 81)
 * Rubocop cleanups (Andrew Glick)
 * Support for knife-vcair, cleanup of stale cloud providers
-
-* data_bag should be encrypted only if secret: is passed https://github.com/mattray/spiceweasel/issues/58
 
 # 2.7.0 (unreleased) #
 

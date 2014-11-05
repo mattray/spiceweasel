@@ -371,8 +371,9 @@ module Spiceweasel
       data_bags = DataBags.new(manifest['data bags'])
       knifecommands = nil
       knifecommands = find_knife_commands unless do_not_validate
-      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, knifecommands)
-      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, knifecommands)
+      options = manifest['options']
+      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, knifecommands, options)
+      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, knifecommands, options)
       knife = Knife.new(manifest['knife'], knifecommands)
 
       create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create + knife.create

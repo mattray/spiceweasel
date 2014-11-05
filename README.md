@@ -218,13 +218,37 @@ clusters:
 produces the knife commands
 
 ```
-knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -E amazon
+knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium -E amazon -r 'role[mysql]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
 ```
 
 Another use of `clusters` is with the `--cluster-file` option, which will allow the use of a different file to define the members of the cluster. If there are any `nodes` or `clusters` defined in the primary manifest file, they will be removed and the content of the `--cluster-file` will be used instead. This allows you to switch the target destination of infrastructure by picking different `--cluster-file` endpoints.
+
+## options ##
+
+The `options` section provides the ability to pass global options to all nodes being created.
+
+```
+options: -i ~/.ssh/mray.pem
+nodes:
+- serverA:
+    run_list: role[base]
+    options: -x user --sudo
+clusters:
+- amazon:
+  - ec2 1:
+      run_list: role[mysql]
+      options: -S mray -x ubuntu -G default -I ami-8af0f326 -f m1.medium
+```
+
+produces the knife commands
+
+```
+knife bootstrap serverA -x user --sudo -r -i ~/.ssh/mray.pem 'role[base]'
+knife ec2 server create -S mray -x ubuntu -G default -I ami-8af0f326 -f m1.medium -E amazon -i ~/.ssh/mray.pem -r 'role[mysql]'
+```
 
 ## knife ##
 
