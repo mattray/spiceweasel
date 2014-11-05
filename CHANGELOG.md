@@ -1,6 +1,6 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
-# 2.8.0 (in development)#
+# 2.8.0 (stable) #
 
 * flags for subsets of the manifest with --only (Issue 57)
 * cluster delete throws an error (Issue 59)
