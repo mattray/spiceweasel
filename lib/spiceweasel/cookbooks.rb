@@ -31,60 +31,73 @@ module Spiceweasel
       @delete = []
       @cookbook_list = other_cookbook_list
       @dependencies = []
+
+      return unless cookbooks
+
       # validate each of the cookbooks specified in the manifest
-      if cookbooks
-        @loader = Chef::CookbookLoader.new(Spiceweasel::Config[:cookbook_dir])
-        begin
-          @loader.load_cookbooks
-        rescue SyntaxError => e
-          STDERR.puts 'ERROR: invalid cookbook metadata.'
-          STDERR.puts e.message
-          exit(-1)
-        end
-        Spiceweasel::Log.debug("cookbooks: #{cookbooks}")
+      @loader = Chef::CookbookLoader.new(Spiceweasel::Config[:cookbook_dir])
+      begin
+        @loader.load_cookbooks
+      rescue SyntaxError => e
+        STDERR.puts 'ERROR: invalid cookbook metadata.'
+        STDERR.puts e.message
+        exit(-1)
+      end
+      Spiceweasel::Log.debug("cookbooks: #{cookbooks}")
 
-        c_names = []
-        cookbooks.each do |cookbook|
-          name = cookbook.keys.first
-          if cookbook[name]
-            version = cookbook[name]['version']
-            options = cookbook[name]['options']
-          end
-          Spiceweasel::Log.debug("cookbook: #{name} #{version} #{options}")
-          if File.directory?('cookbooks')
+      validate_cookbooks(cookbooks)
+    end
 
-            if @loader.cookbooks_by_name[name]
-              validate_metadata(name, version) unless Spiceweasel::Config[:novalidation]
-            else
-              if Spiceweasel::Config[:siteinstall] # use knife cookbook site install
-                create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} site install #{name} #{version} #{options}")
-              else # use knife cookbook site download, untar and then remove the tarball
-                create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} site download #{name} #{version} --file cookbooks/#{name}.tgz #{options}")
-                create_command("tar -C cookbooks/ -xf cookbooks/#{name}.tgz")
-                create_command("rm -f cookbooks/#{name}.tgz")
-              end
-            end
-          elsif !Spiceweasel::Config[:novalidation]
-            STDERR.puts "ERROR: 'cookbooks' directory not found, unable to validate, download and load cookbooks"
-            exit(-1)
-          end
+    def validate_cookbooks(cookbooks)
+      c_names = []
+      cookbooks.each do |cookbook|
+        name = cookbook.keys.first
+        if cookbook[name]
+          version = cookbook[name]['version']
+          options = cookbook[name]['options']
+        end
+        Spiceweasel::Log.debug("cookbook: #{name} #{version} #{options}")
 
-          if options
-            unless c_names.empty?
-              create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
-              c_names = []
-            end
-            create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{name} #{options}")
-          else
-            c_names.push(name)
+        validate_metadata_or_get_knife_commands_wrapper(name, options, version)
+
+        if options
+          unless c_names.empty?
+            create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
+            c_names = []
           end
-          delete_command("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y")
-          @cookbook_list[name] = version # used for validation
+          create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{name} #{options}")
+        else
+          c_names.push(name)
         end
-        unless c_names.empty?
-          create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
+        delete_command("knife cookbook#{Spiceweasel::Config[:knife_options]} delete #{name} #{version} -a -y")
+        @cookbook_list[name] = version # used for validation
+      end
+      unless c_names.empty?
+        create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} upload #{c_names.join(' ')}")
+      end
+      validate_dependencies unless Spiceweasel::Config[:novalidation]
+    end
+
+    def validate_metadata_or_get_knife_commands_wrapper(name, options, version)
+      if File.directory?('cookbooks')
+        if @loader.cookbooks_by_name[name]
+          validate_metadata(name, version) unless Spiceweasel::Config[:novalidation]
+        else
+          get_knife_commands(name, options, version)
         end
-        validate_dependencies unless Spiceweasel::Config[:novalidation]
+      elsif !Spiceweasel::Config[:novalidation]
+        STDERR.puts "ERROR: 'cookbooks' directory not found, unable to validate, download and load cookbooks"
+        exit(-1)
+      end
+    end
+
+    def get_knife_commands(name, options, version)
+      if Spiceweasel::Config[:siteinstall] # use knife cookbook site install
+        create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} site install #{name} #{version} #{options}")
+      else # use knife cookbook site download, untar and then remove the tarball
+        create_command("knife cookbook#{Spiceweasel::Config[:knife_options]} site download #{name} #{version} --file cookbooks/#{name}.tgz #{options}")
+        create_command("tar -C cookbooks/ -xf cookbooks/#{name}.tgz")
+        create_command("rm -f cookbooks/#{name}.tgz")
       end
     end
 

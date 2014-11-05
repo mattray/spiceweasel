@@ -16,6 +16,9 @@ nodes:
 - google aaa bbb ccc:
     run_list: role[mysql]
     options: -E qa -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe
+- vcair 3:
+    run_list: role[base]
+    options: --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat
 clusters:
 - qa:
   - google foo bar:
@@ -24,3 +27,7 @@ clusters:
   - google 2:
       run_list: role[mysql]
       options: -m n1-standard-1 -I debian-7-wheezy-v20130723 -Z us-central2-a -i ~/.ssh/id_rsa -x jdoe -N g-qa{{n}}
+- dev:
+  - vcair 2:
+      run_list: role[base]
+      options: --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat

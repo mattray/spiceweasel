@@ -1,21 +1,24 @@
 This is the current, previous and future development milestones and contains the features backlog.
 
 # 2.8.0 (in development)#
-* Zero padding with {{n}} ISSUE 62
-* fix Ubuntu parallel issue ISSUE 72
 
-* Printed deletion knife commands are incorrect for rackspace server delete ISSUE 65
-* flags for just 1 part of the manifest (implies no validation) ISSUE 57
- * --nodes
- * --databags
- * --environments
-* Cluster: safely concatenate options string, even with newline inside ISSUE 63
-* cluster delete throws an error https://github.com/mattray/spiceweasel/issues/59
-* data_bag should be encrypted only if secret: is passed https://github.com/mattray/spiceweasel/issues/58
-* Chef Zero as a target
-* Berkshelf 3 support
+* flags for subsets of the manifest with --only (Issue 57)
+* cluster delete throws an error (Issue 59)
+* Support for an options key that tags on options to all nodes (Chris Yates)
+* Zero padding with {{n}} (Issue 62)
+* Printed deletion knife commands are incorrect for rackspace server delete (Issue 65)
+* bundler support (Issue 67)
+* Berkshelf 3 support (Issue 69)
+* fix Ubuntu parallel (Issue 72)
+* Sync with ChefDK dependencies (Issue 74)
+* upgrade to ffi-yajl (Issue 75)
+* Better handling of empty directories. (Issue 79)
+* --chef-client produces lower-case search query (Issue 81)
+* Rubocop cleanups (Andrew Glick)
+* Support for knife-vcair, cleanup of stale cloud providers
 
 # 2.7.0 (unreleased) #
+
 * updated Gem dependencies to match ChefDK
 * Berkshelf 3.x upgrade
 * rubocop cleanups

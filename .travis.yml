@@ -9,4 +9,4 @@ rvm:
   # - rbx-19mode
 script:
   - bundle exec rubocop
-  - bundle exec rspec test
+  - bundle exec rspec

@@ -22,20 +22,19 @@ module Spiceweasel
   class Clusters
     attr_reader :create, :delete
 
-    def initialize(clusters, cookbooks, environments, roles, knifecommands)
+    def initialize(clusters, cookbooks, environments, roles, knifecommands, rootoptions)
       @create = []
       @delete = []
-      if clusters
-        Spiceweasel::Log.debug("clusters: #{clusters}")
-        clusters.each do |cluster|
-          cluster_name = cluster.keys.first
-          cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands)
-        end
+      return unless clusters
+      Spiceweasel::Log.debug("clusters: #{clusters}")
+      clusters.each do |cluster|
+        cluster_name = cluster.keys.first
+        cluster_process_nodes(cluster, cluster_name, cookbooks, environments, roles, knifecommands, rootoptions)
       end
     end
 
     # configure the individual nodes within the cluster
-    def cluster_process_nodes(cluster, environment, cookbooks, environments, roles, knifecommands)
+    def cluster_process_nodes(cluster, environment, cookbooks, environments, roles, knifecommands, rootoptions)
       Spiceweasel::Log.debug("cluster::cluster_process_nodes '#{environment}' '#{cluster[environment]}'")
       cluster[environment].each do |node|
         node_name = node.keys.first
@@ -45,13 +44,17 @@ module Spiceweasel
         node[node_name]['options'] = options + " -E #{environment}"
       end
       # let's reuse the Nodes logic
-      nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands)
+      nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands, rootoptions)
       @create.concat(nodes.create)
       # what about providers??
       nodes.delete.each do |del|
-        @delete << del unless del.to_s =~ /^knife client|^knife node/
+        @delete.push(del) unless del.to_s =~ /^knife client|^knife node/
       end
-      @delete << "for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done"
+      if bundler?
+        @delete.push(Command.new("for N in $(bundle exec knife node list -E #{environment}); do bundle exec knife client delete $N -y; bundle exec knife node delete $N -y; done"))
+      else
+        @delete.push(Command.new("for N in $(knife node list -E #{environment}); do knife client delete $N -y; knife node delete $N -y; done"))
+      end
     end
 
     def validate_environment(options, cluster, environments)
@@ -59,11 +62,16 @@ module Spiceweasel
         STDERR.puts "ERROR: Environment '#{cluster}' is listed in the cluster, but not specified as an 'environment' in the manifest."
         exit(-1)
       end
-      if options =~ /-E/ # Environment must match the cluster
-        env = options.split('-E')[1].split[0]
-        STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
-        exit(-1)
-      end
+
+      return unless options =~ /-E/ # Environment must match the cluster
+
+      env = options.split('-E')[1].split[0]
+      STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
+      exit(-1)
+    end
+
+    def bundler?
+      ENV.key?('BUNDLE_BIN_PATH')
     end
   end
 end

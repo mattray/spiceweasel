@@ -28,6 +28,7 @@ data bags:
     items:
     - mysql
     - rabbitmq
+options: --template my_custom_template
 nodes:
 - serverA:
     run_list: role[base]
@@ -50,7 +51,9 @@ clusters:
       run_list: role[mysql]
       options: -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-8af0f326 -f m1.medium
   - ec2 3:
-      run_list: role[webserver] recipe[mysql::client]
+      run_list: >-
+        role[webserver]
+        recipe[mysql::client]
       options: -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small
 knife:
 - ssh:

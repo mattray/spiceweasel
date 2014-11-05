@@ -18,10 +18,23 @@
 #
 
 require 'mixlib/shellout'
+require 'spec_helper'
 
 describe '--extractlocal from extract-repo' do
   it 'spiceweasel --extractlocal' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec berks upload -b ./Berksfile
+bundle exec knife cookbook upload abc ghi jkl mno
+bundle exec knife environment from file development.rb production-blue.json production-green.json production-red.json qa.rb
+bundle exec knife role from file base.rb base2.rb base3.rb base4.rb tc.rb
+bundle exec knife data bag create junk
+bundle exec knife data bag from file junk abc.json ade.json afg.json bcd.json
+bundle exec knife data bag create users
+bundle exec knife data bag from file users mray.json ubuntu.json
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 berks upload -b ./Berksfile
 knife cookbook upload abc ghi jkl mno
 knife environment from file development.rb production-blue.json production-green.json production-red.json qa.rb
@@ -31,7 +44,8 @@ knife data bag from file junk abc.json ade.json afg.json bcd.json
 knife data bag create users
 knife data bag from file users mray.json ubuntu.json
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    end
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--extractlocal',
                                   cwd: 'test/extract-repo',
@@ -125,7 +139,7 @@ describe '--extractjson from extract-repo' do
   ]
 }
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--extractjson',
                                   cwd: 'test/extract-repo',
@@ -139,7 +153,7 @@ end
 describe '--extractyaml from extract-repo' do
   it 'spiceweasel --extractyaml' do
     expected_output = "---\nberksfile: \ncookbooks:\n- abc:\n    version: 0.1.0\n- ghi:\n    version: 0.1.0\n- jkl:\n    version: 0.1.0\n- mno:\n    version: 0.10.0\nroles:\n- base: \n- base2: \n- base3: \n- base4: \n- tc: \nenvironments:\n- development: \n- production-blue: \n- production-green: \n- production-red: \n- qa: \ndata bags:\n- junk:\n    items:\n    - abc\n    - ade\n    - afg\n    - bcd\n- users:\n    items:\n    - mray\n    - ubuntu\n"
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   '--extractyaml',
                                   cwd: 'test/extract-repo',
@@ -147,5 +161,55 @@ describe '--extractyaml from extract-repo' do
     spcwsl.run_command
 
     expect(spcwsl.stdout).to eq expected_output
+  end
+end
+
+describe 'extract from an empty chef-repo2' do
+  it 'spiceweasel --extractlocal' do
+    expected_output = <<-OUTPUT
+    OUTPUT
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+                                  '--extractlocal',
+                                  cwd: 'test/extract-repo2',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/extract-repo2" })
+    spcwsl.run_command
+
+    expect(spcwsl.stdout).to eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
+  end
+end
+
+describe 'extractyaml from an empty chef-repo2' do
+  it 'spiceweasel --extractyaml' do
+    expected_output = <<-OUTPUT
+    OUTPUT
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+                                  '--extractyaml',
+                                  cwd: 'test/extract-repo2',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/extract-repo2" })
+    spcwsl.run_command
+
+    expect(spcwsl.stdout).to eq expected_output
+    expect(spcwsl.stderr).to eq expected_output
+  end
+end
+
+describe 'extractjson from an empty chef-repo2' do
+  it 'spiceweasel --extractjson' do
+    expected_output = <<-OUTPUT
+{
+}
+    OUTPUT
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
+                                  '--extractjson',
+                                  cwd: 'test/extract-repo2',
+                                  environment: { 'PWD' => "#{ENV['PWD']}/test/extract-repo2" })
+    spcwsl.run_command
+
+    expect(spcwsl.stdout).to eq expected_output
+    expect(spcwsl.stderr).to eq ''
   end
 end

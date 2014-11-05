@@ -18,23 +18,40 @@
 #
 
 require 'mixlib/shellout'
+require 'spec_helper'
 
 describe 'working validation with a chef-repo' do
   it 'chef-repo/infrastructure.yml' do
-    expected_output = <<-OUTPUT
+    if bundler?
+      expected_output = <<-OUTPUT
+bundle exec berks upload --no-freeze --halt-on-frozen -b ./Berksfile
+bundle exec knife cookbook upload abc ghi jkl mno
+bundle exec knife environment from file development.rb production-blue.json production-green.json production-red.json sub/efg1.rb sub/efg2.json
+bundle exec knife role from file base.rb base2.rb base3.rb base4.rb sub/bw2.json tc.rb
+bundle exec knife data bag create users
+bundle exec knife data bag from file users mray.json --secret-file PASSWORD
+bundle exec knife data bag create junk
+bundle exec knife data bag from file junk abc.json ade.json afg.json sub1/cde1.json sub1/cde2.json sub2/def1.json
+bundle exec knife bootstrap boxy.lab.atx --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[tc],recipe[abc]'
+bundle exec knife bootstrap guenter.home.atx -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base],recipe[def]'
+bundle exec knife bootstrap wilhelm.home.atx -E development -i ~/.ssh/mray.pem -x user --sudo
+    OUTPUT
+    else
+      expected_output = <<-OUTPUT
 berks upload --no-freeze --halt-on-frozen -b ./Berksfile
 knife cookbook upload abc ghi jkl mno
 knife environment from file development.rb production-blue.json production-green.json production-red.json sub/efg1.rb sub/efg2.json
 knife role from file base.rb base2.rb base3.rb base4.rb sub/bw2.json tc.rb
 knife data bag create users
-knife data bag from file users mray.json
+knife data bag from file users mray.json --secret-file PASSWORD
 knife data bag create junk
 knife data bag from file junk abc.json ade.json afg.json sub1/cde1.json sub1/cde2.json sub2/def1.json
 knife bootstrap boxy.lab.atx --identity-file ~/.ssh/mray.pem --ssh-user user --sudo --no-host-key-verify --ssh-port 22 -r 'role[tc],recipe[abc]'
 knife bootstrap guenter.home.atx -E development -i ~/.ssh/mray.pem -x user --sudo -r 'role[base],recipe[def]'
 knife bootstrap wilhelm.home.atx -E development -i ~/.ssh/mray.pem -x user --sudo
     OUTPUT
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    end
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   'infrastructure.yml',
                                   cwd: 'test/chef-repo',
@@ -46,7 +63,7 @@ end
 
 describe 'expected failure validation with a chef-repo' do
   before(:each) do
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w[.. .. bin spiceweasel])
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
   end
 
   it '--extractjson expected to fail Ruby parse' do

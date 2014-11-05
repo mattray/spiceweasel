@@ -27,23 +27,14 @@ module Spiceweasel
       objects = {}
 
       # BERKSHELF
-      if File.file?('./Berksfile')
-        objects['berksfile'] = nil
-        berksfile = Berksfile.new(objects['berksfile'])
-      end
+      berksfile = parse_berkshelf(objects)
 
       # COOKBOOKS
       cookbooks = berksfile ? resolve_cookbooks(berksfile.cookbook_list) : resolve_cookbooks
       objects['cookbooks'] = cookbooks.sort_by { |c| [c.keys[0]] } unless cookbooks.empty?
 
       # ROLES
-      roles = []
-      Dir.glob('roles/*.{rb,json}').each do |role_full_path|
-        role = grab_name_from_path(role_full_path)
-        Spiceweasel::Log.debug("dir_ext: role: '#{role}'")
-        roles << { role => nil }
-      end
-      objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil?
+      parse_roles(objects)
 
       # ENVIRONMENTS
       environments = []
@@ -55,17 +46,7 @@ module Spiceweasel
       objects['environments'] = environments.sort_by { |e| [e.keys[0]] } unless environments.empty?
 
       # DATA BAGS
-      data_bags = []
-      Dir.glob('data_bags/*').each do |data_bag_full_path|
-        data_bag = data_bag_full_path.split('/').last
-        Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}'")
-        data_bag_items = []
-        Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
-          Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'")
-          data_bag_items << grab_name_from_path(data_bag_item_full_path)
-        end if File.directory?(data_bag_full_path)
-        data_bags << { data_bag => { 'items' => data_bag_items.sort } }
-      end
+      data_bags = parse_data_bags
       objects['data bags'] = data_bags.sort_by { |d| [d.keys[0]] } unless data_bags.empty?
 
       # NODES
@@ -77,6 +58,40 @@ module Spiceweasel
       # end
       # objects['nodes'] = nodes unless nodes.empty?
       objects
+    end
+
+    def self.parse_data_bags
+      data_bags = []
+      Dir.glob('data_bags/*').each do |data_bag_full_path|
+        next unless File.directory?(data_bag_full_path)
+        data_bag = data_bag_full_path.split('/').last
+        Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}'")
+        data_bag_items = []
+        Dir.glob("#{data_bag_full_path}/*.{rb,json}").each do |data_bag_item_full_path|
+          Spiceweasel::Log.debug("dir_ext: data_bag: '#{data_bag}':'#{data_bag_item_full_path}'")
+          data_bag_items << grab_name_from_path(data_bag_item_full_path)
+        end if File.directory?(data_bag_full_path)
+        data_bags << { data_bag => { 'items' => data_bag_items.sort } }
+      end
+      data_bags
+    end
+
+    def self.parse_roles(objects)
+      roles = []
+      Dir.glob('roles/*.{rb,json}').each do |role_full_path|
+        role = grab_name_from_path(role_full_path)
+        Spiceweasel::Log.debug("dir_ext: role: '#{role}'")
+        roles << { role => nil }
+      end
+      objects['roles'] = roles.sort_by { |r| [r.keys[0]] } unless roles.nil? || roles.empty?
+    end
+
+    def self.parse_berkshelf(objects)
+      if File.file?('./Berksfile')
+        objects['berksfile'] = nil
+        berksfile = Berksfile.new(objects['berksfile'])
+      end
+      berksfile
     end
 
     def self.grab_name_from_path(path)
