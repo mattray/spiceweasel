@@ -7,7 +7,6 @@ cookbooks:
 - jkl:
 - mno:
     version: 0.10.0
-- zsh:
 environments:
 - development:
 - "p*":
