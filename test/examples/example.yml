@@ -28,6 +28,7 @@ data bags:
     items:
     - mysql
     - rabbitmq
+options: --template my_custom_template
 nodes:
 - serverA:
     run_list: role[base]

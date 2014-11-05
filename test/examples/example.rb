@@ -48,6 +48,7 @@
       }
     }
   ],
+  'options' => '--template my_custom_template',
   'nodes' =>
   [
     { 'serverA' =>
