@@ -21,7 +21,7 @@ module Spiceweasel
 
     include CommandHelper
 
-    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent kvm lxc openstack rackspace slicehost terremark vagrant voxel vsphere}
+    PROVIDERS = %w{bluebox clodo cs ec2 gandi hp joyent kvm lxc openstack rackspace slicehost terremark vagrant voxel vsphere vc}
 
     attr_reader :create, :delete
 
