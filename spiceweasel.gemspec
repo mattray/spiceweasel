@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.version     = Spiceweasel::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Matt Ray"]
-  s.email       = ["matt@opscode.com"]
-  s.license     = 'Apache'
+  s.email       = ["matt@chef.io"]
+  s.license     = 'Apache-2.0'
   s.homepage    = "https://github.com/mattray/spiceweasel"
   s.summary     = %q{CLI for generating Chef knife commands from a simple JSON or YAML file.}
   s.description = %q{Provides a CLI tool for generating knife commands to build Chef-managed infrastructure from a simple JSON or YAML file.}
