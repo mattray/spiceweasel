@@ -25,7 +25,7 @@ module Spiceweasel
     # run the commands passed in
     def initialize(commands)
       # for now we're shelling out
-      commands.each do | cmd |
+      commands.each do |cmd|
         Spiceweasel::Log.debug("Command will timeout after #{Spiceweasel::Config[:cmd_timeout]} seconds.")
         knife = Mixlib::ShellOut.new(cmd.command, cmd.shellout_opts.merge(live_stream: STDOUT, timeout: Spiceweasel::Config[:timeout].to_i))
         # check for parallel? and eventually use threads
