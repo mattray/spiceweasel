@@ -487,7 +487,7 @@ module Spiceweasel
     # standardize the node run_list formatting
     def process_run_list(run_list)
       return "" if run_list.nil?
-      run_list.gsub!(/ /, ",")
+      run_list.tr!(" ", ",")
       run_list.gsub!(/,+/, ",")
       run_list
     end
