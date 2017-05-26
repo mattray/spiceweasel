@@ -38,10 +38,10 @@ module Spiceweasel
       Spiceweasel::Log.debug("cluster::cluster_process_nodes '#{environment}' '#{cluster[environment]}'")
       cluster[environment].each do |node|
         node_name = node.keys.first
-        options = node[node_name]['options'] || ''
+        options = node[node_name]["options"] || ""
         validate_environment(options, environment, environments) unless Spiceweasel::Config[:novalidation]
         # push the Environment back on the options
-        node[node_name]['options'] = options + " -E #{environment}"
+        node[node_name]["options"] = options + " -E #{environment}"
       end
       # let's reuse the Nodes logic
       nodes = Spiceweasel::Nodes.new(cluster[environment], cookbooks, environments, roles, knifecommands, rootoptions)
@@ -65,13 +65,13 @@ module Spiceweasel
 
       return unless options =~ /-E/ # Environment must match the cluster
 
-      env = options.split('-E')[1].split[0]
+      env = options.split("-E")[1].split[0]
       STDERR.puts "ERROR: Environment '#{env}' is specified for a node in cluster '#{cluster}'. The Environment is the cluster name."
       exit(-1)
     end
 
     def bundler?
-      ENV.key?('BUNDLE_BIN_PATH')
+      ENV.key?("BUNDLE_BIN_PATH")
     end
   end
 end

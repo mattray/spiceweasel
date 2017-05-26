@@ -17,21 +17,21 @@
 # limitations under the License.
 #
 
-require 'mixlib/cli'
-require 'ffi_yajl'
-require 'yaml'
+require "mixlib/cli"
+require "ffi_yajl"
+require "yaml"
 
-require 'spiceweasel/command_helper'
-require 'spiceweasel/cookbooks'
-require 'spiceweasel/berksfile'
-require 'spiceweasel/environments'
-require 'spiceweasel/roles'
-require 'spiceweasel/data_bags'
-require 'spiceweasel/nodes'
-require 'spiceweasel/clusters'
-require 'spiceweasel/knife'
-require 'spiceweasel/extract_local'
-require 'spiceweasel/execute'
+require "spiceweasel/command_helper"
+require "spiceweasel/cookbooks"
+require "spiceweasel/berksfile"
+require "spiceweasel/environments"
+require "spiceweasel/roles"
+require "spiceweasel/data_bags"
+require "spiceweasel/nodes"
+require "spiceweasel/clusters"
+require "spiceweasel/knife"
+require "spiceweasel/extract_local"
+require "spiceweasel/execute"
 
 module Spiceweasel
   # parse and execute cli options
@@ -44,134 +44,134 @@ module Spiceweasel
        spiceweasel [option] --extractlocal')
 
     option :clusterfile,
-           long: '--cluster-file file',
-           description: 'Specify an additional cluster manifest file, overriding any other node or cluster definitions'
+           long: "--cluster-file file",
+           description: "Specify an additional cluster manifest file, overriding any other node or cluster definitions"
 
     option :debug,
-           long: '--debug',
-           description: 'Verbose debugging messages',
+           long: "--debug",
+           description: "Verbose debugging messages",
            boolean: true
 
     option :bulkdelete,
-           long: '--bulkdelete',
-           description: 'Delete all nodes for the provider(s) in the infrastructure',
+           long: "--bulkdelete",
+           description: "Delete all nodes for the provider(s) in the infrastructure",
            boolean: false
 
     option :attribute,
-           short: '-a',
-           long: '--attribute ATTR',
+           short: "-a",
+           long: "--attribute ATTR",
            description: "The attribute to use for opening the connection - default depends on the context. Used in conjunction with '--chef-client'"
 
     option :chefclient,
-           long: '--chef-client',
-           description: 'Print the knife commands to run chef-client on the nodes of the infrastructure',
+           long: "--chef-client",
+           description: "Print the knife commands to run chef-client on the nodes of the infrastructure",
            boolean: true
 
     option :delete,
-           short: '-d',
-           long: '--delete',
-           description: 'Print the knife commands to delete the infrastructure',
+           short: "-d",
+           long: "--delete",
+           description: "Print the knife commands to delete the infrastructure",
            boolean: true
 
     option :execute,
-           short: '-e',
-           long: '--execute',
-           description: 'Execute the knife commands to create the infrastructure directly',
+           short: "-e",
+           long: "--execute",
+           description: "Execute the knife commands to create the infrastructure directly",
            boolean: true
 
     option :extractlocal,
-           long: '--extractlocal',
-           description: 'Use contents of local chef repository directories to generate knife commands to build infrastructure'
+           long: "--extractlocal",
+           description: "Use contents of local chef repository directories to generate knife commands to build infrastructure"
 
     option :extractjson,
-           long: '--extractjson',
-           description: 'Use contents of local chef repository directories to generate JSON spiceweasel manifest'
+           long: "--extractjson",
+           description: "Use contents of local chef repository directories to generate JSON spiceweasel manifest"
 
     option :extractyaml,
-           long: '--extractyaml',
-           description: 'Use contents of local chef repository directories to generate YAML spiceweasel manifest'
+           long: "--extractyaml",
+           description: "Use contents of local chef repository directories to generate YAML spiceweasel manifest"
 
     option :help,
-           short: '-h',
-           long: '--help',
-           description: 'Show this message',
+           short: "-h",
+           long: "--help",
+           description: "Show this message",
            on: :tail,
            boolean: true,
            show_options: true,
            exit: 0
 
     option :knifeconfig,
-           short: '-c CONFIG',
-           long: '--knifeconfig CONFIG',
-           description: 'Specify the knife.rb configuration file'
+           short: "-c CONFIG",
+           long: "--knifeconfig CONFIG",
+           description: "Specify the knife.rb configuration file"
 
     option :log_level,
-           short: '-l LEVEL',
-           long: '--loglevel LEVEL',
-           description: 'Set the log level (debug, info, warn, error, fatal)',
+           short: "-l LEVEL",
+           long: "--loglevel LEVEL",
+           description: "Set the log level (debug, info, warn, error, fatal)",
            proc: lambda { |l| l.to_sym } # rubocop:disable Lambda
 
     option :log_location,
-           short: '-L LOGLOCATION',
-           long: '--logfile LOGLOCATION',
-           description: 'Set the log file location, defaults to STDOUT',
+           short: "-L LOGLOCATION",
+           long: "--logfile LOGLOCATION",
+           description: "Set the log file location, defaults to STDOUT",
            proc: nil
 
     option :node_only,
-           long: '--node-only',
-           description: 'Create node(s) on the server, do not bootstrap',
+           long: "--node-only",
+           description: "Create node(s) on the server, do not bootstrap",
            boolean: false
 
     option :novalidation,
-           long: '--novalidation',
-           description: 'Disable validation',
+           long: "--novalidation",
+           description: "Disable validation",
            boolean: true
 
     option :only,
-           long: '--only ONLY_LIST',
+           long: "--only ONLY_LIST",
            description: "Comma separated list of manifest components to apply. #{MANIFEST_OPTIONS}",
            proc: lambda { |o| o.split(/[\s,]+/) },
            default: []
 
     option :parallel,
-           long: '--parallel',
+           long: "--parallel",
            description: "Use the GNU 'parallel' command to parallelize 'knife VENDOR server create' commands where applicable",
            boolean: true
 
     option :rebuild,
-           short: '-r',
-           long: '--rebuild',
-           description: 'Print the knife commands to delete and recreate the infrastructure',
+           short: "-r",
+           long: "--rebuild",
+           description: "Print the knife commands to delete and recreate the infrastructure",
            boolean: true
 
     option :serverurl,
-           short: '-s URL',
-           long: '--server-url URL',
-           description: 'Specify the Chef Server URL'
+           short: "-s URL",
+           long: "--server-url URL",
+           description: "Specify the Chef Server URL"
 
     option :siteinstall,
-           long: '--siteinstall',
+           long: "--siteinstall",
            description: "Use the 'install' command with 'knife cookbook site' instead of the default 'download'",
            boolean: true
 
     option :timeout,
-           short: '-T seconds',
-           long: '--timeout',
-           description: 'Specify the maximum number of seconds a command is allowed to run without producing output.  Default is 300 seconds',
+           short: "-T seconds",
+           long: "--timeout",
+           description: "Specify the maximum number of seconds a command is allowed to run without producing output.  Default is 300 seconds",
            default: 300
 
     option :version,
-           short: '-v',
-           long: '--version',
-           description: 'Show spiceweasel version',
+           short: "-v",
+           long: "--version",
+           description: "Show spiceweasel version",
            boolean: true,
            proc: ->() { puts "Spiceweasel: #{::Spiceweasel::VERSION}" },
            exit: 0
 
     option :cookbook_directory,
-           short: '-C COOKBOOK_DIR',
-           long: '--cookbook-dir COOKBOOK_DIR',
-           description: 'Set cookbook directory. Specify multiple times for multiple directories.',
+           short: "-C COOKBOOK_DIR",
+           long: "--cookbook-dir COOKBOOK_DIR",
+           description: "Set cookbook directory. Specify multiple times for multiple directories.",
            proc: lambda { |v| # rubocop:disable Blocks
              Spiceweasel::Config[:cookbook_dir] ||= []
              Spiceweasel::Config[:cookbook_dir] << v
@@ -179,8 +179,8 @@ module Spiceweasel
            }
 
     option :unique_id,
-           long: '--unique-id UID',
-           description: 'Unique ID generally used for ruby based configs'
+           long: "--unique-id UID",
+           description: "Unique ID generally used for ruby based configs"
 
     def run # rubocop:disable CyclomaticComplexity
       if Spiceweasel::Config[:extractlocal] || Spiceweasel::Config[:extractjson] || Spiceweasel::Config[:extractyaml]
@@ -189,7 +189,7 @@ module Spiceweasel
         manifest = parse_and_validate_input(find_manifest)
         if Spiceweasel::Config[:clusterfile]
           # if we have a cluster file, override any nodes or clusters in the original manifest
-          manifest['nodes'] = manifest['clusters'] = {}
+          manifest["nodes"] = manifest["clusters"] = {}
           manifest.merge!(parse_and_validate_input(Spiceweasel::Config[:clusterfile]))
         end
       end
@@ -247,15 +247,15 @@ module Spiceweasel
       parse_and_validate_options
       Config.merge!(@config)
       configure_logging
-      Spiceweasel::Log.debug('Validation of the manifest has been turned off.') if Spiceweasel::Config[:novalidation]
+      Spiceweasel::Log.debug("Validation of the manifest has been turned off.") if Spiceweasel::Config[:novalidation]
     end
 
     def parse_and_validate_options
-      ARGV << '-h' if ARGV.empty?
+      ARGV << "-h" if ARGV.empty?
       begin
         parse_options
         # Load knife configuration if using knife config
-        require 'chef/knife'
+        require "chef/knife"
         knife = Chef::Knife.new
         # Only log on error during startup
         Chef::Config[:verbosity] = 0
@@ -299,11 +299,11 @@ module Spiceweasel
           exit(-1)
         end
         output = nil
-        if file.end_with?('.yml')
+        if file.end_with?(".yml")
           output = YAML.load_file(file)
-        elsif file.end_with?('.json')
+        elsif file.end_with?(".json")
           output = JSON.parse(File.read(file))
-        elsif file.end_with?('.rb')
+        elsif file.end_with?(".rb")
           output = instance_eval(IO.read(file), file, 1)
           output = JSON.parse(JSON.dump(output))
         else
@@ -319,8 +319,8 @@ module Spiceweasel
         STDERR.puts "ERROR: Parsing error in #{file}."
         exit(-1)
       rescue Exception => e # rubocop:disable RescueException
-        STDERR.puts 'ERROR: Invalid or missing  manifest .json, .rb, or .yml file provided.'
-        if Spiceweasel::Config[:log_level].to_s == 'debug'
+        STDERR.puts "ERROR: Invalid or missing  manifest .json, .rb, or .yml file provided."
+        if Spiceweasel::Config[:log_level].to_s == "debug"
           STDERR.puts "ERROR: #{e}\n#{e.backtrace.join("\n")}"
         end
         exit(-1)
@@ -332,7 +332,7 @@ module Spiceweasel
     def find_manifest
       ARGV.each do |arg|
         if arg =~ /\.json$|\.rb$|\.yml$/
-          return arg unless ARGV[ARGV.find_index(arg) - 1].eql?('--cluster-file')
+          return arg unless ARGV[ARGV.find_index(arg) - 1].eql?("--cluster-file")
         end
       end
     end
@@ -348,33 +348,33 @@ module Spiceweasel
           exit(-1)
         end
       end
-      only_list.push('berksfile') if only_list.member?('cookbooks')
-      only_list.push('data bags') if only_list.delete('data_bags')
+      only_list.push("berksfile") if only_list.member?("cookbooks")
+      only_list.push("data bags") if only_list.delete("data_bags")
       manifest.keep_if { |key, val| only_list.member?(key) }
     end
 
     def process_manifest(manifest)
       do_not_validate = Spiceweasel::Config[:novalidation]
       berksfile = nil
-      berksfile = Berksfile.new(manifest['berksfile']) if manifest.include?('berksfile')
+      berksfile = Berksfile.new(manifest["berksfile"]) if manifest.include?("berksfile")
       if berksfile
-        cookbooks = Cookbooks.new(manifest['cookbooks'], berksfile.cookbook_list)
+        cookbooks = Cookbooks.new(manifest["cookbooks"], berksfile.cookbook_list)
         create = berksfile.create + cookbooks.create
         delete = berksfile.delete + cookbooks.delete
       else
-        cookbooks = Cookbooks.new(manifest['cookbooks'])
+        cookbooks = Cookbooks.new(manifest["cookbooks"])
         create = cookbooks.create
         delete = cookbooks.delete
       end
-      environments = Environments.new(manifest['environments'], cookbooks)
-      roles = Roles.new(manifest['roles'], environments, cookbooks)
-      data_bags = DataBags.new(manifest['data bags'])
+      environments = Environments.new(manifest["environments"], cookbooks)
+      roles = Roles.new(manifest["roles"], environments, cookbooks)
+      data_bags = DataBags.new(manifest["data bags"])
       knifecommands = nil
       knifecommands = find_knife_commands unless do_not_validate
-      options = manifest['options']
-      nodes = Nodes.new(manifest['nodes'], cookbooks, environments, roles, knifecommands, options)
-      clusters = Clusters.new(manifest['clusters'], cookbooks, environments, roles, knifecommands, options)
-      knife = Knife.new(manifest['knife'], knifecommands)
+      options = manifest["options"]
+      nodes = Nodes.new(manifest["nodes"], cookbooks, environments, roles, knifecommands, options)
+      clusters = Clusters.new(manifest["clusters"], cookbooks, environments, roles, knifecommands, options)
+      knife = Knife.new(manifest["knife"], knifecommands)
 
       create += environments.create + roles.create + data_bags.create + nodes.create + clusters.create + knife.create
       delete += environments.delete + roles.delete + data_bags.delete + nodes.delete + clusters.delete
@@ -388,9 +388,9 @@ module Spiceweasel
     end
 
     def find_knife_commands
-      require 'mixlib/shellout'
-      allknifes = Mixlib::ShellOut.new('knife -h').run_command.stdout.split(/\n/)
-      allknifes.keep_if { |x| x.start_with?('knife') }
+      require "mixlib/shellout"
+      allknifes = Mixlib::ShellOut.new("knife -h").run_command.stdout.split(/\n/)
+      allknifes.keep_if { |x| x.start_with?("knife") }
       Spiceweasel::Log.debug(allknifes)
       allknifes
     end

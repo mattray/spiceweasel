@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'ffi_yajl'
-require 'spiceweasel/command_helper'
+require "ffi_yajl"
+require "spiceweasel/command_helper"
 
 module Spiceweasel
   # manages parsing of Environments
@@ -44,14 +44,14 @@ module Spiceweasel
       envfiles = []
       flatenvs.each do |env|
         Spiceweasel::Log.debug("environment: #{env}")
-        if File.directory?('environments')
+        if File.directory?("environments")
           # expand wildcards and push into environments
           if env =~ /\*/ # wildcard support
             wildenvs = Dir.glob("environments/#{env}")
             # remove anything not ending in .json or .rb
-            wildenvs.delete_if { |x| !x.end_with?('.rb', '.json') }
+            wildenvs.delete_if { |x| !x.end_with?(".rb", ".json") }
             Spiceweasel::Log.debug("found environments '#{wildenvs}' for wildcard: #{env}")
-            flatenvs.concat(wildenvs.map { |x| x[x.rindex('/') + 1..x.rindex('.') - 1] })
+            flatenvs.concat(wildenvs.map { |x| x[x.rindex("/") + 1..x.rindex(".") - 1] })
             next
           end
           validate(env, cookbooks) unless Spiceweasel::Config[:novalidation]
@@ -74,7 +74,7 @@ module Spiceweasel
     def validate(environment, cookbooks) # rubocop:disable CyclomaticComplexity
       env = nil
       file = %W(environments/#{environment}.rb environments/#{environment}.json).find { |f| File.exist?(f) }
-      environment = environment.split('/').last if environment =~ /\// # pull out directories
+      environment = environment.split("/").last if environment =~ /\// # pull out directories
       if file
         case file
         when /\.json$/
@@ -105,7 +105,7 @@ module Spiceweasel
     end
 
     def do_ruby_environment_file(file)
-      if Chef::VERSION.split('.')[0].to_i < 11
+      if Chef::VERSION.split(".")[0].to_i < 11
         env = Chef::Environment.new(false)
       else
         env = Chef::Environment.new

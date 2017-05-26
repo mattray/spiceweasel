@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
+require "mixlib/shellout"
 
-describe 'kvm, cluster functionality from 2.5' do
-  it 'kvm, cluster functionality' do
+describe "kvm, cluster functionality from 2.5" do
+  it "kvm, cluster functionality" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife cookbook delete apache2  -a -y
@@ -62,11 +62,11 @@ seq 3 | parallel -u -j 0 -v -- knife kvm vm create --template-file ~/.chef/boots
     end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-                                  '--parallel',
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/kvm-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--parallel",
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/kvm-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
 
     expect(spcwsl.stdout).to eq expected_output

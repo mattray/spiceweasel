@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spiceweasel/version'
-require 'spiceweasel/cli'
-require 'spiceweasel/config'
-require 'spiceweasel/log'
+require "spiceweasel/version"
+require "spiceweasel/cli"
+require "spiceweasel/config"
+require "spiceweasel/log"

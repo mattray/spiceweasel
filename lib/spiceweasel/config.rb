@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'mixlib/config'
+require "mixlib/config"
 
 module Spiceweasel
   # provides defaults and manages the configuration via Mixlib::Config
@@ -30,7 +30,7 @@ module Spiceweasel
     log_level :info
     log_location STDOUT
 
-    knife_options ''
+    knife_options ""
 
     # do we really need these?
     delete false

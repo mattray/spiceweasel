@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
+require "mixlib/shellout"
 
-describe 'joyent, vsphere, --bulkdelete functionality 2.3' do
-  it 'knife-joyent, knife-vsphere and --bulkdelete' do
+describe "joyent, vsphere, --bulkdelete functionality 2.3" do
+  it "knife-joyent, knife-vsphere and --bulkdelete" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife cookbook delete apache2  -a -y
@@ -52,12 +52,12 @@ seq 2 | parallel -u -j 0 -v -- knife vsphere vm clone -P secret_password -x Admi
     end
     spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-                                  '--parallel',
-                                  '--bulkdelete',
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/joyent-vsphere-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--parallel",
+                                  "--bulkdelete",
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/joyent-vsphere-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end

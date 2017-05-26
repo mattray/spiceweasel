@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
+require "mixlib/shellout"
 
 module Spiceweasel
   # executes the knife commands from parsing manifests
