@@ -49,7 +49,7 @@ module Spiceweasel
     end
 
     def data_bag_from_file(db, items, secret)
-      return if  items.empty?
+      return if items.empty?
 
       if secret
         create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")

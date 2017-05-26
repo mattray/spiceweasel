@@ -123,7 +123,7 @@ module Spiceweasel
       # get the cookbooks and their versions, map to cookbook hash format
       begin
         cookbooks = []
-        Solve.it!(graph, cblist).each { |k, v| cookbooks.push(k => { "version" => v  }) }
+        Solve.it!(graph, cblist).each { |k, v| cookbooks.push(k => { "version" => v }) }
       rescue Solve::Errors::NoSolutionError
         STDERR.puts "ERROR: There are missing cookbook dependencies, please check your metadata.rb files."
         exit(-1)
