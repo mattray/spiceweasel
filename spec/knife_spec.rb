@@ -36,7 +36,7 @@ knife ssh "role:database" "chef-client" -x root
 knife ssh "role:webserver" "sudo chef-client" -x ubuntu
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   "test/examples/knife.yml",
                                   environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })

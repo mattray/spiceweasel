@@ -73,7 +73,7 @@ module Spiceweasel
     # validate the content of the environment file
     def validate(environment, cookbooks) # rubocop:disable CyclomaticComplexity
       env = nil
-      file = %W(environments/#{environment}.rb environments/#{environment}.json).find { |f| File.exist?(f) }
+      file = %W{environments/#{environment}.rb environments/#{environment}.json}.find { |f| File.exist?(f) }
       environment = environment.split("/").last if environment =~ /\// # pull out directories
       if file
         case file

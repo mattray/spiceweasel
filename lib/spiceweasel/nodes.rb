@@ -22,7 +22,7 @@ module Spiceweasel
   class Nodes
     include CommandHelper
 
-    PROVIDERS = %w(bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace vagrant vcair vsphere)
+    PROVIDERS = %w{bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace vagrant vcair vsphere}
 
     attr_reader :create, :delete
 
@@ -47,7 +47,7 @@ module Spiceweasel
           options = ((node[name]["options"] || "") + " " + (rootoptions || "")).rstrip
           Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
           validate_options(name, options, environments) unless Spiceweasel::Config[:novalidation]
-          %w(allow_create_failure timeout).each do |key|
+          %w{allow_create_failure timeout}.each do |key|
             if node[name].key?(key)
               create_command_options[key] = node[name][key]
             end

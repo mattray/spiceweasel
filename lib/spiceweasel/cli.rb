@@ -38,7 +38,7 @@ module Spiceweasel
   class CLI
     include Mixlib::CLI
 
-    MANIFEST_OPTIONS = %w(cookbooks environments roles data_bags nodes clusters knife)
+    MANIFEST_OPTIONS = %w{cookbooks environments roles data_bags nodes clusters knife}
 
     banner('Usage: spiceweasel [option] file
        spiceweasel [option] --extractlocal')

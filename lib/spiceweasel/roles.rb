@@ -82,7 +82,7 @@ module Spiceweasel
     # validate the content of the role file
     def validate(role, _environments, cookbooks, roles) # rubocop:disable CyclomaticComplexity
       # validate the role passed in match the name of either the .rb or .json
-      file = %W(roles/#{role}.rb roles/#{role}.json).find { |f| File.exist?(f) }
+      file = %W{roles/#{role}.rb roles/#{role}.json}.find { |f| File.exist?(f) }
       role = role.split("/").last if role =~ /\// # pull out directories
       if file
         c_role = evaluate_c_role(file)

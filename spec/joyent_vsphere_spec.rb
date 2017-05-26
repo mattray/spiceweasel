@@ -50,7 +50,7 @@ seq 2 | parallel -u -j 0 -v -- knife joyent server create -i ~/.ssh/joyent.pem -
 seq 2 | parallel -u -j 0 -v -- knife vsphere vm clone -P secret_password -x Administrator --template some_template -r 'role[base]'
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   "--parallel",
                                   "--bulkdelete",

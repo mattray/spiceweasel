@@ -128,7 +128,7 @@ knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol win
 knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -E dev -r 'role[base]'
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   "-r",
                                   "--novalidation",
@@ -238,7 +238,7 @@ seq 2 | parallel -u -j 0 -v -- knife google server create g-qa{} -m n1-standard-
 seq 2 | parallel -u -j 0 -v -- knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -E dev -r 'role[base]'
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
                                   "--parallel",
                                   "-r",
