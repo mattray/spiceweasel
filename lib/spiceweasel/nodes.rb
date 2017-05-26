@@ -457,7 +457,7 @@ module Spiceweasel
       end
       names = [] if PROVIDERS.member?(names[0])
       # check options for -N, override name
-      protooptions  += "-a #{Spiceweasel::Config[:attribute]}" if Spiceweasel::Config[:attribute]
+      protooptions += "-a #{Spiceweasel::Config[:attribute]}" if Spiceweasel::Config[:attribute]
       if names.empty?
         search = chef_client_search(nil, run_list, environment)
         commands.push("knife #{protocol} '#{search}' '#{sudo}chef-client' #{protooptions} #{Spiceweasel::Config[:knife_options]}")
