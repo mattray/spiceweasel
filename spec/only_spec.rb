@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
-require 'spec_helper'
+require "mixlib/shellout"
+require "spec_helper"
 
-describe '--only cookbooks' do
+describe "--only cookbooks" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -35,35 +35,35 @@ knife cookbook upload apt --freeze
 knife cookbook upload mysql ntp
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--only cookbooks from the example config with yml' do
-    cmd = @spiceweasel_binary + ' --only cookbooks --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only cookbooks from the example config with yml" do
+    cmd = @spiceweasel_binary + " --only cookbooks --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it '--only cookbooks the example config with json' do
-    cmd = @spiceweasel_binary + ' --only cookbooks --novalidation test/examples/example.json'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only cookbooks the example config with json" do
+    cmd = @spiceweasel_binary + " --only cookbooks --novalidation test/examples/example.json"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it '--only cookbooks from the example config with rb' do
-    cmd = @spiceweasel_binary + ' --only cookbooks --novalidation test/examples/example.rb'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only cookbooks from the example config with rb" do
+    cmd = @spiceweasel_binary + " --only cookbooks --novalidation test/examples/example.rb"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '-r --only cookbooks' do
+describe "-r --only cookbooks" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -90,20 +90,20 @@ berks upload --no-freeze --halt-on-frozen -b ./Berksfile
 knife cookbook upload abc ghi jkl mno
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
   # fails because can't find Berksfile
-  xit '-r --only cookbooks from the infrastructure.yml with berksfile' do
-    cmd = @spiceweasel_binary + ' -r --only cookbooks --novalidation test/chef-repo/infrastructure.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  xit "-r --only cookbooks from the infrastructure.yml with berksfile" do
+    cmd = @spiceweasel_binary + " -r --only cookbooks --novalidation test/chef-repo/infrastructure.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--only environments' do
+describe "--only environments" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -114,19 +114,19 @@ bundle exec knife environment from file development.rb production.rb qa.rb
 knife environment from file development.rb production.rb qa.rb
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--only environments from the example config with yml' do
-    cmd = @spiceweasel_binary + ' --only environments --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only environments from the example config with yml" do
+    cmd = @spiceweasel_binary + " --only environments --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--only roles' do
+describe "--only roles" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -137,19 +137,19 @@ bundle exec knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
 knife role from file base.rb iisserver.rb monitoring.rb webserver.rb
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--only roles from the example config with yml' do
-    cmd = @spiceweasel_binary + ' --only roles --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only roles from the example config with yml" do
+    cmd = @spiceweasel_binary + " --only roles --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--only data_bags' do
+describe "--only data_bags" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -168,19 +168,19 @@ knife data bag create passwords
 knife data bag from file passwords mysql.json rabbitmq.json --secret-file secret_key
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--only data_bags from the example config with yml' do
-    cmd = @spiceweasel_binary + ' --only data_bags --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only data_bags from the example config with yml" do
+    cmd = @spiceweasel_binary + " --only data_bags --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--only nodes' do
+describe "--only nodes" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -223,19 +223,19 @@ knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' 
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--only nodes from the example config with yml' do
-    cmd = @spiceweasel_binary + ' --only nodes --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only nodes from the example config with yml" do
+    cmd = @spiceweasel_binary + " --only nodes --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--only clusters' do
+describe "--only clusters" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -252,19 +252,19 @@ knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7
 knife ec2 server create -S mray -i ~/.ssh/mray.pem -x ubuntu -G default -I ami-7000f019 -f m1.small -E amazon -r 'role[webserver],recipe[mysql::client]'
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--only clusters from the example config with yml' do
-    cmd = @spiceweasel_binary + ' --only clusters --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only clusters from the example config with yml" do
+    cmd = @spiceweasel_binary + " --only clusters --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--only cookbooks,nodes' do
+describe "--only cookbooks,nodes" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -411,31 +411,31 @@ knife bootstrap windows ssh winboxB -x Administrator -P 'super_secret_password' 
 knife bootstrap windows ssh winboxC -x Administrator -P 'super_secret_password' -r 'role[base],role[iisserver]'
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
   # failing because of the comma
-  xit '--only cookbooks,nodes from the example config with yml' do
-    cmd = @spiceweasel_binary + ' --only cookbooks,nodes --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  xit "--only cookbooks,nodes from the example config with yml" do
+    cmd = @spiceweasel_binary + " --only cookbooks,nodes --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--only cookbooks,foo,roles' do
+describe "--only cookbooks,foo,roles" do
   before(:each) do
     @expected_output = <<-OUTPUT
 ERROR: '--only foo' is an invalid option.
 ERROR: Valid options are ["cookbooks", "environments", "roles", "data_bags", "nodes", "clusters", "knife"].
     OUTPUT
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--only cookbooks,foo,roles expected to fail' do
-    cmd = @spiceweasel_binary + ' --only cookbooks,foo,roles --novalidation test/examples/example.yml'
-    spcwsl = Mixlib::ShellOut.new(cmd, environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+  it "--only cookbooks,foo,roles expected to fail" do
+    cmd = @spiceweasel_binary + " --only cookbooks,foo,roles --novalidation test/examples/example.yml"
+    spcwsl = Mixlib::ShellOut.new(cmd, environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
 
     spcwsl.run_command
     expect(spcwsl.stderr).to eq @expected_output

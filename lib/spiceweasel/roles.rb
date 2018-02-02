@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'ffi_yajl'
-require 'chef'
-require 'spiceweasel/command_helper'
+require "ffi_yajl"
+require "chef"
+require "spiceweasel/command_helper"
 
 module Spiceweasel
   # manages parsing of Roles
@@ -50,14 +50,14 @@ module Spiceweasel
     def unwind_roles(cookbooks, environments, flatroles, rolefiles)
       flatroles.each do |role|
         Spiceweasel::Log.debug("role: #{role}")
-        if File.directory?('roles')
+        if File.directory?("roles")
           # expand wildcards and push into flatroles
           if role =~ /\*/ # wildcard support
             wildroles = Dir.glob("roles/#{role}")
             # remove anything not ending in .json or .rb
-            wildroles.delete_if { |x| !x.end_with?('.rb', '.json') }
+            wildroles.delete_if { |x| !x.end_with?(".rb", ".json") }
             Spiceweasel::Log.debug("found roles '#{wildroles}' for wildcard: #{role}")
-            flatroles.concat(wildroles.map { |x| x[x.rindex('/') + 1..x.rindex('.') - 1] })
+            flatroles.concat(wildroles.map { |x| x[x.rindex("/") + 1..x.rindex(".") - 1] })
             next
           end
           validate(role, environments, cookbooks, flatroles) unless Spiceweasel::Config[:novalidation]
@@ -82,8 +82,8 @@ module Spiceweasel
     # validate the content of the role file
     def validate(role, _environments, cookbooks, roles) # rubocop:disable CyclomaticComplexity
       # validate the role passed in match the name of either the .rb or .json
-      file = %W(roles/#{role}.rb roles/#{role}.json).find { |f| File.exist?(f) }
-      role = role.split('/').last if role =~ /\// # pull out directories
+      file = %W{roles/#{role}.rb roles/#{role}.json}.find { |f| File.exist?(f) }
+      role = role.split("/").last if role =~ /\// # pull out directories
       if file
         c_role = evaluate_c_role(file)
         Spiceweasel::Log.debug("role: '#{role}' name: '#{c_role.name}'")
@@ -104,7 +104,7 @@ module Spiceweasel
       when /\.json$/
         c_role = Chef::JSONCompat.from_json(IO.read(file))
       when /\.rb$/
-        if Chef::VERSION.split('.')[0].to_i < 11
+        if Chef::VERSION.split(".")[0].to_i < 11
           c_role = Chef::Role.new(true)
         else
           c_role = Chef::Role.new
@@ -127,7 +127,7 @@ module Spiceweasel
       c_role.run_list.each do |runlist_item|
         if runlist_item.recipe?
           Spiceweasel::Log.debug("recipe: #{runlist_item.name}")
-          cookbook, _recipe = runlist_item.name.split('::')
+          cookbook, _recipe = runlist_item.name.split("::")
           Spiceweasel::Log.debug("role: '#{role}' cookbook: '#{cookbook}' dep: '#{runlist_item}'")
           unless cookbooks.member?(cookbook)
             STDERR.puts "ERROR: Cookbook dependency '#{runlist_item}' from role '#{role}' is missing from the list of cookbooks in the manifest."

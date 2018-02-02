@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
+require "mixlib/shellout"
 
-describe 'google from 2.6, vcair from 2.8' do
-  it 'knife-google/vcair functionality' do
+describe "google from 2.6, vcair from 2.8" do
+  it "knife-google/vcair functionality" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife cookbook delete apache2  -a -y
@@ -128,19 +128,19 @@ knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol win
 knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -E dev -r 'role[base]'
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/google-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/google-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end
 end
 
-describe 'google/vcair --parallel from 2.6' do
-  it 'knife-google/vcair --parallel functionality' do
+describe "google/vcair --parallel from 2.6" do
+  it "knife-google/vcair --parallel functionality" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife cookbook delete apache2  -a -y
@@ -238,13 +238,13 @@ seq 2 | parallel -u -j 0 -v -- knife google server create g-qa{} -m n1-standard-
 seq 2 | parallel -u -j 0 -v -- knife vcair server create --template W2K12-STD-R2-64BIT --bootstrap-protocol winrm --customization-script vcair.bat -E dev -r 'role[base]'
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-                                  '--parallel',
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/google-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--parallel",
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/google-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end

@@ -31,20 +31,20 @@ module Spiceweasel
       @delete = []
       @cookbook_list = {}
       # only load berkshelf if we are going to use it
-      require 'berkshelf'
+      require "berkshelf"
       berks_options = []
       case berkshelf
       when String
         path = berkshelf
       when Hash
-        path = berkshelf['path']
-        berks_options << berkshelf['options'] if berkshelf['options']
+        path = berkshelf["path"]
+        berks_options << berkshelf["options"] if berkshelf["options"]
       end
-      path ||= './Berksfile'
+      path ||= "./Berksfile"
       berks_options << "-b #{path}"
-      berks_options = berks_options.join(' ')
-      opts = Thor::Options.split(berks_options.split(' ')).last
-      resolve_opts = Thor::Options.new(Berkshelf::Cli.tasks['upload'].options).parse(opts)
+      berks_options = berks_options.join(" ")
+      opts = Thor::Options.split(berks_options.split(" ")).last
+      resolve_opts = Thor::Options.new(Berkshelf::Cli.tasks["upload"].options).parse(opts)
       berks = Berkshelf::Berksfile.from_file(path)
       create_command("berks upload #{berks_options}")
       Berkshelf.ui.mute do

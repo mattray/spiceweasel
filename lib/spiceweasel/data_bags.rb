@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require 'ffi_yajl'
+require "ffi_yajl"
 
-require 'spiceweasel/command_helper'
+require "spiceweasel/command_helper"
 
 module Spiceweasel
   # manages parsing of Data Bags
@@ -40,7 +40,7 @@ module Spiceweasel
         db, items, secret = knife_data_bag_create_delete(data_bag)
         items = invoke_validate_item(db, items, secret)
 
-        items.delete_if { |x| x.include?('*') } # remove wildcards
+        items.delete_if { |x| x.include?("*") } # remove wildcards
 
         items.sort!.uniq!
 
@@ -49,7 +49,7 @@ module Spiceweasel
     end
 
     def data_bag_from_file(db, items, secret)
-      return if  items.empty?
+      return if items.empty?
 
       if secret
         create_command("knife data bag#{Spiceweasel::Config[:knife_options]} from file #{db} #{items.join('.json ')}.json --secret-file #{secret}")
@@ -66,7 +66,7 @@ module Spiceweasel
         if item =~ /\*/ # wildcard support, will fail if directory not present
           files = Dir.glob("data_bags/#{db}/#{item}")
           # remove anything not ending in .json
-          files.delete_if { |x| !x.end_with?('.json') }
+          files.delete_if { |x| !x.end_with?(".json") }
           items.concat(files.map { |x| x["data_bags/#{db}/".length..-6] })
           Spiceweasel::Log.debug("found files '#{files}' for data bag: #{db} with wildcard #{item}")
           next
@@ -79,7 +79,7 @@ module Spiceweasel
     def knife_data_bag_create_delete(data_bag)
       db = data_bag.keys.first
       # check directories
-      if !File.directory?('data_bags') && !Spiceweasel::Config[:novalidation]
+      if !File.directory?("data_bags") && !Spiceweasel::Config[:novalidation]
         STDERR.puts "ERROR: 'data_bags' directory not found, unable to validate or load data bag items"
         exit(-1)
       end
@@ -100,8 +100,8 @@ module Spiceweasel
       items = nil
       secret = nil
       if data_bag[db]
-        items = data_bag[db]['items']
-        secret = data_bag[db]['secret']
+        items = data_bag[db]["items"]
+        secret = data_bag[db]["secret"]
         if secret && !File.exist?(File.expand_path(secret)) && !Spiceweasel::Config[:novalidation]
           STDERR.puts "ERROR: secret key #{secret} not found, unable to load encrypted data bags for data bag #{db}."
           exit(-1)
@@ -125,9 +125,9 @@ module Spiceweasel
         exit(-1)
       end
       # validate the id matches the file name
-      item = item.split('/').last if item =~ /\// # pull out directories
+      item = item.split("/").last if item =~ /\// # pull out directories
 
-      return if item.eql?(itemfile['id'])
+      return if item.eql?(itemfile["id"])
 
       STDERR.puts "ERROR: data bag '#{db}' item '#{item}' listed in the manifest does not match the id '#{itemfile['id']}' within the 'data_bags/#{db}/#{item}.json' file."
       exit(-1)

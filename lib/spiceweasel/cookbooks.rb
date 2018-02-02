@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/cookbook/metadata'
+require "chef/cookbook/metadata"
 
 module Spiceweasel
   # manages parsing of Cookbooks
@@ -39,7 +39,7 @@ module Spiceweasel
       begin
         @loader.load_cookbooks
       rescue SyntaxError => e
-        STDERR.puts 'ERROR: invalid cookbook metadata.'
+        STDERR.puts "ERROR: invalid cookbook metadata."
         STDERR.puts e.message
         exit(-1)
       end
@@ -53,8 +53,8 @@ module Spiceweasel
       cookbooks.each do |cookbook|
         name = cookbook.keys.first
         if cookbook[name]
-          version = cookbook[name]['version']
-          options = cookbook[name]['options']
+          version = cookbook[name]["version"]
+          options = cookbook[name]["options"]
         end
         Spiceweasel::Log.debug("cookbook: #{name} #{version} #{options}")
 
@@ -79,7 +79,7 @@ module Spiceweasel
     end
 
     def validate_metadata_or_get_knife_commands_wrapper(name, options, version)
-      if File.directory?('cookbooks')
+      if File.directory?("cookbooks")
         if @loader.cookbooks_by_name[name]
           validate_metadata(name, version) unless Spiceweasel::Config[:novalidation]
         else

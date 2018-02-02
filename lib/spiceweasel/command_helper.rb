@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'spiceweasel/command'
+require "spiceweasel/command"
 
 module Spiceweasel
   # helpers for create and delete commands
@@ -25,7 +25,7 @@ module Spiceweasel
     def create_command(*args)
       @create ||= []
       if bundler?
-        args[0] = 'bundle exec ' + args[0]
+        args[0] = "bundle exec " + args[0]
         @create.push(Command.new(*args))
       else
         @create.push(Command.new(*args))
@@ -35,7 +35,7 @@ module Spiceweasel
     def delete_command(*args)
       @delete ||= []
       if bundler?
-        args[0] = 'bundle exec ' + args[0]
+        args[0] = "bundle exec " + args[0]
         @delete.push(Command.new(*args))
       else
         @delete.push(Command.new(*args))
@@ -43,7 +43,7 @@ module Spiceweasel
     end
 
     def bundler?
-      ENV.key?('BUNDLE_BIN_PATH')
+      ENV.key?("BUNDLE_BIN_PATH")
     end
   end
 end

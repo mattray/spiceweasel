@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'mixlib/log'
+require "mixlib/log"
 
 module Spiceweasel
   # configure logging

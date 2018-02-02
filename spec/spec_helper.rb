@@ -18,5 +18,5 @@
 #
 
 def bundler?
-  ENV.key?('BUNDLE_BIN_PATH')
+  ENV.key?("BUNDLE_BIN_PATH")
 end

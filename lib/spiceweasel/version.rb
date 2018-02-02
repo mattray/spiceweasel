@@ -1,8 +1,8 @@
 # encoding: UTF-8
 #
-# Author:: Matt Ray (<matt@getchef.com>)
+# Author:: Matt Ray (<matt@chef.io>)
 #
-# Copyright:: 2011-2014, Chef Software, Inc <legal@getchef.com>
+# Copyright:: 2011-2017, Chef Software, Inc <legal@getchef.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,5 +19,5 @@
 
 # Spiceweasel version
 module Spiceweasel
-  VERSION = '2.8.0'
+  VERSION = "3.0.0"
 end

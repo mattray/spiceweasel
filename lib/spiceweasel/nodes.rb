@@ -22,7 +22,7 @@ module Spiceweasel
   class Nodes
     include CommandHelper
 
-    PROVIDERS = %w(bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace vagrant vcair vsphere)
+    PROVIDERS = %w{bluebox clodo cs digital_ocean ec2 gandi google hp joyent kvm linode lxc openstack rackspace vagrant vcair vsphere}
 
     attr_reader :create, :delete
 
@@ -41,18 +41,18 @@ module Spiceweasel
         Spiceweasel::Log.debug("node: '#{name}' '#{node[name]}'")
         # get the node's run_list and options
         if node[name]
-          run_list = process_run_list(node[name]['run_list'])
+          run_list = process_run_list(node[name]["run_list"])
           Spiceweasel::Log.debug("node: '#{name}' run_list: '#{run_list}'")
           validate_run_list(name, run_list, cookbooks, roles) unless Spiceweasel::Config[:novalidation]
-          options = ((node[name]['options'] || '') + ' ' + (rootoptions || '')).rstrip
+          options = ((node[name]["options"] || "") + " " + (rootoptions || "")).rstrip
           Spiceweasel::Log.debug("node: '#{name}' options: '#{options}'")
           validate_options(name, options, environments) unless Spiceweasel::Config[:novalidation]
-          %w(allow_create_failure timeout).each do |key|
+          %w{allow_create_failure timeout}.each do |key|
             if node[name].key?(key)
               create_command_options[key] = node[name][key]
             end
           end
-          additional_commands = node[name]['additional_commands'] || []
+          additional_commands = node[name]["additional_commands"] || []
         end
         if Spiceweasel::Config[:chefclient]
           chefclient.push(process_chef_client(names, options, run_list))
@@ -62,10 +62,10 @@ module Spiceweasel
           # provider support
           if PROVIDERS.member?(names[0])
             count = names.length == 2 ? names[1] : 1
-            process_providers(names, count, node[name]['name'], options, run_list, create_command_options, knifecommands)
-          elsif names[0].start_with?('windows_')
+            process_providers(names, count, node[name]["name"], options, run_list, create_command_options, knifecommands)
+          elsif names[0].start_with?("windows_")
             # windows node bootstrap support
-            protocol = names.shift.split('_') # split on 'windows_ssh' etc
+            protocol = names.shift.split("_") # split on 'windows_ssh' etc
             names.each do |server|
               servercommand = "knife bootstrap #{protocol[0]} #{protocol[1]}#{Spiceweasel::Config[:knife_options]} #{server} #{options}"
               servercommand += " -r '#{run_list}'" unless run_list.empty?
@@ -100,15 +100,15 @@ module Spiceweasel
 
     # ensure run_list contents are listed previously.
     def validate_run_list(node, run_list, cookbooks, roles)
-      run_list.split(',').each do |item|
-        if item.start_with?('recipe[')
+      run_list.split(",").each do |item|
+        if item.start_with?("recipe[")
           # recipe[foo] or recipe[foo::bar]
-          cb = item.split(/\[|\]/)[1].split(':')[0]
+          cb = item.split(/\[|\]/)[1].split(":")[0]
           unless cookbooks.member?(cb)
             STDERR.puts "ERROR: '#{node}' run list cookbook '#{cb}' is missing from the list of cookbooks in the manifest."
             exit(-1)
           end
-        elsif item.start_with?('role[')
+        elsif item.start_with?("role[")
           # role[blah]
           role = item.split(/\[|\]/)[1]
           unless roles.member?(role)
@@ -125,7 +125,7 @@ module Spiceweasel
     # for now, just check that -E is legit
     def validate_options(node, options, environments)
       if options =~ /-E/ # check for environments
-        env = options.split('-E')[1].split[0]
+        env = options.split("-E")[1].split[0]
         unless environments.member?(env)
           STDERR.puts "ERROR: '#{node}' environment '#{env}' is missing from the list of environments in the manifest."
           exit(-1)
@@ -139,7 +139,7 @@ module Spiceweasel
       if PROVIDERS.member?(names[0])
         count = names.length == 2 ? names[1] : 1
         do_provider_members(count, nodenames, options)
-      elsif names[0].start_with?('windows_')
+      elsif names[0].start_with?("windows_")
         nodenames.push(names[1..-1])
       else # standard nodes
         nodenames.push(names)
@@ -152,7 +152,7 @@ module Spiceweasel
     def do_provider_members(count, nodenames, options)
       options.split.each do |opt|
         if opt =~ /^-N|^--node-name/
-          optname = opt.sub(/-N|--node-name/, '').lstrip
+          optname = opt.sub(/-N|--node-name/, "").lstrip
           optname = options.split[options.split.find_index(opt) + 1] if optname.empty?
           count.to_i.times do |i|
             nodenames.push(node_numerate(optname, i + 1, count))
@@ -162,7 +162,7 @@ module Spiceweasel
     end
 
     def node_names_flatten(create_command_options, node, run_list)
-      if File.directory?('nodes/')
+      if File.directory?("nodes/")
         if File.exist?("nodes/#{node}.json")
           validate_node_file(node) unless Spiceweasel::Config[:novalidation]
           servercommand = "knife node from file #{node}.json #{Spiceweasel::Config[:knife_options]}".rstrip
@@ -186,7 +186,7 @@ module Spiceweasel
       node = Chef::JSONCompat.from_json(IO.read("nodes/#{name}.json"))
 
       # check the node name vs. contents of the file
-      return unless node['name'] != name
+      return unless node["name"] != name
 
       STDERR.puts "ERROR: Node '#{name}' listed in the manifest does not match the name '#{node['name']}' within the nodes/#{name}.json file."
       exit(-1)
@@ -197,13 +197,13 @@ module Spiceweasel
       provider = names[0]
       validate_provider(provider, names, count, options, knifecommands) unless Spiceweasel::Config[:novalidation]
       provided_names = []
-      if name.nil? && options.split.index('-N') # pull this out for deletes
-        name = options.split[options.split.index('-N') + 1]
+      if name.nil? && options.split.index("-N") # pull this out for deletes
+        name = options.split[options.split.index("-N") + 1]
         count.to_i.times { |i| provided_names << node_numerate(name, i + 1, count) } if name
       end
 
       # google can have names or numbers
-      if provider.eql?('google') && names[1].to_i == 0
+      if provider.eql?("google") && names[1].to_i == 0
         do_google_numeric_provider(create_command_options, names, options, provided_names, run_list)
       elsif Spiceweasel::Config[:parallel]
         process_parallel(count, create_command_options, name, options, provider, run_list)
@@ -221,13 +221,13 @@ module Spiceweasel
 
     def determine_cloud_provider(count, create_command_options, name, options, provider, run_list)
       count.to_i.times do |i|
-        if provider.eql?('vsphere')
+        if provider.eql?("vsphere")
           server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}", i + 1, count)
-        elsif provider.eql?('kvm')
+        elsif provider.eql?("kvm")
           server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}", i + 1, count)
-        elsif provider.eql?('digital_ocean')
+        elsif provider.eql?("digital_ocean")
           server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}", i + 1, count)
-        elsif provider.eql?('google')
+        elsif provider.eql?("google")
           server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}", i + 1, count)
         else
           server = node_numerate("knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}", i + 1, count)
@@ -247,9 +247,9 @@ module Spiceweasel
     end
 
     def do_provided_names(p_name, provider)
-      if ['kvm', 'vsphere'].member?(provider)
+      if ["kvm", "vsphere"].member?(provider)
         delete_command("knife #{provider} vm delete #{p_name} -y")
-      elsif ['digital_ocean'].member?(provider)
+      elsif ["digital_ocean"].member?(provider)
         delete_command("knife #{provider} droplet destroy #{p_name} -y")
       else
         delete_command("knife #{provider} server delete #{p_name} -y")
@@ -259,13 +259,13 @@ module Spiceweasel
     end
 
     def do_bulk_delete(provider)
-      if ['kvm', 'vsphere'].member?(provider)
+      if ["kvm", "vsphere"].member?(provider)
         if bundler?
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs bundle exec knife #{provider} vm delete -y")
         else
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs knife #{provider} vm delete -y")
         end
-      elsif ['digital_ocean'].member?(provider)
+      elsif ["digital_ocean"].member?(provider)
         if bundler?
           delete_command("knife node#{Spiceweasel::Config[:knife_options]} list | xargs bundle exec knife #{provider} droplet destroy -y")
         else
@@ -282,35 +282,35 @@ module Spiceweasel
 
     def process_parallel(count, create_command_options, name, options, provider, run_list)
       parallel = "seq #{count} | parallel -u -j 0 -v -- "
-      if provider.eql?('vsphere')
+      if provider.eql?("vsphere")
         if bundler?
-          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, "{}")
         else
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm clone #{options}".gsub(/\{\{n\}\}/, "{}")
         end
-      elsif provider.eql?('kvm')
+      elsif provider.eql?("kvm")
         if bundler?
-          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, "{}")
         else
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} vm create #{options}".gsub(/\{\{n\}\}/, "{}")
         end
-      elsif provider.eql?('digital_ocean')
+      elsif provider.eql?("digital_ocean")
         if bundler?
-          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, "{}")
         else
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} droplet create #{options}".gsub(/\{\{n\}\}/, "{}")
         end
-      elsif provider.eql?('google')
+      elsif provider.eql?("google")
         if bundler?
-          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, "{}")
         else
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{name} #{options}".gsub(/\{\{n\}\}/, "{}")
         end
       else
         if bundler?
-          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "bundle exec knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, "{}")
         else
-          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, '{}')
+          parallel += "knife #{provider}#{Spiceweasel::Config[:knife_options]} server create #{options}".gsub(/\{\{n\}\}/, "{}")
         end
       end
       parallel += " -r '#{run_list}'" unless run_list.empty?
@@ -324,9 +324,9 @@ module Spiceweasel
         exit(-1)
       end
 
-      return unless provider.eql?('google')
+      return unless provider.eql?("google")
 
-      return unless names[1].to_i != 0 && !options.split.member?('-N')
+      return unless names[1].to_i != 0 && !options.split.member?("-N")
 
       STDERR.puts "ERROR: 'knife google' currently requires providing a name. Please use -N within the options."
       exit(-1)
@@ -335,14 +335,14 @@ module Spiceweasel
     def process_chef_client(names, options, run_list) # rubocop:disable CyclomaticComplexity
       commands = []
       environment = nil
-      protocol = 'ssh'
-      protooptions = ''
+      protocol = "ssh"
+      protooptions = ""
       # protocol options
       sudo = nil
       value = nil # store last option for space-separated values
       options.split.each do |opt|
-        sudo = 'sudo ' if opt =~ /^--sudo$/
-        protooptions += '--no-host-key-verify ' if opt =~ /^--no-host-key-verify$/
+        sudo = "sudo " if opt =~ /^--sudo$/
+        protooptions += "--no-host-key-verify " if opt =~ /^--no-host-key-verify$/
         # SSH identity file used for authentication
         if value =~ /^-i$|^--identity-file$/
           protooptions += "-i #{opt} "
@@ -350,10 +350,10 @@ module Spiceweasel
         end
         if opt =~ /^-i|^--identity-file/
           if opt =~ /^-i$|^--identity-file$/
-            value = '-i'
+            value = "-i"
           else
-            opt.sub!(/-i/, '') if opt =~ /^-i/
-            opt.sub!(/--identity-file/, '') if opt =~ /^--identity-file/
+            opt.sub!(/-i/, "") if opt =~ /^-i/
+            opt.sub!(/--identity-file/, "") if opt =~ /^--identity-file/
             protooptions += "-i #{opt} "
             value = nil
           end
@@ -365,10 +365,10 @@ module Spiceweasel
         end
         if opt =~ /^-G|^--ssh-gateway/
           if opt =~ /^-G$|^--ssh-gateway$/
-            value = '-G'
+            value = "-G"
           else
-            opt.sub!(/-G/, '') if opt =~ /^-G/
-            opt.sub!(/--ssh-gateway/, '') if opt =~ /^--ssh-gateway/
+            opt.sub!(/-G/, "") if opt =~ /^-G/
+            opt.sub!(/--ssh-gateway/, "") if opt =~ /^--ssh-gateway/
             protooptions += "-G #{opt} "
             value = nil
           end
@@ -380,10 +380,10 @@ module Spiceweasel
         end
         if opt =~ /^-P|^--ssh-password/
           if opt =~ /^-P$|^--ssh-password$/
-            value = '-P'
+            value = "-P"
           else
-            opt.sub!(/-P/, '') if opt =~ /^-P/
-            opt.sub!(/--ssh-password/, '') if opt =~ /^--ssh-password/
+            opt.sub!(/-P/, "") if opt =~ /^-P/
+            opt.sub!(/--ssh-password/, "") if opt =~ /^--ssh-password/
             protooptions += "-P #{opt} "
             value = nil
           end
@@ -395,10 +395,10 @@ module Spiceweasel
         end
         if opt =~ /^-p|^--ssh-port/
           if opt =~ /^-p$|^--ssh-port$/
-            value = '-p'
+            value = "-p"
           else
-            opt.sub!(/-p/, '') if opt =~ /^-p/
-            opt.sub!(/--ssh-port/, '') if opt =~ /^--ssh-port/
+            opt.sub!(/-p/, "") if opt =~ /^-p/
+            opt.sub!(/--ssh-port/, "") if opt =~ /^--ssh-port/
             protooptions += "-p #{opt} "
             value = nil
           end
@@ -406,17 +406,17 @@ module Spiceweasel
         # ssh username
         if value =~ /^-x$|^--ssh-user$/
           protooptions += "-x #{opt} "
-          sudo = 'sudo ' unless opt.eql?('root')
+          sudo = "sudo " unless opt.eql?("root")
           value = nil
         end
         if opt =~ /^-x|^--ssh-user/
           if opt =~ /^-x$|^--ssh-user$/
-            value = '-x'
+            value = "-x"
           else
-            opt.sub!(/-x/, '') if opt =~ /^-x/
-            opt.sub!(/--ssh-user/, '') if opt =~ /^--ssh-user/
+            opt.sub!(/-x/, "") if opt =~ /^-x/
+            opt.sub!(/--ssh-user/, "") if opt =~ /^--ssh-user/
             protooptions += "-x #{opt} "
-            sudo = 'sudo ' unless opt.eql?('root')
+            sudo = "sudo " unless opt.eql?("root")
             value = nil
           end
         end
@@ -427,37 +427,37 @@ module Spiceweasel
         end
         if opt =~ /^-E|^--environment/
           if opt =~ /^-E$|^--environment$/
-            value = '-E'
+            value = "-E"
           else
-            opt.sub!(/-E/, '') if opt =~ /^-E/
-            opt.sub!(/--environment/, '') if opt =~ /^--environment/
+            opt.sub!(/-E/, "") if opt =~ /^-E/
+            opt.sub!(/--environment/, "") if opt =~ /^--environment/
             environment = opt
             value = nil
           end
         end
         # nodename
         if value =~ /^-N$|^--node-name$/
-          names = [opt.gsub(/{{n}}/, '*')]
+          names = [opt.gsub(/{{n}}/, "*")]
           value = nil
         end
         if opt =~ /^-N|^--node-name/
           if opt =~ /^-N$|^--node-name$/
-            value = '-N'
+            value = "-N"
           else
-            opt.sub!(/-N|--node-name/, '') if opt =~ /^-N|^--node-name/
-            names = [opt.gsub(/{{n}}/, '*')]
+            opt.sub!(/-N|--node-name/, "") if opt =~ /^-N|^--node-name/
+            names = [opt.gsub(/{{n}}/, "*")]
             value = nil
           end
         end
       end
-      if names[0].start_with?('windows_')
+      if names[0].start_with?("windows_")
         # windows node bootstrap support
-        protocol = names.shift.split('_')[1] # split on 'windows_ssh' etc
+        protocol = names.shift.split("_")[1] # split on 'windows_ssh' etc
         sudo = nil # no sudo for Windows even if ssh is used
       end
       names = [] if PROVIDERS.member?(names[0])
       # check options for -N, override name
-      protooptions  += "-a #{Spiceweasel::Config[:attribute]}" if Spiceweasel::Config[:attribute]
+      protooptions += "-a #{Spiceweasel::Config[:attribute]}" if Spiceweasel::Config[:attribute]
       if names.empty?
         search = chef_client_search(nil, run_list, environment)
         commands.push("knife #{protocol} '#{search}' '#{sudo}chef-client' #{protooptions} #{Spiceweasel::Config[:knife_options]}")
@@ -475,8 +475,8 @@ module Spiceweasel
       search = []
       search.push("name:#{name}") if name
       search.push("chef_environment:#{environment}") if environment
-      run_list.split(',').each do |item|
-        item.sub!(/\[/, ':')
+      run_list.split(",").each do |item|
+        item.sub!(/\[/, ":")
         item.chop!
         item.sub!(/::/, '\:\:')
         search.push(item)
@@ -486,9 +486,9 @@ module Spiceweasel
 
     # standardize the node run_list formatting
     def process_run_list(run_list)
-      return '' if run_list.nil?
-      run_list.gsub!(/ /, ',')
-      run_list.gsub!(/,+/, ',')
+      return "" if run_list.nil?
+      run_list.tr!(" ", ",")
+      run_list.gsub!(/,+/, ",")
       run_list
     end
 

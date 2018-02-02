@@ -27,8 +27,8 @@ module Spiceweasel
     def initialize(command, options = {})
       @command = command.rstrip
       @options = options
-      @timeout = options['timeout']
-      @allow_failure = options.key?('allow_failure') ? options['allow_failure'] : true
+      @timeout = options["timeout"]
+      @allow_failure = options.key?("allow_failure") ? options["allow_failure"] : true
     end
 
     def shellout_opts

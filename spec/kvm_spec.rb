@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
+require "mixlib/shellout"
 
-describe 'kvm, cluster functionality from 2.5' do
-  it 'kvm, cluster functionality' do
+describe "kvm, cluster functionality from 2.5" do
+  it "kvm, cluster functionality" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife cookbook delete apache2  -a -y
@@ -60,13 +60,13 @@ seq 1 | parallel -u -j 0 -v -- knife kvm vm create -E production --template-file
 seq 3 | parallel -u -j 0 -v -- knife kvm vm create --template-file ~/.chef/bootstrap/ubuntu11.10-gems.erb --vm-disk /path-to/ubuntu1110-x64.qcow2 --vm-name knife-kvm-test-ubuntu --ssh-user ubuntu --ssh-password ubuntu --pool default --kvm-host my-test-host --kvm-user root --kvm-password secret -E qa -r 'role[webserver],recipe[mysql::client]'
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-                                  '--parallel',
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/kvm-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--parallel",
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/kvm-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
 
     expect(spcwsl.stdout).to eq expected_output

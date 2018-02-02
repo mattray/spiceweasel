@@ -1,6 +1,10 @@
 [![Build Status](https://travis-ci.org/mattray/spiceweasel.png)](https://travis-ci.org/mattray/spiceweasel)
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/mattray/spiceweasel)
 
+# NO LONGER UNDER DEVELOPMENT #
+
+Spiceweasel has not been under active development for awhile, so I'm archiving the project unless there is some resurgence in interest. It was last tested with Chef 11, 13 is out now and 14 is coming April 2018.
+
 # Description #
 
 Spiceweasel is a command-line tool for batch loading Chef infrastructure. It provides a simple syntax in Ruby, JSON or YAML for describing and deploying infrastructure in order with the Chef command-line tool `knife`. This manifest may be bundled with a Chef repository to deploy the infrastructure contained within the repository and validate that the components listed are all present. The manifest may also be extracted from an existing repository.

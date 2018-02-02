@@ -17,15 +17,15 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
-require 'spec_helper'
+require "mixlib/shellout"
+require "spec_helper"
 
-describe 'clusters, digital_ocean and linode from 2.6' do
+describe "clusters, digital_ocean and linode from 2.6" do
   before(:each) do
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it 'cluster deletion, digital_ocean and linode' do
+  it "cluster deletion, digital_ocean and linode" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife node delete serverA -y
@@ -120,15 +120,15 @@ knife digital_ocean droplet create -S mray -i ~/.ssh/mray.pem -x ubuntu -I ami-7
     OUTPUT
     end
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '--rebuild',
-                                  '--novalidation',
-                                  'test/examples/node-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--rebuild",
+                                  "--novalidation",
+                                  "test/examples/node-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end
 
-  it 'node deletion and creation using --node-only' do
+  it "node deletion and creation using --node-only" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife node delete serverA -y
@@ -231,11 +231,11 @@ knife node run_list set DOweb03 'role[webserver],recipe[mysql::client]'
     OUTPUT
     end
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '--node-only',
-                                  '--rebuild',
-                                  '--novalidation',
-                                  'test/examples/node-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--node-only",
+                                  "--rebuild",
+                                  "--novalidation",
+                                  "test/examples/node-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end

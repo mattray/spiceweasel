@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
-require 'spec_helper'
+require "mixlib/shellout"
+require "spec_helper"
 
-describe '--chef-client from 2.5' do
+describe "--chef-client from 2.5" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -47,41 +47,41 @@ knife ssh 'chef_environment:amazon AND role:mysql' 'sudo chef-client' -i ~/.ssh/
 knife ssh 'chef_environment:amazon AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -G default
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--chef-client, yml' do
+  it "--chef-client, yml" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '--novalidation',
-                                  '--chef-client',
-                                  'test/examples/example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--novalidation",
+                                  "--chef-client",
+                                  "test/examples/example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it '--chef-client, json' do
+  it "--chef-client, json" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '--chef-client',
-                                  'test/examples/example.json',
-                                  '--novalidation',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--chef-client",
+                                  "test/examples/example.json",
+                                  "--novalidation",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it '--chef-client, rb' do
+  it "--chef-client, rb" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  'test/examples/example.rb',
-                                  '--novalidation',
-                                  '--chef-client',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "test/examples/example.rb",
+                                  "--novalidation",
+                                  "--chef-client",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--chef-client --cluster-file from 2.5' do
+describe "--chef-client --cluster-file from 2.5" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -102,48 +102,48 @@ knife ssh 'name:winboxC AND chef_environment:qa AND role:base AND role:iisserver
 knife ssh 'chef_environment:qa AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -x ubuntu -P ubuntu
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it '--chef-client --cluster-file, yml' do
+  it "--chef-client --cluster-file, yml" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '--novalidation',
-                                  '--chef-client',
-                                  '--cluster-file',
-                                  'test/examples/cluster-file-example.yml',
-                                  'test/examples/example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--novalidation",
+                                  "--chef-client",
+                                  "--cluster-file",
+                                  "test/examples/cluster-file-example.yml",
+                                  "test/examples/example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it '--chef-client --cluster-file, json' do
+  it "--chef-client --cluster-file, json" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '--cluster-file',
-                                  'test/examples/cluster-file-example.yml',
-                                  '--novalidation',
-                                  'test/examples/example.json',
-                                  '--chef-client',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--cluster-file",
+                                  "test/examples/cluster-file-example.yml",
+                                  "--novalidation",
+                                  "test/examples/example.json",
+                                  "--chef-client",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it '--chef-client --cluster-file, rb' do
+  it "--chef-client --cluster-file, rb" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '--novalidation',
-                                  '--chef-client',
-                                  'test/examples/example.rb',
-                                  '--cluster-file',
-                                  'test/examples/cluster-file-example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--novalidation",
+                                  "--chef-client",
+                                  "test/examples/example.rb",
+                                  "--cluster-file",
+                                  "test/examples/cluster-file-example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe '--chef-client -a from 2.5' do
-  it '--chef-client -a ec2.public_hostname' do
+describe "--chef-client -a from 2.5" do
+  it "--chef-client -a ec2.public_hostname" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife ssh 'chef_environment:mycluster AND role:mysql' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
@@ -155,14 +155,14 @@ knife ssh 'chef_environment:mycluster AND role:mysql' 'sudo chef-client' -i ~/.s
 knife ssh 'chef_environment:mycluster AND role:webserver AND recipe:mysql\\:\\:client' 'sudo chef-client' -i ~/.ssh/mray.pem -x ubuntu -a ec2.public_hostname
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-                                  '--novalidation',
-                                  '--chef-client',
-                                  '-a',
-                                  'ec2.public_hostname',
-                                  'test/examples/example-cluster.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--novalidation",
+                                  "--chef-client",
+                                  "-a",
+                                  "ec2.public_hostname",
+                                  "test/examples/example-cluster.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end

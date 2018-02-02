@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
-require 'spec_helper'
+require "mixlib/shellout"
+require "spec_helper"
 
 # Cover-all spec to prevent regressions during refactor
-describe 'bin/spiceweasel' do
+describe "bin/spiceweasel" do
   before(:each) do
     if bundler?
       @expected_output = <<-OUTPUT
@@ -222,42 +222,42 @@ knife vsphere vm clone --bootstrap --template 'def' my-new-webserver2
 knife vsphere vm clone --bootstrap --template 'ghi' my-new-webserver3
     OUTPUT
     end
-    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    @spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
   end
 
-  it 'maintains consistent output from the example config with yml' do
+  it "maintains consistent output from the example config with yml" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it 'maintains consistent output from the example config with json' do
+  it "maintains consistent output from the example config with json" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/example.json',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/example.json",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 
-  it 'maintains consistent output from the example config with rb' do
+  it "maintains consistent output from the example config with rb" do
     spcwsl = Mixlib::ShellOut.new(@spiceweasel_binary,
-                                  '-r',
-                                  '--novalidation',
-                                  'test/examples/example.rb',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "-r",
+                                  "--novalidation",
+                                  "test/examples/example.rb",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq @expected_output
   end
 end
 
-describe 'The Spiceweasel binary' do
-  it 'maintains consistent output deleting from the example config with yml using --bulkdelete' do
+describe "The Spiceweasel binary" do
+  it "maintains consistent output deleting from the example config with yml using --bulkdelete" do
     if bundler?
       expected_output = <<-OUTPUT
 bundle exec knife cookbook delete apache2  -a -y
@@ -390,13 +390,13 @@ knife node bulk delete .* -y
 for N in $(knife node list -E amazon); do knife client delete $N -y; knife node delete $N -y; done
     OUTPUT
     end
-    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w(.. bin spiceweasel))
+    spiceweasel_binary = File.join(File.dirname(__FILE__), *%w{.. bin spiceweasel})
     spcwsl = Mixlib::ShellOut.new(spiceweasel_binary,
-                                  '--bulkdelete',
-                                  '-d',
-                                  '--novalidation',
-                                  'test/examples/example.yml',
-                                  environment: { 'PWD' => "#{ENV['PWD']}/test/chef-repo" })
+                                  "--bulkdelete",
+                                  "-d",
+                                  "--novalidation",
+                                  "test/examples/example.yml",
+                                  environment: { "PWD" => "#{ENV['PWD']}/test/chef-repo" })
     spcwsl.run_command
     expect(spcwsl.stdout).to eq expected_output
   end
